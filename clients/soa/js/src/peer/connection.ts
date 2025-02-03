@@ -1,7 +1,7 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-import { SignalingMessage } from '../deviceMessages';
-import { Channel } from './channel';
+import { SignalingMessage } from '../deviceMessages.js';
+import { Channel } from './channel.js';
 
 export type ServiceConfig = {
   serviceType: string;
@@ -13,6 +13,7 @@ export interface PeerConnectionEvents {
   connectionChanged(): void;
 }
 export interface PeerConnection extends TypedEmitter<PeerConnectionEvents> {
+  channelExtension: { upstream: ((data: any) => any); downstream: ((data: any) => any); }| undefined;
   state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
   tiebreaker: boolean;
 

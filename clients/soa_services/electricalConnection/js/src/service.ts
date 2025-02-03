@@ -12,7 +12,7 @@ import {
   ConnectionInterface,
   ConnectionInterfaceConfiguration,
   ConstructableConnectionInterface,
-} from './connectionInterface';
+} from './connectionInterface.js';
 
 interface ConnectionInterfaceConfigurationUpstream
   extends ConnectionInterfaceConfiguration {
@@ -49,13 +49,15 @@ interface ElectricalConnectionServiceEvents {
   newInterface: (event: NewInterfaceEvent) => void;
 }
 
-export class ElectricalConnectionService
+type FullStateType<SignalType extends string> = Record<SignalType, any>
+
+export class ElectricalConnectionService <ServiceId extends string=string, SignalType extends string=string>
   extends TypedEmitter<ElectricalConnectionServiceEvents>
-  implements Service<ServiceType>
+  implements Service<ServiceType, ServiceId, FullStateType<SignalType>>
 {
   serviceDirection = Prosumer;
   serviceType = ServiceType;
-  serviceId: string;
+  serviceId: ServiceId;
 
   interfaceConstructors = new Map<string, ConstructableConnectionInterface>();
   interfaces = new Map<string, ConnectionInterface>();
@@ -64,13 +66,14 @@ export class ElectricalConnectionService
 
   queue: Queue;
 
-  constructor(serviceId: string, signals: string[]) {
+  constructor(serviceId: ServiceId, signals: SignalType[]) {
     super();
     this.serviceId = serviceId;
     this.signals = signals;
     this.queue = new Queue({ autostart: false, concurrency: 1 });
   }
 
+  
   getMeta() {
     const interfaceDescriptions = Array.from(this.interfaceConstructors).map(
       constructors => {
@@ -86,6 +89,17 @@ export class ElectricalConnectionService
       serviceDirection: this.serviceDirection,
       interfaces: interfaceDescriptions,
     };
+  }
+
+  get_state(): FullStateType<SignalType> {
+    let state: FullStateType<SignalType> = {} as FullStateType<SignalType>;
+    for(const [_id, i] of this.interfaces){
+      const interfaceState = i.get_state()
+      for(const signal in interfaceState){
+        state[signal as SignalType]={...state[signal as SignalType], ...interfaceState[signal]}
+      }
+    }
+    return state
   }
 
   addInterface(electricalInterfaceConstructor: ConstructableConnectionInterface): void {

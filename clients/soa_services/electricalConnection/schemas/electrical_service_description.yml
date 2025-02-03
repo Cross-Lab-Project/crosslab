@@ -1,0 +1,122 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Electrical Service Description
+type: object
+properties:
+  serviceType:
+    type: string
+    description: The type of the service.
+  serviceId:
+    type: string
+    description: The id of the service.
+  serviceDirection:
+    type: string
+    description: The direction of the service.
+  interfaces:
+    type: array
+    description: The interfaces of the service.
+    items:
+      type: object
+      properties:
+        interfaceType:
+          type: string
+          description: The type of the interface.
+        availableSignals:
+          type: object
+          description: |
+            The available signals of the interface. Each key defines a specific role of the signal and the values which signals can be used for this role.
+            Which roles are available depends on the interface type.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+examples:
+  - {
+      "serviceType": "http://api.goldi-labs.de/serviceTypes/electrical",
+      "serviceId": "actuators",
+      "serviceDirection": "prosumer",
+      "interfaces": [
+          {
+              "interfaceType": "gpio",
+              "availableSignals": {
+                  "gpio": [
+                      "XMotorLeft",
+                      "XMotorRight",
+                      "YMotorBack",
+                      "YMotorFront",
+                      "ZMotorBottom",
+                      "ZMotorTop",
+                      "Magnet"
+                  ]
+              },
+              "direction": "in"
+          },
+          {
+              "interfaceType": "gpio",
+              "availableSignals": {
+                  "gpio": [
+                      "XLimitLeft",
+                      "XLimitRight",
+                      "YLimitBack",
+                      "YLimitFront",
+                      "ZLimitBottom",
+                      "ZLimitTop",
+                  ]
+              },
+              "direction": "out"
+          },
+          {
+              "interfaceType": "spi",
+              "availableSignals": {
+                  "SCLK": [
+                      "PA0",
+                      "PA1",
+                  ],
+                  "MISO": [
+                      "PA2",
+                      "PA3",
+                  ],
+                  "MOSI": [
+                      "PA3",
+                      "PA2",
+                  ],
+                  "SS": [
+                      "PA0",
+                      "PA1",
+                      "PA2",
+                      "PA3",
+                      "PA4",
+                      "PA5",
+                      "PA6",
+                      "PA7",
+                  ]
+              },
+          },
+          {
+              "interfaceType": "spi",
+              "availableSignals": {
+                  "SCLK": [
+                      "PB0",
+                      "PB1",
+                  ],
+                  "MISO": [
+                      "PB2",
+                      "PB3",
+                  ],
+                  "MOSI": [
+                      "PB3",
+                      "PB2",
+                  ],
+                  "SS": [
+                      "PB0",
+                      "PB1",
+                      "PB2",
+                      "PB3",
+                      "PB4",
+                      "PB5",
+                      "PB6",
+                      "PB7",
+                  ]
+              },
+          }
+      ]
+  }

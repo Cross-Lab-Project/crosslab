@@ -1,4 +1,4 @@
-class CrosslabTransport {
+export class CrosslabTransport {
   private buffer: object[] = [];
   private upstream: (info: object) => void = () => {};
 

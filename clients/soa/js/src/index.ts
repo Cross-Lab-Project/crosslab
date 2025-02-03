@@ -1,7 +1,9 @@
-import { DeviceHandler } from './deviceHandler';
+import { DeviceHandler } from './deviceHandler.js';
 
-export * from './service';
+export * from './service.js';
 
+export * as Messages from './deviceMessages.js';
+export { DataChannel, MediaChannel } from './peer/channel.js';
+export { PeerConnection } from './peer/connection.js';
 export { DeviceHandler };
-export { MediaChannel, DataChannel } from './peer/channel';
-export { PeerConnection } from './peer/connection';
+

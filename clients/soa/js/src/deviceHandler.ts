@@ -1,24 +1,24 @@
-import WebSocket from 'isomorphic-ws';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
+import { CrosslabConnectionTransport, DeviceConnectionTransport } from './deviceConnectionTransport.js';
 import {
   ClosePeerConnectionMessage,
   ConfigurationMessage,
   ConnectionStateChangedMessage,
   CreatePeerConnectionMessage,
   ExperimentStatusChangedMessage,
-  SignalingMessage,
   isClosePeerConnectionMessage,
   isCommandMessage,
   isConfigurationMessage,
   isCreatePeerConnectionMessage,
   isExperimentStatusChangedMessage,
   isSignalingMessage,
-} from './deviceMessages';
-import { crosslabTransport, logger } from './logging';
-import { PeerConnection } from './peer/connection';
-import { WebRTCPeerConnection } from './peer/webrtc-connection';
-import { Service } from './service';
+  SignalingMessage
+} from './deviceMessages.js';
+import { crosslabTransport, logger } from './logging.js';
+import { PeerConnection } from './peer/connection.js';
+import { WebRTCPeerConnection } from './peer/webrtc-connection.js';
+import { Service } from './service.js';
 
 export interface DeviceHandlerEvents {
   connectionsChanged(): void;
@@ -29,55 +29,100 @@ export interface DeviceHandlerEvents {
   }): void;
 }
 
-export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
-  ws!: WebSocket;
+//type Service1 = Service<"type1", "id1", Record<string, any>>
+//type Service2 = Service<"type2", "id2", { "gpio1": boolean, "gpio2": boolean }>
+
+//type ServiceT = Service1 | Service2
+type FullStateType<ServiceT extends Service> = {
+  [serviceId in ServiceT['serviceId']]: Extract<ServiceT, { serviceId: serviceId }>['get_state'] extends () => infer R ? R : never;
+}
+
+export class DeviceHandler<ServiceT extends Service> extends TypedEmitter<DeviceHandlerEvents> {
+  id: string;
   connections = new Map<string, PeerConnection>();
-  services = new Map<string, Service>();
+  services: { [serviceId in ServiceT['serviceId']]: Extract<ServiceT, { serviceId: serviceId }> } = {} as any;
+  transport?: DeviceConnectionTransport;
+  connectionConstuctors = new Map<string, ((message: CreatePeerConnectionMessage)=>PeerConnection)>
+  fullstatemap = new Map<string, any[]>
+  stateEvaluator?: (input: FullStateType<ServiceT>, output: FullStateType<ServiceT>) => boolean;
 
-  async connect(connectOptions: { endpoint: string; id: string; token: string }) {
-    this.ws = new WebSocket(connectOptions.endpoint);
+  evaluateState(input: any[], output: any){
+    const some=input.some(i=>this.stateEvaluator?.(i,output))
+    const every=input.every(i=>this.stateEvaluator?.(i,output))
+    if(some){
+      console.log("Error Detected!")
+      if (every){
+        console.log("User Error!")
+      }
+    }else{
+      console.log("No Error Detected!")
+    }
+  }
 
-    this.ws.onopen = () => {
-      this.ws.send(
-        JSON.stringify({
-          messageType: 'authenticate',
-          deviceUrl: connectOptions.id,
-          token: connectOptions.token,
-        }),
-      );
-      crosslabTransport._set_upstream(info =>
-        this.ws.send(JSON.stringify({ messageType: 'logging', content: info })),
-      );
-    };
+  handleDataUpstream(data: any) {
+    //let state = Object.values<ServiceT>(this.services).map(service => service.get_state());
+    let state = {} as any
+    for(const serviceId in this.services){
+      state[serviceId] = this.services[serviceId as keyof typeof this.services].get_state()
+    }
+    
+    let fullstate={} as any
+    for(const fstate of this.fullstatemap.values()){
+      for(const id in fstate){
+        fullstate[id]=[...fullstate[id]??[], ...fstate[id]]
+      }
+    }
+    this.evaluateState(fullstate[this.id]??[], state);
+    fullstate[this.id]=[state];
+    
+    return {fullstate: {[this.id]: fullstate}, data};
+  };
 
-    const p = new Promise<void>((resolve, reject) => {
-      this.ws.onmessage = authenticationEvent => {
-        const authenticationMessage = JSON.parse(authenticationEvent.data as string);
-        if (authenticationMessage.messageType === 'authenticate') {
-          if (authenticationMessage.authenticated) {
-            resolve();
-          } else reject('Authentication failed');
-        } else {
-          reject(
-            `Expected message with messageType 'authenticate', received ${authenticationMessage.messageType}`,
-          );
-        }
-      };
-    });
+  handleDataDownstream(data: any) {
+    if ("fullstate" in data){
+      for (const device in data["fullstate"]){
+        this.fullstatemap.set(device, data["fullstate"][device])
+      }
+      return data["data"]
+    }
+    return data;
+  };
 
-    this.ws.onclose = event => {
-      logger.log('info', 'ws closed', { reason: event.reason, code: event.code });
-    };
+  constructor(...services: ServiceT[]) {
+    super()
+    this.id = crypto.randomUUID()
+    for (const service of services) {
+      this.addService(service)
+    }
+    this.connectionConstuctors.set("", ()=>(
+      new WebRTCPeerConnection({
+        iceServers: [
+          { urls: 'stun:stun.goldi-labs.de:3478' },
+          { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' },
+        ],
+      })))
+  }
 
-    this.ws.onerror = event => {
-      logger.log('error', event.message, { type: event.type, error: event.error });
-    };
+  setErrorState(stateEvaluator: (input: FullStateType<ServiceT>, output: FullStateType<ServiceT>) => boolean): void {
+    this.stateEvaluator=stateEvaluator
+  }
 
-    await p;
+  async connect(transport: DeviceConnectionTransport): Promise<void>
+  async connect(connectOptions: { endpoint: string; id: string; token: string }): Promise<void>
+  async connect(transportOrconnectOptions: DeviceConnectionTransport | { endpoint: string; id: string; token: string }) {
+    let transport: DeviceConnectionTransport
+    if ('connect' in transportOrconnectOptions) {
+      transport = transportOrconnectOptions;
+    } else {
+      transport = new CrosslabConnectionTransport(transportOrconnectOptions);
+    }
+    return this._connect(transport)
+  }
 
-    this.ws.onmessage = event => {
-      const message = JSON.parse(event.data as string);
-
+  private async _connect(transport: DeviceConnectionTransport) {
+    this.transport=transport
+    this.transport.connect(crosslabTransport)
+    this.transport.on("message", message=>{
       if (isCommandMessage(message)) {
         if (isCreatePeerConnectionMessage(message)) {
           this.handleCreatePeerConnectionMessage(message);
@@ -94,11 +139,11 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       if (isExperimentStatusChangedMessage(message)) {
         this.handleExperimentStatusChangedMessage(message);
       }
-    };
+    })
   }
 
-  addService(service: Service) {
-    this.services.set(service.serviceId, service);
+  addService(service: ServiceT) {
+    this.services[service.serviceId as ServiceT['serviceId']] = service as any;
   }
 
   private handleCreatePeerConnectionMessage(message: CreatePeerConnectionMessage) {
@@ -106,16 +151,16 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       throw Error('Can not create a connection. Connection Id is already present');
     }
     logger.log('info', 'creating connection', message);
-    const connection = new WebRTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.goldi-labs.de:3478' },
-        { urls: 'turn:turn.goldi-labs.de:3478', username: 'goldi', credential: 'goldi' },
-      ],
-    });
+    const connectionConstuctor=this.connectionConstuctors.get(message.connectiontype)
+    if (connectionConstuctor === undefined){
+      throw Error("No Connection Constructor for "+message.connectiontype+" available.")
+    }
+    const connection=connectionConstuctor(message)
     connection.tiebreaker = message.tiebreaker;
+    connection.channelExtension = {upstream: (data)=>this.handleDataUpstream(data), downstream: (data)=>this.handleDataDownstream(data)}
     this.connections.set(message.connectionUrl, connection);
     for (const serviceConfig of message.services) {
-      const service = this.services.get(serviceConfig.serviceId);
+      const service = this.services[serviceConfig.serviceId as ServiceT['serviceId']];
       if (service === undefined) {
         throw Error('No Service for the service config was found');
       }
@@ -123,7 +168,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     }
     connection.on('signalingMessage', msg => {
       logger.log('info', 'sending:', msg);
-      this.ws.send(
+      this.transport?.send(
         JSON.stringify({
           ...msg,
           messageType: 'signaling',
@@ -137,7 +182,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
         status: connection.state,
         connectionUrl: message.connectionUrl,
       };
-      this.ws.send(JSON.stringify(connectionStateChangedMessage));
+      this.transport?.send(JSON.stringify(connectionStateChangedMessage));
       this.emit('connectionsChanged');
     });
     connection.connect();
@@ -174,6 +219,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   }
 
   getServiceMeta() {
-    return Array.from(this.services).map(service => service[1].getMeta());
+    return Object.values<ServiceT>(this.services).map(service => service.getMeta());
   }
 }

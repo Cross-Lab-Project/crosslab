@@ -1,2 +1,3 @@
-export * from './service';
-export * as GPIO from './gpio';
+export * as GPIO from './gpio/index.js';
+export * from './service.js';
+

@@ -9,11 +9,11 @@ bundlePolicy: "max-compat", // transport every stream over a seperate connection
 */
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-import { SignalingMessage } from '../deviceMessages';
-import { logger } from '../logging';
-import { assert } from '../utils';
-import { Channel, MediaChannel } from './channel';
-import { PeerConnection, PeerConnectionEvents, ServiceConfig } from './connection';
+import { SignalingMessage } from '../deviceMessages.js';
+import { logger } from '../logging.js';
+import { assert } from '../utils.js';
+import { Channel, MediaChannel } from './channel.js';
+import { PeerConnection, PeerConnectionEvents, ServiceConfig } from './connection.js';
 
 interface RTCSignalingCandidateMessage extends SignalingMessage {
   signalingType: 'candidate';
@@ -76,6 +76,7 @@ export class WebRTCPeerConnection
   private iceCandidateResolver?: () => void;
   private optionsReceived?: Promise<void>;
   private optionsReceivedResolver?: () => void;
+  channelExtension: { upstream: ((data: any) => any); downstream: ((data: any) => any); }| undefined;
 
   private onnegotiationneeded() {
     if (this._state !== ConnectionState.Calling) {
@@ -114,9 +115,15 @@ export class WebRTCPeerConnection
       const channel = this.receivingChannels.get(event.channel.label);
 
       if (channel !== undefined && channel.channel_type === 'DataChannel') {
-        channel.send = event.channel.send.bind(event.channel);
-        event.channel.onmessage = message => {
-          if (channel.ondata) channel.ondata(message.data);
+        if (this.channelExtension){
+          channel.send = (data) => event.channel.send(this.channelExtension!.upstream(data))
+        }else{
+          channel.send = event.channel.send.bind(event.channel);
+        }
+        event.channel.onmessage = event => {
+          let data=event.data
+          if (this.channelExtension) data=this.channelExtension.downstream(data)
+          if (channel.ondata) channel.ondata(event.data);
         };
         event.channel.onopen = () => {
           channel._setReady();
@@ -155,7 +162,11 @@ export class WebRTCPeerConnection
     const label = this.create_label(serviceConfig, id);
     if (channel.channel_type === 'DataChannel') {
       const webrtcChannel = this.pc.createDataChannel(label);
-      channel.send = webrtcChannel.send.bind(webrtcChannel);
+      if (this.channelExtension){
+        channel.send = (data) => webrtcChannel.send(this.channelExtension!.upstream(data))
+      }else{
+        channel.send = webrtcChannel.send.bind(webrtcChannel);
+      }
       //webrtcChannel.onopen=()=>channel._setReady;
       webrtcChannel.onopen = () => {
         channel._setReady();
@@ -166,6 +177,8 @@ export class WebRTCPeerConnection
         logger.log('error', 'can not set channel ready', { error: e as Error });
       }
       webrtcChannel.onmessage = event => {
+        let data=event.data
+        if (this.channelExtension) data=this.channelExtension.downstream(data)
         if (channel.ondata) channel.ondata(event.data);
       };
     } else if (channel.channel_type === 'MediaChannel') {

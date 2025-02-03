@@ -35,7 +35,7 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
   const token = await client.createWebsocketToken(options.deviceUrl);
   sendEvent('websocketToken', token);
 
-  const deviceHandler = new DeviceHandler();
+  
   const electrical = new ElectricalConnectionService('electrical', ['gpio1', 'gpio2']);
   const gpio = new GPIO.ConstructableGPIOInterface(['gpio1', 'gpio2']);
   electrical.on('newInterface', interfaceEvent => {
@@ -69,11 +69,9 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
     }
   });
   electrical.addInterface(gpio);
-  deviceHandler.addService(electrical);
-
+  
   file_producer = new FileService__Producer('file_producer');
-  deviceHandler.addService(file_producer);
-
+  
   file_consumer = new FileService__Consumer('file_consumer');
   file_consumer.on('file', e => {
     if (e.file.length !== dummyFile.length) {
@@ -86,7 +84,10 @@ async function app(options: { baseUrl: string; authToken: string; deviceUrl: str
     }
     sendEvent('file');
   });
-  deviceHandler.addService(file_consumer);
+  
+  const deviceHandler = new DeviceHandler(electrical);
+  deviceHandler.setErrorState((fullState => fullState.electrical.gpio1==1), ['electrical.gpio1']);
+  
 
   deviceHandler.on('connectionsChanged', () => {
     sendEvent(

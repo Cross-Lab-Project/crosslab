@@ -1,0 +1,30 @@
+{
+    "name": "fst-test",
+    "private": true,
+    "type": "module",
+    "scripts": {
+      "build": "tsc",
+      "dev": "tsc-watch --project tsconfig.json --onSuccess 'node --inspect=9009 ./app/index.js'",
+      "start": "node app/index.js",
+      "format": "prettier . --write",
+      "lint": "eslint ."
+    },
+    "author": "Johannes Nau",
+    "license": "UNLICENSED",
+    "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+        "@eslint/js": "^9.9.0",
+        "@types/eslint__js": "^8.42.3",
+        "typescript-eslint": "^8.1.0",
+        "eslint": "^9.8.0",
+        "prettier": "^3.3.3",
+        "typescript": "^5.5.4",
+        "tsc-watch": "^6.2.0"
+    },
+    "dependencies": {
+        "@cross-lab-project/soa-client": "file:../../clients/soa/js",
+        "@cross-lab-project/soa-service-electrical": "file:../../clients/soa_services/electricalConnection/js",
+        "tiny-typed-emitter": "^2.1.0"
+    }
+  }
+  

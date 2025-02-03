@@ -1,1 +1,0 @@
-export { ConstructableUSARTInterface } from './connectionInterface';

@@ -6,7 +6,7 @@ import {
   ConnectionInterfaceDescription,
   ConnectionInterfaceEvents,
   ConstructableConnectionInterface,
-} from '../connectionInterface';
+} from '../connectionInterface.js';
 
 type InterfaceType = 'gpio';
 const InterfaceType: InterfaceType = 'gpio';
@@ -64,6 +64,12 @@ export class GPIOInterface
     const dir = configuration.direction ?? 'inout';
     if (dir != 'in') {
       this.driver = configuration.driver ?? 'default';
+    }
+  }
+
+  get_state() {
+    return {
+      [this.configuration.signals.gpio]: {gpio: this.signalState}
     }
   }
 

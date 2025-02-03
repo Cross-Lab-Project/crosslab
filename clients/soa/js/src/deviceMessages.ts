@@ -19,6 +19,7 @@ export interface ServiceConfiguration {
   serviceType: string;
   serviceId: string;
   remoteServiceId: string;
+  [key: string]: any;
 }
 
 export interface CreatePeerConnectionMessage extends CommandMessage {
@@ -31,7 +32,7 @@ export interface CreatePeerConnectionMessage extends CommandMessage {
 export function isCreatePeerConnectionMessage(
   message: CommandMessage,
 ): message is CreatePeerConnectionMessage {
-  return message.command === 'createPeerconnection';
+  return message.command.toLowerCase() === 'createpeerconnection';
 }
 
 export interface SignalingMessage extends Message {
@@ -39,7 +40,7 @@ export interface SignalingMessage extends Message {
   connectionUrl: string;
 }
 export function isSignalingMessage(message: Message): message is SignalingMessage {
-  return message.messageType === 'signaling';
+  return message.messageType.toLowerCase() === 'signaling';
 }
 
 export interface ServiceDescription {
@@ -60,7 +61,7 @@ export interface ClosePeerConnectionMessage extends CommandMessage {
 export function isClosePeerConnectionMessage(
   message: CommandMessage,
 ): message is ClosePeerConnectionMessage {
-  return message.command === 'closePeerconnection';
+  return message.command.toLowerCase() === 'closepeerconnection';
 }
 
 export interface ConnectionStateChangedMessage extends Message {
@@ -78,7 +79,7 @@ export function isConfigurationMessage(
   message: Message,
 ): message is ConfigurationMessage {
   return (
-    message.messageType === 'configuration' &&
+    message.messageType.toLowerCase() === 'configuration' &&
     typeof message.configuration === 'object' &&
     message.configuration !== null
   );
@@ -94,7 +95,7 @@ export function isExperimentStatusChangedMessage(
   message: Message,
 ): message is ExperimentStatusChangedMessage {
   return (
-    message.messageType === 'experiment-status-changed' &&
+    message.messageType.toLowerCase() === 'experiment-status-changed' &&
     typeof message.status === 'string' &&
     (message.message === undefined || typeof message.message === 'string')
   );

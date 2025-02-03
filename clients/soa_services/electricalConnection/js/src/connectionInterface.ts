@@ -11,6 +11,7 @@ export interface ConnectionInterfaceEvents {
   upstreamData(data: unknown): void;
 }
 export interface ConnectionInterface extends TypedEmitter<ConnectionInterfaceEvents> {
+  get_state(): Record<string, any>;
   readonly interfaceType: string;
   readonly configuration: ConnectionInterfaceConfiguration;
 
