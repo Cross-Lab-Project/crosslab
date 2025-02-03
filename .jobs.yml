@@ -60,7 +60,7 @@ helper/dummy-device/python:
 helper/cli:
   - script: build
     dependencies:
-      - clients/api/python:build
+      - clients/api/js:build
   - script: lint
     dependencies:
       - helper/cli:build
