@@ -5,7 +5,13 @@ import { getClient } from './login.js';
 export function device(program: Command) {
   const device = program.command('device');
 
-  const {promptUrl} = CRUD(device,{create:'createDevice', list:'listDevices', read:'getDevice', update:'updateDevice', del:'deleteDevice'}, 'device', (item: any) => ({ name: item.name, url: item.url }), {
+  CRUD(device,{
+    create:'createDevice',
+    list:'listDevices',
+    read:'getDevice',
+    update:'updateDevice',
+    del:'deleteDevice'
+  },'device', (item) => ({ name: item.name, url: item.url }), {
     _c_name: 'Name of the device',
     _c_description: 'OPTIONAL Description of the device',
     _c_type: 'Type of the device: device | edge instanciable | cloud instanciable | group',
@@ -16,12 +22,11 @@ export function device(program: Command) {
   device
     .command('token')
     .argument('[device url]')
-    .action(async (url?: string) => {
+    .action(async (_url?: string) => {
       const client = await getClient();
-      client.createDevice
-      url = url || (await promptUrl(client));
+      //url = url || (await promptUrl(client));
       const identity = await client.getIdentity();
-      const token = await (client as any).createToken({
+      const token = await (client as any).createToken({ // eslint-disable-line @typescript-eslint/no-explicit-any
         user: identity.id,
         claims: { device_token: true },
       });

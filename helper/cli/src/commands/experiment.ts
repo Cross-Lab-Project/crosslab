@@ -9,7 +9,13 @@ import { getClient } from './login.js';
 export function experiment(program: Command) {
   const experiment = program.command('experiment');
   
-    CRUD(experiment,{create:'createExperiment', list:'listExperiments', read:'getExperiment', update:'updateExperiment', del:'deleteExperiment'}, 'experiment', (item: any) => ({ name: item.url, url: item.url }));
+    CRUD(experiment,{
+      create:'createExperiment',
+      list:'listExperiments',
+      read:'getExperiment',
+      update:'updateExperiment',
+      del:'deleteExperiment'
+    }, 'experiment', (item) => ({ name: item.url, url: item.url }));
 
     experiment
       .command('run')
@@ -17,7 +23,7 @@ export function experiment(program: Command) {
       .action(async (url?: string) => {
         const client = await getClient();
   
-        let obj: any;
+        let obj: Awaited<ReturnType<APIClient['getExperiment']>>;
         let response: Awaited<ReturnType<APIClient['createExperiment']>>
         if (url){
           obj = await client.getExperiment(url)

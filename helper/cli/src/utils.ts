@@ -6,7 +6,7 @@ import { inspect } from "node:util"
 import { Document, Node, parse, YAMLMap, YAMLSeq } from 'yaml'
 import { config } from "./config.js"
 
-export function outputJson(parsed: any){
+export function outputJson(parsed: unknown){
     if (process.stdout.isTTY)
     {
         process.stdout.write(inspect(parsed, { colors: true, depth: null, maxArrayLength: Infinity }))
@@ -23,8 +23,8 @@ function addComments(node: Node | null, path: string = ''){
         const keysToDelete = []
         for(const item of node.items){
             console.log(item.key)
-            if ((item.key as any).toString().startsWith('_c_')){
-                const key = (item.key as any).toString().slice(3)
+            if ((item.key as object).toString().startsWith('_c_')){
+                const key = (item.key as object).toString().slice(3)
                 keysToDelete.push(item.key)
                 if (!node.has(key)){
                     node.commentBefore=(node.commentBefore?node.commentBefore+'\n':'')+key+': '+item.value
@@ -43,7 +43,7 @@ function addComments(node: Node | null, path: string = ''){
     }
 }
 
-export async function editJson(json: any){
+export async function editJson(json: unknown){
     if (!process.stdin.isTTY) {
         let input = '';
         for await (const chunk of process.stdin) input += chunk;

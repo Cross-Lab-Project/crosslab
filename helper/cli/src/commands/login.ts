@@ -46,19 +46,19 @@ export function login(program: Command) {
       if (config.profiles) {
         while (!profile) {
           process.stdout.write('Choose the profile you want to login to.\n');
-          let profiles = Object.keys(config.profiles);
+          const profiles = Object.keys(config.profiles);
           for (let i = 0; i < profiles.length; i++) {
             process.stdout.write(('[' + i + ']').padStart(4) + ' ' + profiles[i]+ ' ' + chalk.dim(config.profiles[profiles[i]].url) + '\n');
           }
           process.stdout.write('Press n to create a new profile\n');
-          let profileIndex = await prompt('Profile: ');
+          const profileIndex = await prompt('Profile: ');
           if (profileIndex === 'n') {
             profile = await createNewProfile();
           } else {
             try {
               profile = profiles[parseInt(profileIndex)];
               if (!profile) throw new Error('Invalid profile');
-            } catch (e) {
+            } catch (_e) {
               process.stdout.write('\n\nInvalid profile\n\n');
             }
           }

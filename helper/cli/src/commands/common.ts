@@ -1,3 +1,4 @@
+/* eslint @typescript-eslint/no-explicit-any: 0 */
 import { APIClient } from '@cross-lab-project/api-client';
 import select from '@inquirer/select';
 import { Command } from 'commander';
