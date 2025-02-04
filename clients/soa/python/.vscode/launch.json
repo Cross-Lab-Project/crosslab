@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "Debug Tests",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "purpose": ["debug-test"],
             "console": "internalConsole",
@@ -14,7 +14,7 @@
         },
         {
             "name": "Pytest",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "pytest",
         }
