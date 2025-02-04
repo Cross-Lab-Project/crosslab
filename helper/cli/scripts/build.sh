@@ -4,7 +4,7 @@ mkdir -p build
 mkdir -p dist
 
 # Execute esbuild command
-npx esbuild src/index.ts --bundle --platform=node --outfile=build/index.js
+npx --yes esbuild src/index.ts --bundle --platform=node --outfile=build/index.js
 node --experimental-sea-config sea-config.json
 
 # Declare an associative array for binaries
