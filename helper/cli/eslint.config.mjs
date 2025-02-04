@@ -19,6 +19,7 @@ export default tseslint.config(
       'src/generated/**/*',
       'src/database/migrations/**/*',
       'test/generated/**/*',
+      'build/**/*',
       'dist/**/*',
       'lib/**/*',
       'app/**/*',
