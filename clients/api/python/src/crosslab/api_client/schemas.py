@@ -3830,18 +3830,41 @@ class LtiLaunchRequest(TypedDict):
     id_token: str
 
 
+LtiLaunchResponse200SessionRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+LtiLaunchResponse200SessionRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+LtiLaunchResponse200SessionRole_mappingItemsDevice = Union[LtiLaunchResponse200SessionRole_mappingItemsDeviceAlt1, LtiLaunchResponse200SessionRole_mappingItemsDeviceAlt2]
+
+
+class LtiLaunchResponse200SessionRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: LtiLaunchResponse200SessionRole_mappingItemsDevice
+
+
 class LtiLaunchResponse200Session(TypedDict):
     """
     Properties:
     - uri
     - resource_uri: The URI of the resource.
     - experiment_uri: The URI of the experiment.
+    - experiment_change_uri: The URI to change the experiment setting.
     - roles: The roles of the session.
+    - role_mapping
     """
     uri: str
     resource_uri: str
     experiment_uri: NotRequired[str]
+    experiment_change_uri: NotRequired[str]
     roles: List[Literal["instructor", "student"]]
+    role_mapping: NotRequired[List[LtiLaunchResponse200SessionRole_mappingItems]]
 
 
 class LtiLaunchResponse200(TypedDict):
@@ -4168,3 +4191,36 @@ class UpdateResourceStudentResponse200(TypedDict):
 
 
 UpdateResourceStudentResponse: TypeAlias = UpdateResourceStudentResponse200
+
+
+UpdateLtiExperimentRequestRole_mappingItemsDeviceAlt1: TypeAlias = Literal["GROUP"]
+
+
+UpdateLtiExperimentRequestRole_mappingItemsDeviceAlt2: TypeAlias = str
+
+
+UpdateLtiExperimentRequestRole_mappingItemsDevice = Union[UpdateLtiExperimentRequestRole_mappingItemsDeviceAlt1, UpdateLtiExperimentRequestRole_mappingItemsDeviceAlt2]
+
+
+class UpdateLtiExperimentRequestRole_mappingItems(TypedDict):
+    """
+    Properties:
+    - role
+    - device
+    """
+    role: str
+    device: UpdateLtiExperimentRequestRole_mappingItemsDevice
+
+
+class UpdateLtiExperimentRequest(TypedDict):
+    """
+    Properties:
+    - impersonate: URI of the student to impersonate.
+    - role_mapping: Mapping of roles to devices.
+This overwrites any existing role mapping possibles et by the student impersonation.
+    """
+    impersonate: NotRequired[str]
+    role_mapping: NotRequired[List[UpdateLtiExperimentRequestRole_mappingItems]]
+
+
+UpdateLtiExperimentResponse: TypeAlias = None
