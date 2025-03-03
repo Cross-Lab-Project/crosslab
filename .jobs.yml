@@ -221,11 +221,15 @@ services/booking/src/schedule-service:
 services/booking:
   - script: build-spec
     paths:
-    - ./api
+      - ./api
+    dependencies:
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/booking-backend:build-spec      
+      - services/booking/src/schedule-service:build-spec
   - script: lint-spec
     paths:
       - ./api
-    dependencies:
+    dependencies:      
       - services/booking:build-spec
     tags:
       - test
