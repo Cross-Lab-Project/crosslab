@@ -8,6 +8,31 @@ dotenv.config();
 
 const basicOrmConfig = CommonConfig.readOrmConfig();
 
+const webrtcIceServers = (()=>{
+  const servers: {urls: string, username?: string, credential?: string}[]=[]
+  for (const key in process.env){
+    const match=RegExp("^WEBRTC_ICE_SERVER_([^_]*)$").exec(key);
+    if(match){
+      const server_name=match[1];
+      const urls=process.env[match[0]];
+      if(!urls || !RegExp("^(turn|stun):[^:]*:\d+$").exec(urls)){
+        utils.die("Invalid ICE server URL: "+urls);
+      }else{
+        const server: {urls: string, username?: string, credential?: string} = {urls};
+        if (process.env[`WEBRTC_ICE_SERVER_${server_name}_USERNAME`]){
+          server.username=process.env[`WEBRTC_ICE_SERVER_${server_name}_USERNAME`];
+        }
+        if (process.env[`WEBRTC_ICE_SERVER_${server_name}_CREDENTIAL`]){
+          server.credential=process.env[`WEBRTC_ICE_SERVER_${server_name}_CREDENTIAL`];
+        }
+        servers.push(server);
+      }
+
+    }
+  }
+  return servers;
+})()
+
 export const config = {
   PORT: parseInt(process.env.PORT ?? '3001'),
   NODE_ENV: process.env.NODE_ENV ?? 'development',
@@ -21,6 +46,7 @@ export const config = {
     process.env.AUTHORIZATION_PSK ||
     utils.die('Environment variable AUTHORIZATION_PSK must be set'),
   JWT_SECRET: 'secret',
+  WEBRTC_ICE_SERVERS: webrtcIceServers,
   orm: {
     ...basicOrmConfig,
     entities: Entities,
@@ -28,3 +54,4 @@ export const config = {
     migrationsRun: true,
   },
 };
+
