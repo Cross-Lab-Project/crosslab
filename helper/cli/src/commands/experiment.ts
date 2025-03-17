@@ -1,76 +1,52 @@
-import { APIClient, ExperimentServiceTypes } from '@cross-lab-project/api-client';
-import chalk from 'chalk';
+
+import { APIClient } from '@cross-lab-project/api-client';
 import { Command } from 'commander';
+import open from 'open';
+import { editJson } from '../utils.js';
+import { CRUD } from './common.js';
+import { getClient } from './login.js';
 
-import { prompt } from './prompt.js';
-
-function shortExperimentList(
-  experiments: ExperimentServiceTypes.ExperimentOverview[],
-  printNumbers: boolean = false,
-) {
-  let ret: string = '';
-  for (const [idx, experiment] of experiments.entries()) {
-    if (printNumbers) {
-      ret += ('[' + idx + ']').padStart(4) + ' ';
-    }
-    ret += chalk.green(experiment.status) + ' ' + chalk.dim(experiment.url) + '\n';
-  }
-  return ret;
-}
-
-async function selecteExperiment(
-  experiments: ExperimentServiceTypes.ExperimentOverview[],
-) {
-  process.stdout.write(shortExperimentList(experiments, true));
-  return experiments[parseInt(await prompt('Select experiment: '))];
-}
-
-export function experiment(program: Command, getClient: () => APIClient) {
+export function experiment(program: Command) {
   const experiment = program.command('experiment');
+  
+    CRUD(experiment,{
+      create:'createExperiment',
+      list:'listExperiments',
+      read:'getExperiment',
+      update:'updateExperiment',
+      del:'deleteExperiment'
+    }, 'experiment', (item) => ({ name: item.url, url: item.url }));
 
-  experiment
-    .command('list')
-    .option('--json', 'Output the JSON response')
-    .action(async options => {
-      const client = getClient();
-      const experiments = await client.listExperiments();
-      if (options.json) {
-        console.log(JSON.stringify(experiments, null, 2));
-      } else {
-        console.log(experiments);
-      }
-    });
+    experiment
+      .command('run')
+      .argument('[experiment url]')
+      .action(async (url?: string) => {
+        const client = await getClient();
+  
+        let obj: Awaited<ReturnType<APIClient['getExperiment']>>;
+        let response: Awaited<ReturnType<APIClient['createExperiment']>>
+        if (url){
+          obj = await client.getExperiment(url)
+          response = await client.updateExperiment(url, {...obj, status: 'running'})
+        }else{
+          obj = await editJson({});
+          response = await client.createExperiment({...obj, status: 'running'})
+        }
 
-  experiment
-    .command('inspect')
-    .argument('[experiment url]')
-    .action(async (url?: string) => {
-      const client = getClient();
-      if (url == undefined)
-        url = (await selecteExperiment(await client.listExperiments())).url;
-      if (url == undefined) throw new Error('No device selected');
-      const experiment = await client.getExperiment(url);
-      console.log(experiment);
-    });
+        for (const device of response.instantiatedDevices ?? []) {
+          const url = `${ device.codeUrl }?instanceUrl=${ device.url}&deviceToken=${ device.token }`
+          if (process.stdout.isTTY)
+          {
+              process.stdout.write(`Please open the following url, if the browser does not automatically open:\n  ${url}\n\n`)
+          }
+          open(url)
+        }
 
-  experiment.command('create').action(async () => {
-    const client = getClient();
-    let experiment = '';
-    for await (const chunk of process.stdin) experiment += chunk;
-
-    const exp = JSON.parse(experiment);
-
-    client.createExperiment(exp);
-  });
-
-  experiment
-    .command('delete')
-    .argument('[experiment url]')
-    .action(async (url?: string) => {
-      const client = getClient();
-      if (url == undefined)
-        url = (await selecteExperiment(await client.listExperiments())).url;
-      if (url == undefined) throw new Error('No experiment selected');
-      await client.deleteExperiment(url);
-    });
-}
+        if (process.stdout.isTTY)
+        {
+            process.stdout.write(`Experiment URL: `)
+        }
+        process.stdout.write(response.url)
+        process.stdout.write('\n')
+      });
+  }

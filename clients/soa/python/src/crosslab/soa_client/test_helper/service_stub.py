@@ -14,7 +14,7 @@ class ServiceStub(Service):
     service_id: str
 
     _hasOutgoingTrack: bool
-    _hasIncoumingTrack: bool
+    _hasIncomingTrack: bool
     _hasDataChannel: bool
 
     _outgoingTrack: MediaStreamTrack
@@ -43,12 +43,12 @@ class ServiceStub(Service):
         self.service_id = service_id
 
         self._hasOutgoingTrack = outTrack is not None
-        self._hasIncoumingTrack = receiveVideo
+        self._hasIncomingTrack = receiveVideo
         self._hasDataChannel = dataChannel
 
-        if (self._hasOutgoingTrack and self._hasIncoumingTrack) or self._hasDataChannel:
+        if (self._hasOutgoingTrack and self._hasIncomingTrack) or self._hasDataChannel:
             self.service_direction = "prosumer"
-        elif self._hasIncoumingTrack:
+        elif self._hasIncomingTrack:
             self.service_direction = "consumer"
         elif self._hasOutgoingTrack:
             self.service_direction = "producer"
@@ -57,7 +57,7 @@ class ServiceStub(Service):
             self.service_direction = "producer"
             self._outgoingTrack = outTrack
 
-        if self._hasIncoumingTrack:
+        if self._hasIncomingTrack:
             self.recvPacket = asyncio.Event()
             self.received_frame_pts = []
             self._wait_for_n_frames = wait_for_n_frames
@@ -78,7 +78,7 @@ class ServiceStub(Service):
         if self._hasOutgoingTrack:
             mediaChannel = MediaChannel(self._outgoingTrack)
             connection.transmit(serviceConfig, "video", mediaChannel)
-        if self._hasIncoumingTrack:
+        if self._hasIncomingTrack:
             mediaChannel = MediaChannel()
             mediaChannel.on("track", self._onTrack)
             connection.receive(serviceConfig, "video", mediaChannel)
@@ -96,15 +96,16 @@ class ServiceStub(Service):
     async def teardownConnection(self, connection: Connection):
         if self._hasOutgoingTrack:
             pass
-        if self._hasIncoumingTrack:
+        if self._hasIncomingTrack:
             if self.receiveCoroutine:
                 self.receiveCoroutine.cancel()
                 await asyncio.sleep(0)
+            self._incomingTrack = None
         if self._hasDataChannel:
             self.channels.clear()
 
     def _onTrack(self, track: MediaStreamTrack):
-        if self._hasIncoumingTrack:
+        if self._hasIncomingTrack:
             self._incomingTrack = track
             self.receiveCoroutine = asyncio.create_task(self._receive())
 
