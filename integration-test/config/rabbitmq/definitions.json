@@ -1,0 +1,19 @@
+{
+  "vhosts": [{ "name": "/" }],
+  "users": [
+    {
+      "name": "rabbitmq",
+      "password_hash": "MrBZnOlA6iRKCx8KO2zJXGBv5wJjlNy1lsdX0MWuffvInj5I",
+      "tags": ["administrator"]
+    }
+  ],
+  "permissions": [
+    {
+      "user": "rabbitmq",
+      "vhost": "/",
+      "configure": ".*",
+      "read": ".*",
+      "write": ".*"
+    }
+  ]
+}

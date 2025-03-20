@@ -127,23 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -173,10 +160,11 @@ export class Client {
   private fixedHeaders: [string, string][];
   private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
     let raw_response;
+    const parsedUrl = new URL(url.toString());
     try {
       if (
-        url.toString().startsWith(this.baseUrl) ||
-        url.toString().startsWith(this.serviceUrl)
+        parsedUrl.toString().startsWith(this.baseUrl) ||
+        parsedUrl.toString().startsWith(this.serviceUrl)
       ) {
         raw_response = await fetch(url, init);
       } else {
@@ -211,12 +199,8 @@ export class Client {
       fixedHeaders?: [string, string][];
     },
   ) {
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl = options.serviceUrl
-      ? options.serviceUrl.endsWith('/')
-        ? options.serviceUrl.slice(0, -1)
-        : options.serviceUrl
-      : this.baseUrl;
+    this.baseUrl = new URL(baseUrl).toString().slice(0, -1);
+    this.serviceUrl = new URL(options.serviceUrl ?? this.baseUrl).toString().slice(0, -1);
     this.accessToken = options.accessToken ?? '';
     this.fixedHeaders = options.fixedHeaders ?? [];
   }
@@ -244,6 +228,7 @@ export class Client {
     url?: string;
   }): Promise<Signatures.ListDevicesSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
+    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateListDevicesInput())
       throw new ValidationError(
@@ -253,15 +238,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateListDevicesOutput(response))
       throw new ValidationError(
@@ -316,6 +308,7 @@ export class Client {
     },
   ): Promise<Signatures.CreateDeviceSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/devices');
+    console.log('trying to fetch url:', url);
 
     const body = device;
 
@@ -336,8 +329,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'POST',
         headers: [
@@ -394,7 +395,8 @@ export class Client {
   ): Promise<Signatures.GetDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       device_id: device_id,
@@ -414,8 +416,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'GET',
         headers: [
@@ -473,7 +483,7 @@ export class Client {
    */
   public async updateDevice(
     url: string,
-    deviceUpdate: Types.DeviceUpdate<'request'>,
+    deviceUpdate: Types.DeviceUpdate<'request'> | undefined,
     options?: {
       headers?: [string, string][];
       changedUrl?: string;
@@ -481,7 +491,8 @@ export class Client {
   ): Promise<Signatures.UpdateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
+    console.log('trying to fetch url:', url);
 
     const body = deviceUpdate;
 
@@ -503,8 +514,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'PATCH',
         headers: [
@@ -558,7 +577,8 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       device_id: device_id,
@@ -572,15 +592,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateDeleteDeviceOutput(response))
       throw new ValidationError(
@@ -631,7 +658,8 @@ export class Client {
   ): Promise<Signatures.InstantiateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       device_id: device_id,
@@ -653,8 +681,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'POST',
         headers: [
@@ -715,7 +751,8 @@ export class Client {
   ): Promise<Signatures.GetDeviceAvailabilitySuccessResponse['body']> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       device_id: device_id,
@@ -740,8 +777,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'GET',
         headers: [
@@ -796,7 +841,8 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       device_id: device_id,
@@ -812,15 +858,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateDeleteDeviceAvailabilityRulesOutput(response))
       throw new ValidationError(
@@ -859,14 +912,15 @@ export class Client {
    */
   public async addDeviceAvailabilityRules(
     url: string,
-    availabilityRules: Types.AvailabilityRule<'request'>[],
+    availabilityRules: Types.AvailabilityRule<'request'>[] | undefined,
     options?: {
       headers?: [string, string][];
     },
   ): Promise<Signatures.AddDeviceAvailabilityRulesSuccessResponse['body']> {
     const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/availability');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
+    console.log('trying to fetch url:', url);
 
     const body = availabilityRules;
 
@@ -884,16 +938,23 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateAddDeviceAvailabilityRulesOutput(response))
       throw new ValidationError(
@@ -938,7 +999,8 @@ export class Client {
   ): Promise<Signatures.CreateWebsocketTokenSuccessResponse['body']> {
     const urlSuffix = '/devices/{}/websocket'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/websocket');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/websocket');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       device_id: device_id,
@@ -954,15 +1016,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateCreateWebsocketTokenOutput(response))
       throw new ValidationError(
@@ -1016,7 +1085,8 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/devices/{}/signaling'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [device_id] = validateUrl(url, this.baseUrl, '/devices/{}/signaling');
+    const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/signaling');
+    console.log('trying to fetch url:', url);
 
     const body = sigMessage;
 
@@ -1034,16 +1104,23 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateSendSignalingMessageOutput(response))
       throw new ValidationError(
@@ -1083,6 +1160,7 @@ export class Client {
     url?: string;
   }): Promise<Signatures.ListPeerconnectionsSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
+    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateListPeerconnectionsInput())
       throw new ValidationError(
@@ -1094,15 +1172,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateListPeerconnectionsOutput(response))
       throw new ValidationError(
@@ -1156,6 +1241,7 @@ export class Client {
     },
   ): Promise<Signatures.CreatePeerconnectionSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/peerconnections');
+    console.log('trying to fetch url:', url);
 
     const body = peerconnection;
 
@@ -1182,8 +1268,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'POST',
         headers: [
@@ -1239,7 +1333,11 @@ export class Client {
   ): Promise<Signatures.GetPeerconnectionSuccessResponse['body']> {
     const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(url, this.baseUrl, '/peerconnections/{}');
+    const [peerconnection_id] = validateUrl(
+      new URL(url).toString(),
+      '/peerconnections/{}',
+    );
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       peerconnection_id: peerconnection_id,
@@ -1255,15 +1353,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateGetPeerconnectionOutput(response))
       throw new ValidationError(
@@ -1309,7 +1414,11 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/peerconnections/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [peerconnection_id] = validateUrl(url, this.baseUrl, '/peerconnections/{}');
+    const [peerconnection_id] = validateUrl(
+      new URL(url).toString(),
+      '/peerconnections/{}',
+    );
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       peerconnection_id: peerconnection_id,
@@ -1325,15 +1434,22 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ['Authorization', authorization],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateDeletePeerconnectionOutput(response))
       throw new ValidationError(
@@ -1389,10 +1505,10 @@ export class Client {
     const urlSuffix = '/peerconnections/{}/device_status'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [peerconnection_id] = validateUrl(
-      url,
-      this.baseUrl,
+      new URL(url).toString(),
       '/peerconnections/{}/device_status',
     );
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       peerconnection_id: peerconnection_id,
@@ -1414,8 +1530,16 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
     const response = await this.fetch(
-      url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query),
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'PATCH',
         headers: [

@@ -1,9 +1,13 @@
 import { sleep } from '@crosslab/booking-service-common';
 import * as amqplib from 'amqplib';
 
-import { config } from './config';
-import { freeDevice, reservateDevice } from './internal';
-import { DeviceBookingRequest } from './messageDefinition';
+import { config } from './config.js';
+import { freeDevice, reservateDevice } from './internal.js';
+import { DeviceBookingRequest } from './messageDefinition.js';
+
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 export async function handleFreeDeviceRequest(): Promise<void> {
   // freeDevice
@@ -33,11 +37,11 @@ export async function handleFreeDeviceRequest(): Promise<void> {
         try {
           data = BigInt(msg.content.toString());
         } catch (error) {
-          console.log('Can not parse message:', error);
+          console.error('Can not parse message:', error);
           try {
             channel.ack(msg);
           } catch (error) {
-            console.log('Can not ack message:', error);
+            console.error('Can not ack message:', error);
           }
           continue;
         }
@@ -45,13 +49,14 @@ export async function handleFreeDeviceRequest(): Promise<void> {
           await freeDevice(data);
           channel.ack(msg);
         } catch (err) {
-          console.log('Error freeing device:' + err);
-          channel.nack(msg);
+          console.error('Error freeing device:' + err);
+          channel.ack(msg);
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error('Got uncaught error in handleFreeDeviceRequest:', err);
       console.log('Reconnecting...');
+      await sleep(1000);
     }
   }
 }
@@ -84,11 +89,11 @@ export async function handleDeviceReservationRequest(): Promise<void> {
         try {
           data = DeviceBookingRequest.fromString(msg.content.toString());
         } catch (error) {
-          console.log('Can not parse message:', error);
+          console.error('Can not parse message:', error);
           try {
             channel.ack(msg);
           } catch (error) {
-            console.log('Can not ack message:', error);
+            console.error('Can not ack message:', error);
           }
           continue;
         }
@@ -96,13 +101,14 @@ export async function handleDeviceReservationRequest(): Promise<void> {
           await reservateDevice(data);
           channel.ack(msg);
         } catch (err) {
-          console.log('Error reservating device:' + err);
+          console.error('Error reservating device:' + err);
           channel.nack(msg);
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error('Got uncaught error in handleFreeDeviceRequest:', err);
       console.log('Reconnecting...');
+      await sleep(1000);
     }
   }
 }

@@ -5,7 +5,7 @@ import {
   ReservationAnswer,
   ReservationMessage,
   ReservationRequest,
-} from './messageDefinition';
+} from './messageDefinition.js';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
