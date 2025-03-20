@@ -27,6 +27,7 @@ export interface CreatePeerConnectionMessage extends CommandMessage {
   connectionUrl: string;
   services: ServiceConfiguration[];
   tiebreaker: boolean;
+  config?: {iceServers?: RTCIceServer[]};
 }
 export function isCreatePeerConnectionMessage(
   message: CommandMessage,

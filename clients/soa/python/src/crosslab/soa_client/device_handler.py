@@ -1,9 +1,10 @@
 import asyncio
 import logging
 import re
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import aiohttp
+from aiortc import RTCConfiguration, RTCIceServer  # type: ignore
 from crosslab.api_client import APIClient  # type: ignore
 from pyee.asyncio import AsyncIOEventEmitter
 
@@ -152,7 +153,19 @@ class DeviceHandler(AsyncIOEventEmitter):
     async def _on_create_peerconnection(self, msg: CreatePeerConnectionMessage):
         assert msg["connectionUrl"] not in self._connections
         if msg["connectionType"] == "webrtc":
-            connection = WebRTCPeerConnection()
+            iceServers: List[RTCIceServer] = list()
+            if msg["config"].get("iceServers") is not None:
+                for server in msg["config"]["iceServers"]:
+                    iceServers.append(
+                        RTCIceServer(
+                            urls=msg["config"]["iceServers"]["urls"],
+                            username=msg["config"]["iceServers"].get("username", None),
+                            credential=msg["config"]["iceServers"].get(
+                                "credential", None
+                            ),
+                        )
+                    )
+            connection = WebRTCPeerConnection(RTCConfiguration(iceServers))
         else:
             raise Exception("Unknown connection type")
         connection.tiebreaker = msg["tiebreaker"]
