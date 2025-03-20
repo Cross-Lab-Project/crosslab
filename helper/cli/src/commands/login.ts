@@ -1,52 +1,87 @@
 import { APIClient } from '@cross-lab-project/api-client';
 import { Command } from 'commander';
 
+import chalk from 'chalk';
+import { config, saveConfig } from '../config.js';
 import { prompt } from './prompt.js';
 
-export function login(program: Command, getClient: () => APIClient) {
+export async function getClient() {
+  try{
+    const profile = config.profiles![config.activeProfile!];
+    if (!profile) {throw new Error('No active profile found');}
+    const client = new APIClient(profile.url);
+    if (profile.token) {
+      client.accessToken = profile.token;
+    }
+    try{
+      const identity=await client.getIdentity()
+      process.stderr.write('Logged in as ' + identity.username + '\n');
+    }catch{
+      // if the tty is interactive, then we can prompt the user for the password
+      if (process.stdin.isTTY) {
+        try{
+          await client.login(profile.username, await prompt('Password: ', true));
+        }catch{
+          process.stderr.write('Password incorrect\n');
+          process.exit(1);
+        }
+      } else {
+        throw new Error('No active profile found');
+      }
+    }
+    return client;
+  }catch{
+    process.stderr.write('No active profile found or token invalid. Please login first\n');
+    process.exit(1);
+  }
+}
+
+
+export function login(program: Command) {
   program
     .command('login')
     .description('Authenticate to CrossLab using your credentials')
-    .option('--raw', 'Output the raw JSON response')
-    .option('--local', 'Use the local authentification schema')
-    .action(async (options, command) => {
-      const client = getClient();
-      let username: string = options.username;
-      let password: string = options.password;
-
-      if (username == undefined) {
-        username = await prompt('Username: ');
+    .action(async () => {
+      let profile: string | null = null;
+      if (config.profiles) {
+        while (!profile) {
+          process.stdout.write('Choose the profile you want to login to.\n');
+          const profiles = Object.keys(config.profiles);
+          for (let i = 0; i < profiles.length; i++) {
+            process.stdout.write(('[' + i + ']').padStart(4) + ' ' + profiles[i]+ ' ' + chalk.dim(config.profiles[profiles[i]].url) + '\n');
+          }
+          process.stdout.write('Press n to create a new profile\n');
+          const profileIndex = await prompt('Profile: ');
+          if (profileIndex === 'n') {
+            profile = await createNewProfile();
+          } else {
+            try {
+              profile = profiles[parseInt(profileIndex)];
+              if (!profile) throw new Error('Invalid profile');
+            } catch (_e) {
+              process.stdout.write('\n\nInvalid profile\n\n');
+            }
+          }
+        }
+      } else {
+        profile = await createNewProfile();
       }
+      config.activeProfile = profile;
+      await saveConfig();
 
-      if (password == undefined) {
-        password = await prompt('Password: ', true);
-      }
-
-      await client.login(username, password, {
-        method: options.local ? 'local' : 'tui',
-      });
-
-      if (!options.raw) {
-        process.stdout.write('Logged in successfully\n\n');
-        process.stdout.write('Please save these variables to your environment:\n\n');
-      }
-
-      process.stdout.write('export CROSSLAB_CLI_URL=' + client.url + '\n');
-      process.stdout.write('export CROSSLAB_CLI_TOKEN=' + client.accessToken + '\n');
-
-      if (!options.raw) {
-        const get_full_name: (c: Command) => string = (c: Command) => {
-          return c.parent ? get_full_name(c.parent) + ' ' + c.name() : c.name();
-        };
-        process.stdout.write('\n');
-        process.stdout.write(
-          'To automate the login process, you can use the following in the script:\n\n',
-        );
-        process.stdout.write(
-          'eval $(' +
-            get_full_name(command) +
-            ' --username <username> --password <password> --raw)\n\n',
-        );
-      }
+      const client = await getClient();
+      config.profiles![profile].token = client.accessToken;
+      await saveConfig();
     });
+}
+
+async function createNewProfile() {
+  const profile = await prompt('profile name: ');
+  config.profiles = config.profiles || {};
+  config.profiles[profile] = {
+    url: await prompt('URL: '),
+    username: await prompt('Username: '),
+    token: '',
+  };
+  return profile;
 }

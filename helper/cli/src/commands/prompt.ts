@@ -16,14 +16,14 @@ export async function prompt(message: string, password: boolean = false) {
     }) as IReadline;
 
     rl._writeToOutput = function _writeToOutput(stringToWrite) {
-      if (rl.muted) rl.output.write(stringToWrite.replace(/[^\n\e]/gm, ''));
+      if (rl.muted) rl.output.write(stringToWrite.replace(/[^\ne]/gm, ''));
       else rl.output.write(stringToWrite);
     };
 
     rl.query = message;
     rl.muted = false;
 
-    rl.question((rl as any).query, answer => {
+    rl.question((rl).query, answer => {
       rl.close();
       resolve(answer);
     });

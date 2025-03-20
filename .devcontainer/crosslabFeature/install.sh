@@ -8,13 +8,18 @@ apt-get install -y \
     mariadb-server \
     mariadb-client
 
-# Install Python 3.8 - 3.11
+# Install Python 3.8 - 3.13
 apt-get -y install software-properties-common
 add-apt-repository -y ppa:deadsnakes/ppa
 apt-get update
-PYTHON_VERSIONS="3.8 3.9 3.10 3.11 3.12"
+PYTHON_VERSIONS="3.8 3.9 3.10 3.11"
 for VERSION in ${PYTHON_VERSIONS}; do 
     apt-get -y install python$VERSION python$VERSION-distutils python$VERSION-dev
+done
+
+PYTHON_VERSIONS="3.12 3.13"
+for VERSION in ${PYTHON_VERSIONS}; do 
+    apt-get -y install python$VERSION python$VERSION-dev
 done
 
 # aiortc dependencies
