@@ -45,7 +45,7 @@ export class LdapAuthenticationSource implements AuthenticationSource {
    */
   private async ldap_bind(username: string, password: string): Promise<boolean> {
     // Initialize Ldap Client
-    if (!this.config.url) {
+    if (!this.config.url || !password) {
       return false;
     }
     const client = new ldapts.Client({
