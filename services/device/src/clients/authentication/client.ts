@@ -108,7 +108,7 @@ function isValidHttpUrl(string: string) {
  * parsePathParameters("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
 function parsePathParameters(url: string, endpoint: string): string[] {
-  const parameterRegex = '([a-zA-Z0-9-:]+)';
+  const parameterRegex = '([^/]+)';
   const regex = new RegExp(endpoint.replaceAll('{}', parameterRegex) + '(?:.(?!\\\\))?$');
   const matches = url.match(regex);
 

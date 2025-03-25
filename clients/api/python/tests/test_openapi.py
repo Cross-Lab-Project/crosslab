@@ -5895,21 +5895,21 @@ async def test_lti_launch(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"access_token":"minim","session":{"uri":"https://RaHMdQUboxqghjUtFSplBPrvNidOls.myV","resource_uri":"https://unb.ufgmP3sxpp-gC7-yhXWoorWGz8fBNDwHH4VVDXmRdYtm.5PAo4uH1nLz1,TXq","roles":["instructor","instructor","instructor"],"experiment_uri":"http://vidKQHGyOpDT.ponnbqWMqrfiVMc1FjcL"}}')
+        response_200_dict = json.loads(r'{"access_token":"minim","session":{"uri":"https://UAASLLwMkIdSNpj.wqkfaWe27csDqjjyN4uoI0wBNeOxjzZQ0L3sxpp-gC7-yhXWoorWGz8fBND","resource_uri":"https://n.piehX1nLz1YXqezrcYPqFxkDqpJn","roles":["instructor"],"role_mapping":[{"role":"nulla consectetur in deserunt","device":"https://zwhUGaSJTKpCDHkMQBSesScIRgPFcawXv.pdkplKNDxrdcet10LCf3UWFD-rpJQA0PvPxRm91vTppQ.X3cVcK"}],"experiment_change_uri":"https://hfRtAMwM.rwimFRW0jzG,d,fuZPtpckqvdsgkiZhTUXU4wXW","experiment_uri":"http://xSlTWCzgHiovQVtNPLskSop.nlflb35YtpaK8DY"}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.lti_launch(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"access_token":"minim","session":{"uri":"https://RaHMdQUboxqghjUtFSplBPrvNidOls.myV","resource_uri":"https://unb.ufgmP3sxpp-gC7-yhXWoorWGz8fBNDwHH4VVDXmRdYtm.5PAo4uH1nLz1,TXq","roles":["instructor","instructor","instructor"],"experiment_uri":"http://vidKQHGyOpDT.ponnbqWMqrfiVMc1FjcL"}}')
+        response_200_dict = json.loads(r'{"access_token":"minim","session":{"uri":"https://UAASLLwMkIdSNpj.wqkfaWe27csDqjjyN4uoI0wBNeOxjzZQ0L3sxpp-gC7-yhXWoorWGz8fBND","resource_uri":"https://n.piehX1nLz1YXqezrcYPqFxkDqpJn","roles":["instructor"],"role_mapping":[{"role":"nulla consectetur in deserunt","device":"https://zwhUGaSJTKpCDHkMQBSesScIRgPFcawXv.pdkplKNDxrdcet10LCf3UWFD-rpJQA0PvPxRm91vTppQ.X3cVcK"}],"experiment_change_uri":"https://hfRtAMwM.rwimFRW0jzG,d,fuZPtpckqvdsgkiZhTUXU4wXW","experiment_uri":"http://xSlTWCzgHiovQVtNPLskSop.nlflb35YtpaK8DY"}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.lti_launch(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"access_token":"minim","session":{"uri":"https://RaHMdQUboxqghjUtFSplBPrvNidOls.myV","resource_uri":"https://unb.ufgmP3sxpp-gC7-yhXWoorWGz8fBNDwHH4VVDXmRdYtm.5PAo4uH1nLz1,TXq","roles":["instructor","instructor","instructor"],"experiment_uri":"http://vidKQHGyOpDT.ponnbqWMqrfiVMc1FjcL"}}')
+        response_200_dict = json.loads(r'{"access_token":"minim","session":{"uri":"https://UAASLLwMkIdSNpj.wqkfaWe27csDqjjyN4uoI0wBNeOxjzZQ0L3sxpp-gC7-yhXWoorWGz8fBND","resource_uri":"https://n.piehX1nLz1YXqezrcYPqFxkDqpJn","roles":["instructor"],"role_mapping":[{"role":"nulla consectetur in deserunt","device":"https://zwhUGaSJTKpCDHkMQBSesScIRgPFcawXv.pdkplKNDxrdcet10LCf3UWFD-rpJQA0PvPxRm91vTppQ.X3cVcK"}],"experiment_change_uri":"https://hfRtAMwM.rwimFRW0jzG,d,fuZPtpckqvdsgkiZhTUXU4wXW","experiment_uri":"http://xSlTWCzgHiovQVtNPLskSop.nlflb35YtpaK8DY"}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.lti_launch(url=full_url, body=request, **parameters)
@@ -6359,3 +6359,29 @@ async def test_update_resource_student(aioresponses: aioresponses):
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
                 resp = await client.update_resource_student(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_update_lti_experiment(aioresponses: aioresponses):
+    url = r'/lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment'
+    url_variant = r'lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment'
+    full_url = BASE_URL+r'/lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment'
+
+    request = json.loads(r'{"impersonate":"http://WVWmSjaVXcayyefykFZxXlwcwg.eauGXvmp2rfcExQfpT.jVjvGD+VnPxNxbjw,YKqcKH5h72iJ4"}')
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment(url=full_url, body=request, **parameters)
