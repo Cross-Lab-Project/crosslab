@@ -15,7 +15,7 @@ const webrtcIceServers = (()=>{
     if(match){
       const server_name=match[1];
       const urls=process.env[match[0]];
-      if(!urls || !RegExp("^(turn|stun):[^:]*:\d+$").exec(urls)){
+      if(!urls || !RegExp("^(turn|stun):[^:]*:\\d+$").exec(urls)){
         utils.die("Invalid ICE server URL: "+urls);
       }else{
         const server: {urls: string, username?: string, credential?: string} = {urls};
