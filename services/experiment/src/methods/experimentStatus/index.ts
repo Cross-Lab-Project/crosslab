@@ -35,6 +35,11 @@ export async function transitionExperiment(
         );
       break;
     case 'booked':
+      if (experimentModel.status !== 'created' && experimentModel.status !== 'booked')
+        throw new InvalidChangeError(
+          `Cannot change status of experiment from "${experimentModel.status}" to "booked"`,
+          400,
+        );
       return await bookExperiment(experimentModel);
     case 'running':
       return await runExperiment(experimentModel, clients);

@@ -53,10 +53,10 @@ export async function sendChangedCallback(experiment: ExperimentModel) {
 
       if (res.status === 410) {
         const changedCallbackURLs = changedCallbacks.get(experiment.uuid);
-        changedCallbacks.set(
-          experiment.uuid,
-          changedCallbackURLs?.filter(cbUrl => cbUrl != url),
-        );
+        const newCallbackURLs = changedCallbackURLs?.filter(cbUrl => cbUrl != url) ?? [];
+        if (newCallbackURLs.length > 0)
+          changedCallbacks.set(experiment.uuid, newCallbackURLs);
+        else changedCallbacks.delete(experiment.uuid);
       }
     } catch (error) {
       logger.log('error', 'An error occurred while sending a changed-callback', {
