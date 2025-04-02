@@ -460,7 +460,11 @@ export class WebRTCPeerConnection
         transceiver,
         label,
       });
-      const channel = this.mediaChannelMap.get(label);
+      let channel = this.mediaChannelMap.get(label);
+      if(channel === undefined && this.mediaChannelMap.size === 1){
+        channel = this.mediaChannelMap.values().next().value; // get the first channel, workaround
+        // TODO: Do a proper out of band signaling for the media channels based on mid
+      }
       if (channel === undefined) {
         logger.log(
           'trace',
