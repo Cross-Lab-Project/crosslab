@@ -9,15 +9,10 @@ from aiortc import RTCConfiguration, RTCIceCandidate, RTCSessionDescription
 from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
 from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
-from crosslab.soa_client.connection import (
-    Channel,
-    Connection,
-    DataChannel,
-    MediaChannel,
-)
+from crosslab.soa_client.connection import (Channel, Connection, DataChannel,
+                                            MediaChannel)
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -254,9 +249,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
     async def _handleIceCandidate(self, message: SignalingMessage):
         logger.debug("handleIceCandidate")
-        candidate = candidate_from_sdp(message["content"]["candidate"].split(":", 1)[1])
-        candidate.sdpMid = message["content"]["sdpMid"]
-        candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
+        try:
+            candidate = candidate_from_sdp(message["content"]["candidate"].split(":", 1)[1])
+            candidate.sdpMid = message["content"]["sdpMid"]
+            candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
+        except Exception as e:
+            pass
         await self._acceptIceCandiate(candidate)
 
     async def _handleOptions(self, message: SignalingMessage):
@@ -270,8 +268,6 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             rtpTranseiver = self.pc.addTransceiver(
                 channel.track if channel.track else "video", direction="sendrecv"
             )
-            if channel.track is not None:
-                channel.track.stop()
             videoPreference = filter(
                 lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
             )
