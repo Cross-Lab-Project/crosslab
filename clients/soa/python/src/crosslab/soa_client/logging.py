@@ -63,4 +63,16 @@ class CrosslabHandler(logging.Handler):
 handler = CrosslabHandler()
 
 crosslab_logger = logging.getLogger("crosslab")
+crosslab_logger.setLevel(logging.DEBUG)
 crosslab_logger.addHandler(handler)
+crosslab_logger.addHandler(logging.StreamHandler())
+
+#aiortc_logger = logging.getLogger("aiortc")
+#aiortc_logger.setLevel(logging.DEBUG)
+#aiortc_logger.addHandler(handler)
+#aiortc_logger.addHandler(logging.StreamHandler())
+
+#aioice_logger = logging.getLogger("aioice")
+#aioice_logger.setLevel(logging.DEBUG)
+#aioice_logger.addHandler(handler)
+#aioice_logger.addHandler(logging.StreamHandler())

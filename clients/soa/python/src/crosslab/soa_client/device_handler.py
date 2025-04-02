@@ -6,22 +6,18 @@ from typing import Dict, List, Optional
 import aiohttp
 from aiortc import RTCConfiguration, RTCIceServer  # type: ignore
 from crosslab.api_client import APIClient  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter
-
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.logging import handler as loggin_handler
-from crosslab.soa_client.messages import (
-    AuthenticationMessage,
-    ClosePeerConnectionMessage,
-    ConfigurationMessage,
-    ConnectionStateChangedMessage,
-    CreatePeerConnectionMessage,
-    ExperimentStatusChangedMessage,
-    LoggingMessage,
-    SignalingMessage,
-)
+from crosslab.soa_client.messages import (AuthenticationMessage,
+                                          ClosePeerConnectionMessage,
+                                          ConfigurationMessage,
+                                          ConnectionStateChangedMessage,
+                                          CreatePeerConnectionMessage,
+                                          ExperimentStatusChangedMessage,
+                                          LoggingMessage, SignalingMessage)
 from crosslab.soa_client.service import Service
+from pyee.asyncio import AsyncIOEventEmitter
 
 logger = logging.getLogger(__name__)
 
@@ -154,17 +150,16 @@ class DeviceHandler(AsyncIOEventEmitter):
         assert msg["connectionUrl"] not in self._connections
         if msg["connectionType"] == "webrtc":
             iceServers: List[RTCIceServer] = list()
-            if msg["config"].get("iceServers") is not None:
-                for server in msg["config"]["iceServers"]:
-                    iceServers.append(
-                        RTCIceServer(
-                            urls=msg["config"]["iceServers"]["urls"],
-                            username=msg["config"]["iceServers"].get("username", None),
-                            credential=msg["config"]["iceServers"].get(
-                                "credential", None
-                            ),
+            if msg.get("config") is not None:
+                if msg["config"].get("iceServers") is not None:
+                    for server in msg["config"]["iceServers"]:
+                        iceServers.append(
+                            RTCIceServer(
+                                urls=server["urls"],
+                                username=server.get("username", None),
+                                credential=server.get("credential", None),
+                            )
                         )
-                    )
             connection = WebRTCPeerConnection(RTCConfiguration(iceServers))
         else:
             raise Exception("Unknown connection type")
