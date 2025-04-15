@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
 import * as mocha from 'mocha';
 
-import { Timeslot } from './generated/types';
-import { timetableAnd, timetableNot, timetableSortInPlace } from './timetable';
+import { Timeslot } from './generated/types.js';
+import { timetableAnd, timetableNot, timetableSortInPlace } from './timetable.js';
 
 mocha.describe('timetable.ts', function () {
   mocha.it('timetableSortInPlace', function (done) {

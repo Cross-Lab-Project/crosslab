@@ -2,6 +2,8 @@ import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 
 import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../generated/types.js';
+import { WEEK } from '../../../globals.js';
+import { calculateAvailability } from '../../../methods/availability.js';
 import { ConcreteDeviceModel } from '../../model.js';
 import { DeviceOverviewRepository } from './deviceOverview.js';
 
@@ -30,7 +32,6 @@ export class ConcreteDeviceRepository extends AbstractRepository<
   async create(data?: ConcreteDevice<'request'>): Promise<ConcreteDeviceModel> {
     const model = await super.create(data);
     model.type = 'device';
-    model.announcedAvailability = [];
     model.availabilityRules = [];
     model.connected = false;
     model.services = [];
@@ -54,7 +55,11 @@ export class ConcreteDeviceRepository extends AbstractRepository<
     return {
       ...(await this.dependencies.deviceOverview.format(model)),
       type: 'device',
-      announcedAvailability: model.announcedAvailability,
+      announcedAvailability: calculateAvailability(
+        model.availabilityRules,
+        Date.now(),
+        Date.now() + WEEK,
+      ),
       connected: model.connected,
       experiment: model.experiment ?? undefined,
       services: model.services,

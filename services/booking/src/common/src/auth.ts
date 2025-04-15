@@ -1,11 +1,6 @@
-import { baseConfig } from './config';
+import { baseConfig } from './config.js';
 
 let institutePrefixURL: URL[];
-
-export function CheckAuth(token: string): [URL, boolean] {
-  throw new Error('TODO');
-  return [new URL(''), false];
-}
 
 function convertInstitutionPrefix(): void {
   if (!institutePrefixURL) {

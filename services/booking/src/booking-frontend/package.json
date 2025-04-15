@@ -1,13 +1,22 @@
 {
+  "type": "module",
   "name": "@crosslab/service-booking-frontend",
   "version": "0.0.1",
   "description": "Part of booking service. Main service with which a user interacts.",
   "main": "app/index.js",
+  "dockerName": "booking-frontend",
+  "bin": {
+    "crosslab-booking-frontend": "./app/index.js"
+  },
+  "files": [
+    "app"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && env-cmd -e development c8 --include=\"app/operations/index.js\" mocha app/operations/*_test.js",
     "build:generate": "openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
-    "build:compile": "tsc",
-    "build": "npm run build:generate && npm run build:compile",
+    "build:compile": "tsc && cp src/generated/basicValidation.cjs app/generated/basicValidation.cjs",
+    "build:add-shebang": "bash scripts/add-shebang.sh",
+    "build": "npm-run-all build:*",
     "start": "npm run build && env-cmd -e development node app/index.js",
     "format": "prettier . --write",
     "lint": "eslint ."
@@ -15,23 +24,28 @@
   "author": "Marcus Soll",
   "license": "Apache-2.0",
   "dependencies": {
-    "@cross-lab-project/codegen-typescript-addon": "file:../../../../helper/crosslab-typescript-addon",
-    "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration",
-    "@cross-lab-project/service-common": "file:../../../common",
+    "@crosslab/service-common": "file:../../../common",
     "@crosslab/booking-service-common": "file:../common",
     "@crosslab/service-booking-backend": "file:../booking-backend",
-    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
-    "@types/amqplib": "^0.10.5",
-    "@types/express": "^4.17.21",
     "ajv-formats": "^3.0.1",
-    "amqplib": "^0.10.4",
-    "dayjs": "^1.11.12",
-    "env-cmd": "^10.1.0",
+    "amqplib": "^0.10.2",
+    "dayjs": "^1.11.7",
     "express": "^4.18.1",
-    "mysql2": "^3.6.0",
-    "typescript": "^5.5.4"
+    "mysql2": "^3.6.0"
   },
   "devDependencies": {
-    "prettier": "^3.3.3"
+    "typescript": "^5.5.4",
+    "@cross-lab-project/codegen-typescript-addon": "file:../../../../helper/crosslab-typescript-addon",
+    "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/amqplib": "^0.10.1",
+    "@types/express": "^4.17.13",
+    "@crosslab/booking-service-test-common": "file:../test_common",
+    "@types/mocha": "^10.0.6",
+    "c8": "^10.1.2",
+    "env-cmd": "^10.1.0",
+    "mocha": "^10.4.0",
+    "prettier": "^3.0.3",
+    "npm-run-all": "^4.1.5"
   }
 }

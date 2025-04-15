@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import * as mocha from 'mocha';
 
-import { DeviceBookingRequest } from './messageDefinition';
+import { DeviceBookingRequest } from './messageDefinition.js';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -92,7 +92,7 @@ mocha.describe('messageDefinition.ts', function () {
       try {
         DeviceBookingRequest.fromString(bad[i]);
       } catch (err) {
-        //    console.log(err);
+        console.log(err);
         fail = true;
       }
       if (!fail) {

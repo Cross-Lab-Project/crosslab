@@ -1,27 +1,26 @@
-import {
-  JWTVerify,
-  parseJwtFromRequestAuthenticationHeader,
-} from '@cross-lab-project/service-common';
+import { authorization, error } from '@crosslab/service-common';
+import express from 'express';
 
-import { config } from './config';
-import { app } from './generated';
-import { isUserTypeJWT } from './generated/types';
+import { config } from './config.js';
+import { app } from './generated/index.js';
 
-if (require.main === module) {
-  app.initService({
-    security: {
-      JWT: JWTVerify(
-        {
-          JWKS_URL: config.JWKS_URL,
-          SECURITY_AUDIENCE: config.SECURITY_AUDIENCE,
-          SECURITY_ISSUER: config.SECURITY_ISSUER,
-        },
-        isUserTypeJWT,
-        parseJwtFromRequestAuthenticationHeader,
-      ),
+app.initService({
+  preHandlers: [
+    application => {
+      application.use(express.json());
+      application.use(express.urlencoded({ extended: false }));
+      application.use(authorization.middleware() as express.RequestHandler);
     },
-  });
+  ],
+  postHandlers: [
+    application => {
+      application.get('/federation/status', (_req, res) => {
+        res.send({ status: 'ok' });
+      });
+    },
+  ],
+  errorHandler: error.middleware,
+});
 
-  console.log('Starting booking-frontend');
-  app.listen(config.PORT);
-}
+console.log('Starting booking-frontend');
+app.listen(config.PORT);

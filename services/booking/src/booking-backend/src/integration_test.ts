@@ -1,5 +1,5 @@
 //const why = require('why-is-node-running')
-import { sleep } from '@crosslab/booking-service-common';
+import { baseConfig, sleep } from '@crosslab/booking-service-common';
 import {
   fakeServerConfig,
   getFakeInstitutePrefix,
@@ -14,23 +14,44 @@ import {
   tearDownDummySql,
 } from '@crosslab/booking-service-test-common';
 import * as amqplib from 'amqplib';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import express from 'express';
 import * as http from 'http';
 import * as mocha from 'mocha';
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
-import { callbackType, handleCallback, randomID } from './internal';
+import { config } from './config.js';
+import {
+  MapToString,
+  ResetAMQPDeviceCount,
+  StartAMQPTestFree,
+  StopAMQPTestFree,
+  TestAMQPresults,
+} from './integrationtest_helper_amqp.js';
+import {
+  DeleteBooking,
+  callbackType,
+  dispatchCallback,
+  freeDevice,
+  handleCallback,
+  randomID,
+  reservateDevice,
+} from './internal.js';
+import { DeviceBookingRequest } from './messageDefinition.js';
 
-let connection: amqplib.Connection;
-let channel: amqplib.Channel;
+let connection: amqplib.Connection | undefined;
+let channel: amqplib.Channel | undefined;
 
 mocha.describe('internal.ts', function () {
   this.timeout(10000);
 
   mocha.before(async function () {
-    // Config
+    // Config - use both global config and local config to ensure different application parts work with same config
+    baseConfig.OwnURL = getFakeOwnURL();
+    baseConfig.InstitutePrefix = getFakeInstitutePrefix();
+    baseConfig.ReservationDSN = getSQLDNS();
+    baseConfig.BookingDSN = getSQLDNS();
+
     config.OwnURL = getFakeOwnURL();
     config.InstitutePrefix = getFakeInstitutePrefix();
     config.ReservationDSN = getSQLDNS();
@@ -41,7 +62,7 @@ mocha.describe('internal.ts', function () {
 
   mocha.after(async function () {
     await stopFakeServer();
-    //setTimeout(function(){console.log("why?");why();console.log("WHY??");}, 10000);
+    //setTimeout(function(){console.log("why?");why();console.log("WHY??");}, 1000);
   });
 
   mocha.beforeEach(async function () {
@@ -52,14 +73,10 @@ mocha.describe('internal.ts', function () {
     await setupDummySql();
 
     // Connect to amqp
-    connection = await amqplib.connect(config.AmqpUrl);
+    connection = await amqplib.connect(baseConfig.AmqpUrl);
     channel = await connection.createChannel();
 
     await channel.assertQueue('device-booking', {
-      durable: true,
-    });
-
-    await channel.assertQueue('device-reservation', {
       durable: true,
     });
 
@@ -69,21 +86,19 @@ mocha.describe('internal.ts', function () {
 
     // Drain queues
     while (await channel.get('device-booking', { noAck: true })) {}
-
-    while (await channel.get('device-reservation', { noAck: true })) {}
-
-    while (await channel.get('device-freeing', { noAck: true })) {}
+    //while (await channel.get('device-freeing', { noAck: true })) { }
     await startDeviceReservation();
   });
 
   mocha.afterEach(async function () {
     await tearDownDummySql();
 
-    await channel.deleteQueue('device-booking');
-    await channel.deleteQueue('device-freeing');
+    await channel?.deleteQueue('device-booking');
+    await channel?.deleteQueue('device-freeing');
 
-    await channel.close();
-    await connection.close();
+    await channel?.close();
+    await sleep(250);
+    await connection?.close();
 
     channel = undefined;
     connection = undefined;
@@ -102,8 +117,8 @@ mocha.describe('internal.ts', function () {
       let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
         BigInt(1),
       ]);
-      if (rows[0].status != 'booked') {
-        throw new Error('Booking should be booked, is ' + rows[0].status);
+      if ((rows as any[])[0].status != 'booked') {
+        throw new Error('Booking should be booked, is ' + (rows as any[])[0].status);
       }
     } catch (err) {
       throw err;
@@ -126,8 +141,10 @@ mocha.describe('internal.ts', function () {
         let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
           BigInt(1),
         ]);
-        if (rows[0].status == 'booked') {
-          throw new Error('Booking should not be booked, is ' + rows[0].status);
+        if ((rows as any[])[0].status == 'booked') {
+          throw new Error(
+            'Booking should not be booked, is ' + (rows as any[])[0].status,
+          );
         }
       } catch (err) {
         throw err;
@@ -147,8 +164,8 @@ mocha.describe('internal.ts', function () {
       let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
         BigInt(2),
       ]);
-      if (rows[0].status != 'booked') {
-        throw new Error('Booking should be booked, is ' + rows[0].status);
+      if ((rows as any[])[0].status != 'booked') {
+        throw new Error('Booking should be booked, is ' + (rows as any[])[0].status);
       }
 
       // device 2
@@ -157,8 +174,8 @@ mocha.describe('internal.ts', function () {
       [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
         BigInt(2),
       ]);
-      if (rows[0].status != 'booked') {
-        throw new Error('Booking should be booked, is ' + rows[0].status);
+      if ((rows as any[])[0].status != 'booked') {
+        throw new Error('Booking should be booked, is ' + (rows as any[])[0].status);
       }
     } catch (err) {
       throw err;
@@ -181,8 +198,10 @@ mocha.describe('internal.ts', function () {
         let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
           BigInt(2),
         ]);
-        if (rows[0].status == 'booked') {
-          throw new Error('Booking should not be booked, is ' + rows[0].status);
+        if ((rows as any[])[0].status == 'booked') {
+          throw new Error(
+            'Booking should not be booked, is ' + (rows as any[])[0].status,
+          );
         }
       } catch (err) {
         throw err;
@@ -192,7 +211,7 @@ mocha.describe('internal.ts', function () {
     },
   );
 
-  mocha.it('handleCallback() BookingUpdate (group, available)', async () => {
+  mocha.it('handleCallback() BookingUpdate (local group, available)', async () => {
     let db = await mysql.createConnection(getSQLDNS());
     db.connect();
     try {
@@ -201,8 +220,8 @@ mocha.describe('internal.ts', function () {
       let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
         BigInt(3),
       ]);
-      if (rows[0].status != 'booked') {
-        throw new Error('Booking should be booked, is ' + rows[0].status);
+      if ((rows as any[])[0].status != 'booked') {
+        throw new Error('Booking should be booked, is ' + (rows as any[])[0].status);
       }
     } catch (err) {
       throw err;
@@ -211,7 +230,7 @@ mocha.describe('internal.ts', function () {
     }
   });
 
-  mocha.it('handleCallback() BookingUpdate (group, not available)', async () => {
+  mocha.it('handleCallback() BookingUpdate (local group, not available)', async () => {
     let db = await mysql.createConnection(getSQLDNS());
     db.connect();
     try {
@@ -221,65 +240,8 @@ mocha.describe('internal.ts', function () {
       let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
         BigInt(3),
       ]);
-      if (rows[0].status == 'booked') {
-        throw new Error('Booking should not be booked, is ' + rows[0].status);
-      }
-    } catch (err) {
-      throw err;
-    } finally {
-      db.end();
-    }
-  });
-
-  mocha.it('handleCallback() BookingUpdate (remote, available)', async () => {
-    try {
-      let db = await mysql.createConnection(getSQLDNS());
-      db.connect();
-      try {
-        await handleCallback(callbackType.BookingUpdate, BigInt(4), {
-          Position: 0,
-        });
-        await sleep(1000);
-        let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
-          BigInt(3),
-        ]);
-        if (rows[0].status != 'booked') {
-          throw new Error('Booking should be booked, is ' + rows[0].status);
-        }
-      } catch (err) {
-        throw err;
-      } finally {
-        db.end();
-      }
-    } catch (err) {
-      console.log(err);
-      throw err;
-    }
-  });
-
-  mocha.it('handleCallback() BookingUpdate (remote, not available)', async () => {
-    let db = await mysql.createConnection(getSQLDNS());
-    db.connect();
-    try {
-      fakeServerConfig.device_not_available = true;
-      fakeServerConfig.proxy_schedule_empty = true;
-      fakeServerConfig.booking_status = 'rejected';
-      await handleCallback(callbackType.BookingUpdate, BigInt(4), { Position: 0 });
-      await sleep(1000);
-      let [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE id=?', [
-        BigInt(3),
-      ]);
-      if (rows[0].status == 'booked') {
-        let [rowsinner, fieldsinner] = await db.execute(
-          'SELECT `bookeddevice` FROM bookeddevices WHERE booking=? AND originalposition=?',
-          [BigInt(4), 0],
-        );
-        throw new Error(
-          'Booking should not be booked, is ' +
-            rows[0].status +
-            ', booked device is ' +
-            rowsinner[0].bookeddevice,
-        );
+      if ((rows as any[])[0].status == 'booked') {
+        throw new Error('Booking should not be booked, is ' + (rows as any[])[0].status);
       }
     } catch (err) {
       throw err;
@@ -289,55 +251,751 @@ mocha.describe('internal.ts', function () {
   });
 
   mocha.it('dispatchCallback()', async () => {
-    throw Error('TODO implement');
-  });
+    resetFakeServerVars();
 
-  mocha.it('reservateDevice() - remote', async () => {
-    throw Error('TODO implement');
+    await dispatchCallback(BigInt(1));
+    await sleep(100);
+    let serverConfig = fakeServerConfig; // Workaround since TypeScript does not notice var changes in functions
+    if (serverConfig.callback_test_local_single_was_called === false) {
+      throw new Error(
+        'http://localhost:10801/test_callbacks/test-local-single was not called',
+      );
+    }
+    if (serverConfig.callback_test_local_two_first_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_local_two_second_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_local_group_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_remote_single_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    resetFakeServerVars();
+
+    await dispatchCallback(BigInt(2));
+    await sleep(100);
+    serverConfig = fakeServerConfig; // Workaround since TypeScript does not notice var changes in functions
+    if (serverConfig.callback_test_local_single_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_local_two_first_was_called === false) {
+      throw new Error(
+        'http://localhost:10801/test_callbacks/test-local-single was not called',
+      );
+    }
+    if (serverConfig.callback_test_local_two_second_was_called === false) {
+      throw new Error(
+        'http://localhost:10801/test_callbacks/test-local-single was not called',
+      );
+    }
+    if (serverConfig.callback_test_local_group_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_remote_single_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    resetFakeServerVars();
+
+    await dispatchCallback(BigInt(3));
+    await sleep(100);
+    serverConfig = fakeServerConfig; // Workaround since TypeScript does not notice var changes in functions
+    if (serverConfig.callback_test_local_single_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_local_two_first_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_local_two_second_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    if (serverConfig.callback_test_local_group_was_called === false) {
+      throw new Error(
+        'http://localhost:10801/test_callbacks/test-local-group was not called',
+      );
+    }
+    if (serverConfig.callback_test_remote_single_was_called === true) {
+      throw new Error('wrong callback called');
+    }
+    resetFakeServerVars();
   });
 
   mocha.it('reservateDevice() - local single device', async () => {
-    throw Error('TODO implement');
+    await reservateDevice(
+      new DeviceBookingRequest(
+        BigInt(5),
+        new URL('http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'),
+        0,
+        dayjs('1999-01-10T08:00:00Z'),
+        dayjs('1999-01-10T09:00:00Z'),
+      ),
+    );
+    await sleep(1000);
+
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(5)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'booked') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute(
+        'SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?',
+        [5, 0],
+      );
+      if (rows.length === 0) {
+        throw new Error('booked device not found');
+      }
+
+      if (
+        (rows as any[])[0].originaldevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong original device ' + (rows as any[])[0].originaldevice);
+      }
+
+      if (
+        (rows as any[])[0].bookeddevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong booked device ' + (rows as any[])[0].bookeddevice);
+      }
+
+      if ((rows as any[])[0].remotereference !== null) {
+        throw new Error('wrong remote reference ' + (rows as any[])[0].remotereference);
+      }
+
+      if ((rows as any[])[0].local != true) {
+        // Unfortunate, type conversion
+        throw new Error('wrong local ' + (rows as any[])[0].local);
+      }
+
+      if (
+        (rows as any[])[0].reservation < 0 ||
+        (rows as any[])[0].reservation === undefined ||
+        (rows as any[])[0].reservation === null
+      ) {
+        throw new Error('bad reservation ' + (rows as any[])[0].reservation);
+      }
+
+      let bookingID = (rows as any[])[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute(
+        'SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?',
+        [bookingID],
+      );
+
+      if (rows.length === 0) {
+        throw new Error('reservation not found');
+      }
+
+      if (
+        (rows as any[])[0].device !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong device ' + (rows as any[])[0].device);
+      }
+
+      if (!dayjs((rows as any[])[0].start).isSame(dayjs('1999-01-10T08:00:00Z'))) {
+        throw new Error('wrong start ' + (rows as any[])[0].start);
+      }
+
+      if (!dayjs((rows as any[])[0].end).isSame(dayjs('1999-01-10T09:00:00Z'))) {
+        throw new Error('wrong end ' + (rows as any[])[0].end);
+      }
+    } finally {
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local two devices', async () => {
-    throw Error('TODO implement');
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      // Test booking 1st half
+
+      await reservateDevice(
+        new DeviceBookingRequest(
+          BigInt(6),
+          new URL('http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'),
+          0,
+          dayjs('1999-02-10T08:00:00Z'),
+          dayjs('1999-02-10T09:00:00Z'),
+        ),
+      );
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(6)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'pending') {
+        // not yet complete
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Test other device
+      [rows, fields] = await db.execute(
+        'SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?',
+        [6, 1],
+      );
+      if (rows.length === 0) {
+        throw new Error('booked device not found');
+      }
+
+      if (
+        (rows as any[])[0].originaldevice !==
+        'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong original device ' + (rows as any[])[0].originaldevice);
+      }
+
+      if ((rows as any[])[0].bookeddevice !== null) {
+        throw new Error('wrong booked device ' + (rows as any[])[0].bookeddevice);
+      }
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute(
+        'SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?',
+        [6, 0],
+      );
+      if (rows.length === 0) {
+        throw new Error('booked device not found');
+      }
+
+      if (
+        (rows as any[])[0].originaldevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong original device ' + (rows as any[])[0].originaldevice);
+      }
+
+      if (
+        (rows as any[])[0].bookeddevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong booked device ' + (rows as any[])[0].bookeddevice);
+      }
+
+      if ((rows as any[])[0].remotereference !== null) {
+        throw new Error('wrong remote reference ' + (rows as any[])[0].remotereference);
+      }
+
+      if ((rows as any[])[0].local != true) {
+        // Unfortunate, type conversion
+        throw new Error('wrong local ' + (rows as any[])[0].local);
+      }
+
+      if (
+        (rows as any[])[0].reservation < 0 ||
+        (rows as any[])[0].reservation === undefined ||
+        (rows as any[])[0].reservation === null
+      ) {
+        throw new Error('bad reservation ' + (rows as any[])[0].reservation);
+      }
+
+      let bookingID = (rows as any[])[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute(
+        'SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?',
+        [bookingID],
+      );
+
+      if (rows.length === 0) {
+        throw new Error('reservation not found');
+      }
+
+      if (
+        (rows as any[])[0].device !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong device ' + (rows as any[])[0].device);
+      }
+
+      if (!dayjs((rows as any[])[0].start).isSame(dayjs('1999-02-10T08:00:00Z'))) {
+        throw new Error('wrong start ' + (rows as any[])[0].start);
+      }
+
+      if (!dayjs((rows as any[])[0].end).isSame(dayjs('1999-02-10T09:00:00Z'))) {
+        throw new Error('wrong end ' + (rows as any[])[0].end);
+      }
+
+      // Test booking 2nd half
+      await reservateDevice(
+        new DeviceBookingRequest(
+          BigInt(6),
+          new URL('http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'),
+          1,
+          dayjs('1999-02-10T08:00:00Z'),
+          dayjs('1999-02-10T09:00:00Z'),
+        ),
+      );
+      await sleep(1000);
+
+      [rows, fields] = await db.execute('SELECT `status` FROM booking WHERE `id`=?', [
+        BigInt(6),
+      ]);
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'booked') {
+        // complete
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Test other device
+      [rows, fields] = await db.execute(
+        'SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?',
+        [6, 0],
+      );
+      if (rows.length === 0) {
+        throw new Error('booked device not found');
+      }
+
+      if (
+        (rows as any[])[0].originaldevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong original device ' + (rows as any[])[0].originaldevice);
+      }
+
+      if (
+        (rows as any[])[0].bookeddevice !==
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong booked device ' + (rows as any[])[0].bookeddevice);
+      }
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute(
+        'SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?',
+        [6, 1],
+      );
+      if (rows.length === 0) {
+        throw new Error('booked device not found');
+      }
+
+      if (
+        (rows as any[])[0].originaldevice !==
+        'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong original device ' + (rows as any[])[0].originaldevice);
+      }
+
+      if (
+        (rows as any[])[0].bookeddevice !==
+        'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong booked device ' + (rows as any[])[0].bookeddevice);
+      }
+
+      if ((rows as any[])[0].remotereference !== null) {
+        throw new Error('wrong remote reference ' + (rows as any[])[0].remotereference);
+      }
+
+      if ((rows as any[])[0].local != true) {
+        // Unfortunate, type conversion
+        throw new Error('wrong local ' + (rows as any[])[0].local);
+      }
+
+      if (
+        (rows as any[])[0].reservation < 0 ||
+        (rows as any[])[0].reservation === undefined ||
+        (rows as any[])[0].reservation === null
+      ) {
+        throw new Error('bad reservation ' + (rows as any[])[0].reservation);
+      }
+
+      bookingID = (rows as any[])[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute(
+        'SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?',
+        [bookingID],
+      );
+
+      if (rows.length === 0) {
+        throw new Error('reservation not found');
+      }
+
+      if (
+        (rows as any[])[0].device !==
+        'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'
+      ) {
+        throw new Error('wrong device ' + (rows as any[])[0].device);
+      }
+
+      if (!dayjs((rows as any[])[0].start).isSame(dayjs('1999-02-10T08:00:00Z'))) {
+        throw new Error('wrong start ' + (rows as any[])[0].start);
+      }
+
+      if (!dayjs((rows as any[])[0].end).isSame(dayjs('1999-02-10T09:00:00Z'))) {
+        throw new Error('wrong end ' + (rows as any[])[0].end);
+      }
+    } finally {
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local group', async () => {
-    throw Error('TODO implement');
-  });
+    await reservateDevice(
+      new DeviceBookingRequest(
+        BigInt(7),
+        new URL('http://localhost:10801/devices/00000000-0000-0000-0000-000000000010'),
+        0,
+        dayjs('1999-03-10T08:00:00Z'),
+        dayjs('1999-03-10T09:00:00Z'),
+      ),
+    );
+    await sleep(1000);
 
-  mocha.it('reservateDevice() - remote not available', async () => {
-    throw Error('TODO implement');
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+
+    try {
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(7)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'booked') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Test bookeddevice
+      [rows, fields] = await db.execute(
+        'SELECT `bookeddevice`, `originaldevice`, `remotereference`, `local`, `reservation` FROM bookeddevices WHERE `booking`=? AND `originalposition`=?',
+        [7, 0],
+      );
+      if (rows.length === 0) {
+        throw new Error('booked device not found');
+      }
+
+      if (
+        (rows as any[])[0].originaldevice !==
+        'http://localhost:10801/devices/00000000-0000-0000-0000-000000000010'
+      ) {
+        throw new Error('wrong original device ' + (rows as any[])[0].originaldevice);
+      }
+
+      if (
+        (rows as any[])[0].bookeddevice !==
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000' &&
+        (rows as any[])[0].bookeddevice !==
+          'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'
+      ) {
+        // Group: one of those, selection is not deterministic
+        throw new Error('wrong booked device ' + (rows as any[])[0].bookeddevice);
+      }
+      let selected = (rows as any[])[0].bookeddevice;
+
+      if ((rows as any[])[0].remotereference !== null) {
+        throw new Error('wrong remote reference ' + (rows as any[])[0].remotereference);
+      }
+
+      if ((rows as any[])[0].local != true) {
+        // Unfortunate, type conversion
+        throw new Error('wrong local ' + (rows as any[])[0].local);
+      }
+
+      if (
+        (rows as any[])[0].reservation < 0 ||
+        (rows as any[])[0].reservation === undefined ||
+        (rows as any[])[0].reservation === null
+      ) {
+        throw new Error('bad reservation ' + (rows as any[])[0].reservation);
+      }
+
+      let bookingID = (rows as any[])[0].reservation;
+
+      // Test reservation
+      [rows, fields] = await db.execute(
+        'SELECT `device`, `start`, `end` FROM reservation WHERE `id`=?',
+        [bookingID],
+      );
+
+      if (rows.length === 0) {
+        throw new Error('reservation not found');
+      }
+
+      if ((rows as any[])[0].device !== selected) {
+        throw new Error('wrong device ' + (rows as any[])[0].device);
+      }
+
+      if (!dayjs((rows as any[])[0].start).isSame(dayjs('1999-03-10T08:00:00Z'))) {
+        throw new Error('wrong start ' + (rows as any[])[0].start);
+      }
+
+      if (!dayjs((rows as any[])[0].end).isSame(dayjs('1999-03-10T09:00:00Z'))) {
+        throw new Error('wrong end ' + (rows as any[])[0].end);
+      }
+    } finally {
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local single device not available', async () => {
-    throw Error('TODO implement');
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await StartAMQPTestFree();
+
+    try {
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(100),
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          dayjs('1999-01-10T08:00:00Z').toDate(),
+          dayjs('1999-01-10T09:00:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      // Try booking
+      await reservateDevice(
+        new DeviceBookingRequest(
+          BigInt(5),
+          new URL('http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'),
+          0,
+          dayjs('1999-01-10T08:00:00Z'),
+          dayjs('1999-01-10T09:00:00Z'),
+        ),
+      );
+      await sleep(1000);
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(5)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'rejected') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error('wrong number of free devices ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(6n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+    } finally {
+      ResetAMQPDeviceCount();
+      await StopAMQPTestFree();
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local two devices not available', async () => {
-    throw Error('TODO implement');
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await StartAMQPTestFree();
+
+    try {
+      // Create successful reservation
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(99),
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          dayjs('1999-02-10T08:00:00Z').toDate(),
+          dayjs('1999-02-10T09:00:00Z').toDate(),
+          'successful reservation',
+        ],
+      );
+
+      await db.execute(
+        'UPDATE bookeddevices SET bookeddevice=?, reservation=? WHERE id=?',
+        [
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          BigInt(99),
+          BigInt(7),
+        ],
+      );
+
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(100),
+          'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000',
+          dayjs('1999-02-10T08:15:00Z').toDate(),
+          dayjs('1999-02-10T08:30:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      // Try booking
+      await reservateDevice(
+        new DeviceBookingRequest(
+          BigInt(6),
+          new URL('http://localhost:10801/devices/20000000-0000-0000-0000-000000000000'),
+          1,
+          dayjs('1999-02-10T08:00:00Z'),
+          dayjs('1999-02-10T09:00:00Z'),
+        ),
+      );
+      await sleep(1000);
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(6)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'rejected') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 2) {
+        throw new Error('wrong number of free devices ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(7n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(8n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+    } finally {
+      ResetAMQPDeviceCount();
+      await StopAMQPTestFree();
+      await db.end();
+    }
   });
 
   mocha.it('reservateDevice() - local group not available', async () => {
-    throw Error('TODO implement');
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    await StartAMQPTestFree();
+
+    try {
+      // Create fake reservation
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(100),
+          'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+          dayjs('1999-03-10T08:10:00Z').toDate(),
+          dayjs('1999-03-10T09:20:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      await db.execute(
+        'INSERT INTO reservation (`id`,`device`, `start`, `end`, `bookingreference`) VALUES (?,?,?,?,?)',
+        [
+          BigInt(101),
+          'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000',
+          dayjs('1999-03-10T08:40:00Z').toDate(),
+          dayjs('1999-03-10T09:50:00Z').toDate(),
+          'block reservation',
+        ],
+      );
+
+      // Try booking
+      await reservateDevice(
+        new DeviceBookingRequest(
+          BigInt(7),
+          new URL('http://localhost:10801/devices/00000000-0000-0000-0000-000000000010'),
+          0,
+          dayjs('1999-03-10T08:00:00Z'),
+          dayjs('1999-03-10T09:00:00Z'),
+        ),
+      );
+      await sleep(1000);
+
+      // Test booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(7)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'rejected') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error('wrong number of free devices ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(9n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+    } finally {
+      ResetAMQPDeviceCount();
+      await StopAMQPTestFree();
+      await db.end();
+    }
   });
 
-  mocha.it('freeDevice() - remote', async () => {
-    throw Error('TODO implement');
-  });
+  mocha.it('reservateDevice() - booking not existing', async () => {
+    let errFound = false;
+    try {
+      await reservateDevice(
+        new DeviceBookingRequest(
+          BigInt(5000),
+          new URL('http://localhost:10801/devices/10000000-0000-0000-0000-000000000000'),
+          0,
+          dayjs('1999-01-10T08:00:00Z'),
+          dayjs('1999-01-10T09:00:00Z'),
+        ),
+      );
+      await sleep(1000);
+    } catch (err) {
+      if (
+        (err as Error).toString() != new Error('Booking 5000 does not exist').toString()
+      ) {
+        console.log('Unknown err ' + err);
+        throw err;
+      }
+      errFound = true;
+    }
 
-  mocha.it('freeDevice() - local single device', async () => {
-    throw Error('TODO implement');
-  });
-
-  mocha.it('freeDevice() - local multiple devices', async () => {
-    throw Error('TODO implement');
-  });
-
-  mocha.it('freeDevice() - local group', async () => {
-    throw Error('TODO implement');
+    if (!errFound) {
+      throw new Error('No error on unknown booking');
+    }
   });
 
   mocha.it('randomID()', async () => {
@@ -353,19 +1011,225 @@ mocha.describe('internal.ts', function () {
     }
   });
 
-  mocha.it('DeleteBooking()', async () => {
-    throw Error('TODO implement');
+  mocha.it('DeleteBooking() local single device', async () => {
+    await StartAMQPTestFree();
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await DeleteBooking(BigInt(1));
+
+      sleep(1000);
+
+      // Check booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(1)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'cancelled') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error('wrong number of free devices ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(1n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+
+      if (TestAMQPresults.get(1n) != 1) {
+        throw new Error('wrong number of devices freed ' + MapToString(TestAMQPresults));
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 
-  mocha.it('putBookingByIDLock', async () => {
-    throw Error('TODO implement');
+  mocha.it('DeleteBooking() local multiple devices', async () => {
+    await StartAMQPTestFree();
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await DeleteBooking(BigInt(2), 'rejected', 'test message');
+
+      sleep(1000);
+
+      // Check booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status`, `message` FROM booking WHERE `id`=?',
+        [BigInt(2)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'rejected') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      if ((rows as any[])[0].message !== 'test message') {
+        throw new Error('wrong message ' + (rows as any[])[0].message);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 2) {
+        throw new Error('wrong number of free devices ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(2n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+
+      if (TestAMQPresults.get(2n) != 1) {
+        throw new Error('wrong number of devices freed ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(3n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+
+      if (TestAMQPresults.get(3n) != 1) {
+        throw new Error('wrong number of devices freed ' + MapToString(TestAMQPresults));
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 
-  mocha.it('deleteBookingByIDLock', async () => {
-    throw Error('TODO implement');
+  mocha.it('DeleteBooking() local group', async () => {
+    await StartAMQPTestFree();
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await DeleteBooking(BigInt(3));
+
+      sleep(1000);
+
+      // Check booking
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT `status` FROM booking WHERE `id`=?',
+        [BigInt(3)],
+      );
+      if (rows.length === 0) {
+        throw new Error('booking not found');
+      }
+
+      if ((rows as any[])[0].status !== 'cancelled') {
+        throw new Error('wrong status ' + (rows as any[])[0].status);
+      }
+
+      // Check request for freeing
+      if (TestAMQPresults.size != 1) {
+        throw new Error('wrong number of free devices ' + MapToString(TestAMQPresults));
+      }
+
+      if (!TestAMQPresults.has(4n)) {
+        throw new Error('wrong devices freed ' + MapToString(TestAMQPresults));
+      }
+
+      if (TestAMQPresults.get(4n) != 1) {
+        throw new Error('wrong number of devices freed ' + MapToString(TestAMQPresults));
+      }
+    } finally {
+      db.end();
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
   });
 
-  mocha.it('postBookingCallbackByID', async () => {
-    throw Error('TODO implement');
+  mocha.it('DeleteBooking() non-existing', async () => {
+    await StartAMQPTestFree();
+    try {
+      let error_thrown = false;
+      try {
+        await DeleteBooking(BigInt(1111));
+      } catch (err) {
+        if ((err as Error).message != 'Booking 1111 does not exist') {
+          throw new Error('unknown error' + err);
+        }
+        error_thrown = true;
+      }
+      sleep(100);
+
+      if (!error_thrown) {
+        throw new Error('No error thrown');
+      }
+    } finally {
+      await StopAMQPTestFree();
+      ResetAMQPDeviceCount();
+    }
+  });
+
+  mocha.it('freeDevice() - local single device', async () => {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await freeDevice(BigInt(1));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT * FROM reservation WHERE `id`=?',
+        [BigInt(4)],
+      );
+      if (rows.length !== 0) {
+        throw new Error('reservation 4 still exists');
+      }
+    } finally {
+      db.end();
+    }
+  });
+
+  mocha.it('freeDevice() - local multiple devices', async () => {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      freeDevice(BigInt(2));
+      freeDevice(BigInt(3));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT * FROM reservation WHERE `id`=?',
+        [BigInt(5)],
+      );
+      if (rows.length !== 0) {
+        throw new Error('reservation 5 still exists');
+      }
+      [rows, fields] = await db.execute('SELECT * FROM reservation WHERE `id`=?', [
+        BigInt(6),
+      ]);
+      if (rows.length !== 0) {
+        throw new Error('reservation 6 still exists');
+      }
+    } finally {
+      db.end();
+    }
+  });
+
+  mocha.it('freeDevice() - local group', async () => {
+    let db = await mysql.createConnection(config.BookingDSN);
+    await db.connect();
+    try {
+      await freeDevice(BigInt(4));
+      await sleep(1000);
+
+      let [rows, fields]: [any, any] = await db.execute(
+        'SELECT * FROM reservation WHERE `id`=?',
+        [BigInt(7)],
+      );
+      if (rows.length !== 0) {
+        throw new Error('reservation 7 still exists');
+      }
+    } finally {
+      db.end();
+    }
   });
 });

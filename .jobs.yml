@@ -28,6 +28,7 @@ helper/python-test-helper:
   - script: test
     dependencies:
       - helper/python-test-helper:build
+      - helper/python-test-helper:lint
     tags:
       - test
 
@@ -107,6 +108,7 @@ services/auth:
   - script: test
     dependencies:
       - services/auth:build
+      - services/auth:lint
     tags:
       - test
 
@@ -124,6 +126,7 @@ services/authorization:
   - script: build
     dependencies:
       - services/common:build
+      - services/common:lint
   - script: build-docker
     dependencies:
       - services/authorization:build
@@ -135,28 +138,111 @@ services/authorization:
   - script: test
     dependencies:
       - services/authorization:build
+      - services/authorization:lint
     tags:
       - test
 
+services/booking/src/common:
+  - script: build
+    dependencies:
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - services/booking:build-spec
+      - services/booking/src/booking-backend:build-spec
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/schedule-service:build-spec
+      - services/device:build-spec
+      - clients/api/js:build
+
+services/booking/src/device-reservation:
+  - script: build
+    dependencies:
+      - services/booking/src/common:build
+  - script: test
+    dependencies:
+      - services/booking/src/device-reservation:build
+    tags:
+      - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/device-reservation:build
+
+services/booking/src/test_common:
+  - script: build
+    dependencies:
+      - services/booking/src/common:build
+      - services/booking/src/device-reservation:build
+
+services/booking/src/booking-backend:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/booking/src/test_common:build
+  - script: test
+    dependencies:
+      - services/booking/src/booking-backend:build
+    tags:
+      - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/booking-backend:build
+
+services/booking/src/booking-frontend:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/booking/src/booking-backend:build
+  - script: test
+    dependencies:
+      - services/booking/src/booking-frontend:build
+    tags:
+      - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/booking-frontend:build
+
+services/booking/src/schedule-service:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/common:build
+      - services/booking/src/common:build
+      - services/booking/src/test_common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+  # - script: test
+  #   dependencies:
+  #     - services/booking/src/schedule-service:build
+  #   tags:
+  #     - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/schedule-service:build
+
 services/booking:
-   - script: build-spec
-#   - script: lint-spec
-#     dependencies:
-#       - services/booking:build-spec
-#     tags:
-#       - test
-#   - script: build
-#     dependencies:
-#       - services/booking:build-spec
-#       - services/common:build
-#       - helper/crosslab-typescript-addon:build
-#       - helper/openapi-codegeneration:build
-#       - clients/api/js:build
-#   - script: test
-#     dependencies:
-#       - services/booking:build
-#     tags:
-#       - test
+  - script: build-spec
+    paths:
+      - ./api
+    dependencies:
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/booking-backend:build-spec      
+      - services/booking/src/schedule-service:build-spec
+  - script: lint-spec
+    paths:
+      - ./api
+    dependencies:      
+      - services/booking:build-spec
+    tags:
+      - test
 
 services/device:
   - script: build-spec
@@ -199,6 +285,10 @@ services/experiment:
   - script: build
     dependencies:
       - services/experiment:build-spec
+      - services/booking/src/booking-backend:build-spec
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/schedule-service:build-spec
+      - services/booking:build-spec
       - services/common:build
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
@@ -316,6 +406,7 @@ clients/api/python:
   - script: test
     dependencies:
       - clients/api/python:build
+      - clients/api/python:lint
     tags:
       - test
 
@@ -332,7 +423,9 @@ clients/soa/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
       - clients/soa/python:build
+      - clients/soa/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -360,7 +453,10 @@ clients/soa_services/electricalConnection/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/electricalConnection/python:build
+      - clients/soa_services/electricalConnection/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -387,7 +483,10 @@ clients/soa_services/webcam/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/webcam/python:build
+      - clients/soa_services/webcam/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -414,7 +513,10 @@ clients/soa_services/file/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/file/python:build
+      - clients/soa_services/file/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -441,7 +543,10 @@ clients/soa_services/message/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/message/python:build
+      - clients/soa_services/message/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -468,7 +573,10 @@ clients/soa_services/parameter/python:
       - test
   - script: test
     dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
       - clients/soa_services/message/python:build
+      - clients/soa_services/message/python:lint
       - helper/python-test-helper:test
     tags:
       - test
@@ -493,11 +601,26 @@ integration-test:
       - services/common:build
       - services/auth:build
       - services/authorization:build
-#      - services/booking:build
+      - services/booking/src/booking-backend:build
+      - services/booking/src/booking-frontend:build
+      - services/booking/src/device-reservation:build
+      - services/booking/src/schedule-service:build
       - services/device:build
       - services/experiment:build
       - services/federation:build
       - services/gateway:build
+      - services/auth:build-docker
+      - services/authorization:build-docker
+      - services/booking/src/booking-backend:build-docker
+      - services/booking/src/booking-frontend:build-docker
+      - services/booking/src/device-reservation:build-docker
+      - services/booking/src/schedule-service:build-docker
+      - services/device:build-docker
+      - services/experiment:build-docker
+      - services/federation:build-docker
+      - services/gateway:build-docker
+      - services/auth:test
+      - services/authorization:test
       - clients/api/js:build
       - clients/soa/js:build
       - clients/soa_services/electricalConnection/js:build

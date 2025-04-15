@@ -43,6 +43,7 @@ patch:
     - $ref: '../parameters/device_changed_url.yml'
   requestBody:
     description: Updated device.
+    required: false
     content:
       application/json:
         $ref: '../content/device_update.yml'

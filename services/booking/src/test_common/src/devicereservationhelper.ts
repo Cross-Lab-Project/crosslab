@@ -2,23 +2,35 @@ import { baseConfig, sleep } from '@crosslab/booking-service-common';
 import {
   ReservationMessage,
   ReservationRequest,
+  config,
   mainLoop,
 } from '@crosslab/service-device-reservation';
 import * as amqplib from 'amqplib';
 
+import { getSQLDNS } from './setup.js';
+
 var running: boolean = false;
 
 export async function startDeviceReservation() {
+  config.BookingDSN = getSQLDNS();
+  config.ReservationDSN = getSQLDNS();
+  config.CallbackDSN = getSQLDNS();
   if (running) {
     throw Error('reservation already started');
   }
   let connection: amqplib.Connection = await amqplib.connect(baseConfig.AmqpUrl);
   let channel: amqplib.Channel = await connection.createChannel();
 
+  // Ensure queue exists
+  await channel.assertQueue('device-reservation', {
+    durable: true,
+  });
+
   // Drain queue for tests
   while (await channel.get('device-reservation', { noAck: true })) {}
 
   await channel.close();
+  await sleep(250);
   await connection.close();
 
   mainLoop();
@@ -46,9 +58,14 @@ export async function stopDeviceReservation() {
 
   while (await channel.get('TEST_ANSWER_STOP_SERVER', { noAck: true })) {}
   await channel.deleteQueue('TEST_ANSWER_STOP_SERVER');
+
+  // Drain queue
+  while (await channel.get('device-reservation', { noAck: true })) {}
+
   await channel.deleteQueue('device-reservation');
 
   await channel.close();
+  await sleep(250);
   await connection.close();
 
   running = false;

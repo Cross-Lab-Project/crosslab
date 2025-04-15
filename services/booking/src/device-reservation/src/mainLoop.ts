@@ -1,15 +1,16 @@
-import { BelongsToUs, baseConfig, sleep } from '@crosslab/booking-service-common';
+import { BelongsToUs, sleep } from '@crosslab/booking-service-common';
 import * as amqplib from 'amqplib';
 import { Mutex, withTimeout } from 'async-mutex';
 import * as crypto from 'crypto';
 import * as mysql from 'mysql2/promise';
 
+import { config } from './config.js';
 import {
   ErrorTimeoutText,
   ReservationAnswer,
   ReservationMessage,
   ReservationRequest,
-} from './messageDefinition';
+} from './messageDefinition.js';
 
 (BigInt.prototype as any).toJSON = function () {
   return this.toString();
@@ -22,7 +23,7 @@ var mutex = withTimeout(new Mutex(), 5000, new Error(ErrorTimeoutText));
 export async function mainLoop(): Promise<void> {
   while (true) {
     try {
-      let connection = await amqplib.connect(baseConfig.AmqpUrl);
+      let connection = await amqplib.connect(config.AmqpUrl);
       let channel = await connection.createChannel();
 
       await channel.assertQueue('device-reservation', {
@@ -46,11 +47,11 @@ export async function mainLoop(): Promise<void> {
         try {
           data = ReservationMessage.fromString(msg.content.toString());
         } catch (error) {
-          console.log('Can not parse message:', error);
+          console.error('Can not parse message:', error);
           try {
             channel.ack(msg);
           } catch (error) {
-            console.log('Can not ack message:', error);
+            console.error('Can not ack message:', error);
           }
           continue;
         }
@@ -59,7 +60,7 @@ export async function mainLoop(): Promise<void> {
         try {
           // Process message
           let answer: ReservationAnswer;
-          let db = await mysql.createConnection(baseConfig.ReservationDSN);
+          let db = await mysql.createConnection(config.ReservationDSN);
           await db.connect();
           try {
             let rows: any, fields: any;
@@ -67,9 +68,10 @@ export async function mainLoop(): Promise<void> {
               case ReservationRequest.Stop:
                 // This should never be called by any service, we still need it to stop main loop for testing...
                 channel.ack(msg);
-                sleep(250);
-                channel.close();
-                connection.close();
+                await sleep(250);
+                await channel.close();
+                await sleep(250);
+                await connection.close();
                 return;
               case ReservationRequest.New:
                 answer = {
@@ -304,6 +306,7 @@ export async function mainLoop(): Promise<void> {
                 break;
             }
           } catch (error) {
+            console.error('Can not process request: ' + error);
             // Do not jump out here, always send an answer to caller
             answer = {
               Type: data.Type,
@@ -327,7 +330,7 @@ export async function mainLoop(): Promise<void> {
             channel.sendToQueue(data.AnswerQueue, Buffer.from(JSON.stringify(answer)));
             channel.ack(msg);
           } catch (error) {
-            console.log('Can not ack message:', error);
+            console.error('Can not ack message:', error);
           }
         } catch (error) {
           try {
@@ -346,15 +349,16 @@ export async function mainLoop(): Promise<void> {
             channel.sendToQueue(data.AnswerQueue, Buffer.from(JSON.stringify(answer)));
             channel.ack(msg);
           } catch (e) {
-            console.log('Can not ack message:', e);
+            console.error('Can not ack message:', e);
           }
         } finally {
           release();
         }
       }
     } catch (err) {
-      console.log(err);
+      console.error('Uncaught error in mainLoop:', err);
       console.log('Reconnecting...');
+      await sleep(1000);
     }
   }
 }
