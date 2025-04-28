@@ -65,9 +65,6 @@ export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewMode
 export class ConcreteDeviceModel extends DeviceOverviewModel {
   declare type: 'device';
 
-  @Column()
-  connected!: boolean;
-
   @Column('simple-json')
   announcedAvailability!: Required<TimeSlot>[];
 
