@@ -30,12 +30,7 @@ export const patchLtiSessionBySessionIdExperiment: patchLtiSessionBySessionIdExp
   };
 
 export const postLtiSessionBySessionIdExperimentCallback: postLtiSessionBySessionIdExperimentCallbackSignature =
-  async (req, parameters, _body) => {
-    await req.authorization.check_authorization_or_fail(
-      'edit',
-      uri.generate_session(parameters),
-    );
-
+  async (_req, parameters, _body) => {
     const session = await LTISession.byId(parameters);
     await session.update();
     return { status: 201 };
