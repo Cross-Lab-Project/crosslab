@@ -4,6 +4,7 @@ import { app } from '../src/app.js';
 import { LTIPlatform } from '../src/business/lti_platform.js';
 import { LTIResource } from '../src/business/lti_resource.js';
 import { config } from '../src/config.js';
+import * as uri from '../src/helper/uris.js';
 import { apiMock, chai, resetDatabase } from './helper.js';
 import { PlatformHost, launch } from './platform_host.js';
 
@@ -35,9 +36,10 @@ describe('LTI Role Selection', () => {
     let res = await launch(platform, platformHost);
     expect(res.status).to.equal(200, res.text);
 
+    const session_id=uri.parse_session(res.body.session.uri);
     expect(apiMock.requests.slice(-2, -1)).to.deep.equal([
       {
-        url: '/experiments?',
+        url: '/experiments?changedURL=https%3A%2F%2Fapi.johannes.goldi-labs.de%2Flti%2Fsession%2F'+session_id.session_id+'%2Fexperiment_callback',
         method: 'POST',
         body: {
           status: 'created',

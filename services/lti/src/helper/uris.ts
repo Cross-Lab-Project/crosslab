@@ -59,7 +59,7 @@ export const parse_session_change_experiment = (uri: string) => {
 }
 
 export const generate_session_experiment_callback = (id: { session_id: string}) =>
-  base + `session/${id.session_id}/experiment_callback`;
+  base + `/session/${id.session_id}/experiment_callback`;
 export const parse_session_experiment_callback = (uri: string) => {
   const match = parse(`${base}/session/(.*)/experiment_callback`, uri);
   return { session_id: match[1] };
