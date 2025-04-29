@@ -9,6 +9,8 @@ import {
   LtiSessionRoleMapModel
 } from '../database/model.js';
 import { random } from '../helper/generators.js';
+import * as uris from '../helper/uris.js';
+import { grading } from '../lti/grading.js';
 import { LTIMessage } from './lti_message.js';
 import { LTIResource } from './lti_resource.js';
 
@@ -51,8 +53,8 @@ export class LTISession {
     });
     const role_mappings = student
       ? await ApplicationDataSource.manager.findBy(LtiResourceStudentRoleMapModel, {
-          student: { id: student.id },
-        })
+        student: { id: student.id },
+      })
       : [];
 
     await ApplicationDataSource.manager.insert(
@@ -69,7 +71,7 @@ export class LTISession {
     });
 
 
-    return new LTISession(session,role_mappings_models);
+    return new LTISession(session, role_mappings_models);
   }
 
   static async byId(id: SessionId) {
@@ -80,7 +82,7 @@ export class LTISession {
     const role_mappings_models = await ApplicationDataSource.manager.findBy(LtiSessionRoleMapModel, {
       session: { id: id.session_id },
     });
-    return new LTISession(_session,role_mappings_models);
+    return new LTISession(_session, role_mappings_models);
   }
 
   // #endregion
@@ -110,8 +112,8 @@ export class LTISession {
       );
       logger.info('Creating experiment', template.configuration);
       const experiment = template.configuration;
-      for (const {role, device} of this.role_mappings) {
-        experiment.devices=experiment.devices.map(d=>(d.role===role?{...d, device}:d));
+      for (const { role, device } of this.role_mappings) {
+        experiment.devices = experiment.devices.map(d => (d.role === role ? { ...d, device } : d));
       }
       if (this.session_model.experiment_uri) {
         await experimentClient.updateExperiment(
@@ -120,7 +122,7 @@ export class LTISession {
         );
       } else {
         this.session_model.experiment_uri = (
-          await experimentClient.createExperiment({ status: 'created', ...experiment })
+          await experimentClient.createExperiment({ status: 'created', ...experiment }, { changedURL: uris.generate_session_experiment_callback({ session_id: this.session_id }) })
         ).url;
         await ApplicationDataSource.manager.save(LtiSessionModel, this.session_model);
       }
@@ -159,5 +161,23 @@ export class LTISession {
       session: { id: this.session_id },
     });
     await this.createOrUpdateExperiment(clients);
+  }
+
+  public async update() {
+    if (!this.session_model.experiment_uri) return;
+    const experiment = await clients.experiment.getExperiment(this.session_model.experiment_uri);
+    if (experiment.status === 'finished' && experiment.lti_grade) {
+      if (!this.session_model.resource.platform.iss) return;
+      if (!this.session_model.resource.platform.client_id) return;
+      if (!this.session_model.launchMessage['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']?.lineitem) return;
+      grading({
+        iss: this.session_model.resource.platform.iss,
+        client_id: this.session_model.resource.platform.client_id,
+        userId: this.session_model.launchMessage.sub,
+        grade: experiment.lti_grade as number ?? 0,
+        lineitem: this.session_model.launchMessage['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']?.lineitem,
+      })
+      // TODO: delete the session??
+    }
   }
 }

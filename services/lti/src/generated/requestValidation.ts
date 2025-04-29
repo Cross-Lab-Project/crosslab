@@ -45,7 +45,10 @@ import {
 	patchLtiResourceByResourceIdStudentsByStudentIdResponseType,
 	patchLtiSessionBySessionIdExperimentParametersType,
 	patchLtiSessionBySessionIdExperimentRequestBodyType,
-	patchLtiSessionBySessionIdExperimentResponseType
+	patchLtiSessionBySessionIdExperimentResponseType,
+	postLtiSessionBySessionIdExperimentCallbackParametersType,
+	postLtiSessionBySessionIdExperimentCallbackRequestBodyType,
+	postLtiSessionBySessionIdExperimentCallbackResponseType
 } from "./signatures.js"
 
 import * as basicValidation from "./basicValidation.cjs"
@@ -792,6 +795,45 @@ export function validatePatchLtiSessionBySessionIdExperimentOutput(response: Res
     }
 
     (validatePatchLtiSessionBySessionIdExperimentOutput as any).errors = `Response status ${response.status} is unexpected`
+
+    return false
+}
+
+/**
+ * This function validates the inputs of a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export function validatePostLtiSessionBySessionIdExperimentCallbackInput(parameters: postLtiSessionBySessionIdExperimentCallbackParametersType, body: postLtiSessionBySessionIdExperimentCallbackRequestBodyType) {
+    if (parameters) {
+        if (
+            !basicValidation.validateSessionIdRequest(parameters["session_id"])
+        ) {
+            (validatePostLtiSessionBySessionIdExperimentCallbackInput as any).errors = (basicValidation.validateSessionIdRequest as any).errors
+            return false
+        }
+    } else {
+        return false
+    }
+
+    if (!basicValidation.validatePostLtiSessionBySessionIdExperimentCallbackRequestBodyRequest(body)) {
+        (validatePostLtiSessionBySessionIdExperimentCallbackInput as any).errors = (basicValidation.validatePostLtiSessionBySessionIdExperimentCallbackRequestBodyRequest as any).errors
+        return false
+    }
+
+    return true
+}
+
+/**
+ * This function validates the outputs to a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export function validatePostLtiSessionBySessionIdExperimentCallbackOutput(response: ResponseData): response is postLtiSessionBySessionIdExperimentCallbackResponseType {
+    if (response.status < 100 || response.status >= 600) return false
+
+    
+    if (response.status === 201) {
+        return true
+    }
+
+    (validatePostLtiSessionBySessionIdExperimentCallbackOutput as any).errors = `Response status ${response.status} is unexpected`
 
     return false
 }
