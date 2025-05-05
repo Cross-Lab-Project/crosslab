@@ -18,6 +18,11 @@ export type RawLtiMessage = {
     "context_memberships_url": string,
     "service_versions": string[],
   }
+  "https://purl.imsglobal.org/spec/lti-ags/claim/endpoint"?: {
+    "scope": string[],
+    "lineitems": string,
+    "lineitem": string
+  },
 };
 
 function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
@@ -70,6 +75,38 @@ function isRawLtiMessage(message: JWTPayload): message is RawLtiMessage {
         context_memberships_url: string;
         service_versions: string[];
       }).service_versions.every(version => typeof version === 'string')
+    ) {
+      return false;
+    }
+  }
+  if (message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint']){
+    if (
+      typeof message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] !== 'object' ||
+      message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] === null ||
+      typeof (
+        message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] as {
+          scope: unknown;
+          lineitems: unknown;
+          lineitem: unknown;
+        }
+      ).lineitems !== 'string' ||
+      typeof (
+        message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] as {
+          scope: unknown;
+          lineitems: unknown;
+          lineitem: unknown;
+        }
+      ).lineitem !== 'string' ||
+      !Array.isArray((message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] as {
+        scope: string[];
+        lineitems: string;
+        lineitem: string;
+      }).scope) ||
+      !(message['https://purl.imsglobal.org/spec/lti-ags/claim/endpoint'] as {
+        scope: string[];
+        lineitems: string;
+        lineitem: string;
+      }).scope.every(scope => typeof scope === 'string')
     ) {
       return false;
     }

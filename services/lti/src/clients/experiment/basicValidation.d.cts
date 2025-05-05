@@ -54,6 +54,10 @@ export declare function validateTemplateUpdate<T extends 'request' | 'response' 
     object: unknown
 ): TemplateUpdate<T>
 
+export declare function validateExperimentStatus<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): ExperimentStatus<T>
+
 export declare function validateChangedURL<T extends 'request' | 'response' | 'all'>(
     object: unknown
 ): ChangedURL<T>
@@ -241,6 +245,14 @@ export declare function validateTemplateUpdateRequest<T extends 'request' | 'res
 export declare function validateTemplateUpdateResponse<T extends 'request' | 'response' | 'all'>(
     object: unknown
 ): TemplateUpdateResponse<T>
+
+export declare function validateExperimentStatusRequest<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): ExperimentStatusRequest<T>
+
+export declare function validateExperimentStatusResponse<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): ExperimentStatusResponse<T>
 
 export declare function validateChangedURLRequest<T extends 'request' | 'response' | 'all'>(
     object: unknown

@@ -9,7 +9,7 @@ import {
   patchLtiResourceByResourceIdStudentsSignature,
 } from '../generated/signatures.js';
 import { Student as StudentObject } from '../generated/types.js';
-import * as uri from './uris.js';
+import * as uri from '../helper/uris.js';
 
 function to_wire(student: LTIResourceStudent): StudentObject<'response'> {
   return utils.removeNullOrUndefined({

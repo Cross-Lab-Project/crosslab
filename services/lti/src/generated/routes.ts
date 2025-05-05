@@ -32,7 +32,9 @@ import {
 	patchLtiResourceByResourceIdStudentsByStudentIdParametersType,
 	patchLtiResourceByResourceIdStudentsByStudentIdRequestBodyType,
 	patchLtiSessionBySessionIdExperimentParametersType,
-	patchLtiSessionBySessionIdExperimentRequestBodyType
+	patchLtiSessionBySessionIdExperimentRequestBodyType,
+	postLtiSessionBySessionIdExperimentCallbackParametersType,
+	postLtiSessionBySessionIdExperimentCallbackRequestBodyType
 } from "./signatures.js"
 
 import {
@@ -69,7 +71,9 @@ import {
 	validatePatchLtiResourceByResourceIdStudentsByStudentIdInput,
 	validatePatchLtiResourceByResourceIdStudentsByStudentIdOutput,
 	validatePatchLtiSessionBySessionIdExperimentInput,
-	validatePatchLtiSessionBySessionIdExperimentOutput
+	validatePatchLtiSessionBySessionIdExperimentOutput,
+	validatePostLtiSessionBySessionIdExperimentCallbackInput,
+	validatePostLtiSessionBySessionIdExperimentCallbackOutput
 } from "./requestValidation.js"
 
 export default function router(): express.Router {
@@ -588,6 +592,39 @@ export default function router(): express.Router {
 
             if (!validatePatchLtiSessionBySessionIdExperimentOutput(result)) {
                 throw new ValidationError("Response validation failed", (validatePatchLtiSessionBySessionIdExperimentOutput as any).errors, 500)
+            }
+
+            for (const headerName in result.headers) {
+                const header = result.headers[headerName]
+                if (header) {
+                    res.setHeader(headerName, header)
+                }
+            }
+
+            return res.status(result.status).json(result.body)
+        } catch(error) {
+            next(error)
+            return
+        }
+    })
+
+    router.post("/lti/session/:session_id/experiment_callback", async (req: TypedRequest<{ "session_id": string },postLtiSessionBySessionIdExperimentCallbackRequestBodyType,{}>, res, next) => {
+        const parameters: postLtiSessionBySessionIdExperimentCallbackParametersType = {
+            "session_id": req.params["session_id"]
+        }
+
+        const body: postLtiSessionBySessionIdExperimentCallbackRequestBodyType = req.body
+
+        try {
+            if (!validatePostLtiSessionBySessionIdExperimentCallbackInput(parameters, body)) {
+                throw new ValidationError("Request validation failed", (validatePostLtiSessionBySessionIdExperimentCallbackInput as any).errors, 400)
+            }
+
+            const result = await operations.postLtiSessionBySessionIdExperimentCallback(
+                req,parameters, body)
+
+            if (!validatePostLtiSessionBySessionIdExperimentCallbackOutput(result)) {
+                throw new ValidationError("Response validation failed", (validatePostLtiSessionBySessionIdExperimentCallbackOutput as any).errors, 500)
             }
 
             for (const headerName in result.headers) {
