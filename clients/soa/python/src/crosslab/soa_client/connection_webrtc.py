@@ -8,15 +8,10 @@ from aiortc import RTCPeerConnection  # type: ignore
 from aiortc import RTCConfiguration, RTCIceCandidate, RTCSessionDescription
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
 from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
-from crosslab.soa_client.connection import (
-    Channel,
-    Connection,
-    DataChannel,
-    MediaChannel,
-)
+from crosslab.soa_client.connection import (Channel, Connection, DataChannel,
+                                            MediaChannel)
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -260,9 +255,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             )
             candidate.sdpMid = message["content"]["sdpMid"]
             candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
+            await self._acceptIceCandiate(candidate)
         except Exception:
             pass  # ignore invalid candidates
-        await self._acceptIceCandiate(candidate)
 
     async def _handleOptions(self, message: SignalingMessage):
         logger.debug("handleOptions")
