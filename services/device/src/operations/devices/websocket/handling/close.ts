@@ -14,7 +14,6 @@ export async function closeHandling(
   reason: Buffer,
 ) {
   // close handler: stop heartbeat and disconnect device
-  deviceModel.connected = false;
   await repositories.concreteDevice.save(deviceModel);
   sendChangedCallback(deviceModel);
   connectedDevices.delete(deviceModel.uuid);

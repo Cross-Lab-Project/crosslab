@@ -37,7 +37,6 @@ export function heartbeatHandling(
             deviceModel.uuid,
           )}' did not answer hearbeat check, closing connection`,
         );
-        deviceModel.connected = false;
         await repositories.concreteDevice.save(deviceModel);
         sendChangedCallback(deviceModel);
         connectedDevices.delete(deviceModel.uuid);

@@ -1,8 +1,9 @@
 import { repositories } from '../../../database/dataSource.js';
 import { ConcreteDevice, DeviceChangedEventCallback } from '../../../generated/types.js';
 import { timeoutMap } from '../../../globals.js';
-import { getDevice } from '../../../methods/device.js';
+import { toUuid } from '../../../methods/device.js';
 import { signalingQueueManager } from '../../../methods/signaling/signalingQueueManager.js';
+import { connectedDevices } from '../../devices/websocket/handling/index.js';
 
 /**
  * This function handles an incoming "device-changed" event callback.
@@ -34,11 +35,12 @@ async function handleConcreteDevice(concreteDevice: ConcreteDevice<'response'>) 
   );
 
   for (const pendingConnection of pendingConnections) {
-    const deviceA = await getDevice({ url: pendingConnection.deviceA.url });
-    const deviceB = await getDevice({ url: pendingConnection.deviceB.url });
-
-    if (!('connected' in deviceA && 'connected' in deviceB)) continue;
-    if (!(deviceA.connected && deviceB.connected)) continue;
+    if (
+      !connectedDevices.has(toUuid(pendingConnection.deviceA)) ||
+      !connectedDevices.has(toUuid(pendingConnection.deviceB))
+    ) {
+      continue;
+    }
 
     clearTimeout(timeoutMap.get(pendingConnection.uuid));
     signalingQueueManager.startSignalingQueues(pendingConnection.uuid);

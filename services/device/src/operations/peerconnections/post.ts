@@ -7,9 +7,10 @@ import {
 import { repositories } from '../../database/dataSource.js';
 import { postPeerconnectionsSignature } from '../../generated/signatures.js';
 import { closedCallbacks, statusChangedCallbacks } from '../../methods/callbacks.js';
-import { getDevice } from '../../methods/device.js';
+import { getDevice, toUuid } from '../../methods/device.js';
 import { signalingQueueManager } from '../../methods/signaling/signalingQueueManager.js';
 import { peerconnectionUrlFromId } from '../../methods/urlFromId.js';
+import { connectedDevices } from '../devices/websocket/handling/index.js';
 
 /**
  * This function implements the functionality for handling POST requests on
@@ -37,7 +38,10 @@ export const postPeerconnections: postPeerconnectionsSignature = async (
     );
   }
 
-  if (!deviceA.connected || !deviceB.connected)
+  if (
+    !connectedDevices.has(toUuid(body.devices[0])) ||
+    !connectedDevices.has(toUuid(body.devices[1]))
+  )
     throw new DeviceNotConnectedError(
       'One of the participating devices is currently not connected',
       409,

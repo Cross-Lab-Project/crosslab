@@ -40,7 +40,6 @@ export async function authenticationHandling(
     return ws.close(1002, 'No device found with matching websocket token');
   }
 
-  deviceModel.connected = true;
   connectedDevices.set(deviceModel.uuid, ws);
   await repositories.concreteDevice.save(deviceModel);
   removeDisconnectTimeout(deviceModel.uuid);
