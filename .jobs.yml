@@ -619,8 +619,6 @@ integration-test:
       - services/experiment:build-docker
       - services/federation:build-docker
       - services/gateway:build-docker
-      - services/auth:test
-      - services/authorization:test
       - clients/api/js:build
       - clients/soa/js:build
       - clients/soa_services/electricalConnection/js:build
