@@ -501,11 +501,11 @@ export type TimeSlot<T extends 'request' | 'response' | 'all' = 'all'> = T exten
  */
 export type Availability<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
-    ? TimeSlot[]
+    ? Require<TimeSlot, 'start' | 'end'>[]
     : T extends 'request'
-      ? TimeSlot<'request'>[]
+      ? Require<TimeSlot<'request'>, 'start' | 'end'>[]
       : T extends 'response'
-        ? TimeSlot<'response'>[]
+        ? Require<TimeSlot<'response'>, 'start' | 'end'>[]
         : never;
 
 export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
@@ -551,9 +551,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * A list of time slots that the maintainer of the device announced it is available
          *
          */
-        announcedAvailability?: TimeSlot[];
+        announcedAvailability?: Require<TimeSlot, 'start' | 'end'>[];
         experiment?: string;
         services?: ServiceDescription[];
+        instanceOf?: string;
         [k: string]: unknown;
       }
     : T extends 'request'
@@ -587,6 +588,7 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
           type?: 'device';
           experiment?: string;
           services?: ServiceDescription<'request'>[];
+          instanceOf?: string;
           [k: string]: unknown;
         }
       : T extends 'response'
@@ -631,9 +633,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
              * A list of time slots that the maintainer of the device announced it is available
              *
              */
-            announcedAvailability?: TimeSlot<'response'>[];
+            announcedAvailability?: Require<TimeSlot<'response'>, 'start' | 'end'>[];
             experiment?: string;
             services?: ServiceDescription<'response'>[];
+            instanceOf?: string;
             [k: string]: unknown;
           }
         : never;
@@ -961,9 +964,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * A list of time slots that the maintainer of the device announced it is available
            *
            */
-          announcedAvailability?: TimeSlot[];
+          announcedAvailability?: Require<TimeSlot, 'start' | 'end'>[];
           experiment?: string;
           services?: ServiceDescription[];
+          instanceOf?: string;
           [k: string]: unknown;
         })
       | ({
@@ -1101,6 +1105,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
             type?: 'device';
             experiment?: string;
             services?: ServiceDescription<'request'>[];
+            instanceOf?: string;
             [k: string]: unknown;
           })
         | ({
@@ -1245,9 +1250,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                * A list of time slots that the maintainer of the device announced it is available
                *
                */
-              announcedAvailability?: TimeSlot<'response'>[];
+              announcedAvailability?: Require<TimeSlot<'response'>, 'start' | 'end'>[];
               experiment?: string;
               services?: ServiceDescription<'response'>[];
+              instanceOf?: string;
               [k: string]: unknown;
             })
           | ({
@@ -1459,9 +1465,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * A list of time slots that the maintainer of the device announced it is available
                *
                */
-              announcedAvailability?: TimeSlot[];
+              announcedAvailability?: Require<TimeSlot, 'start' | 'end'>[];
               experiment?: string;
               services?: ServiceDescription[];
+              instanceOf?: string;
               [k: string]: unknown;
             })
           | ({
@@ -1610,6 +1617,7 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                 type?: 'device';
                 experiment?: string;
                 services?: ServiceDescription<'request'>[];
+                instanceOf?: string;
                 [k: string]: unknown;
               })
             | ({
@@ -1765,9 +1773,13 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    * A list of time slots that the maintainer of the device announced it is available
                    *
                    */
-                  announcedAvailability?: TimeSlot<'response'>[];
+                  announcedAvailability?: Require<
+                    TimeSlot<'response'>,
+                    'start' | 'end'
+                  >[];
                   experiment?: string;
                   services?: ServiceDescription<'response'>[];
+                  instanceOf?: string;
                   [k: string]: unknown;
                 })
               | ({

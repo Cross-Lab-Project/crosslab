@@ -1,0 +1,383 @@
+# yaml-language-server: $schema=https://spec.openapis.org/oas/3.1/schema/2025-02-13
+openapi: 3.1.0
+info:
+  title: CrossLab Booking Service REST API (internal)
+  description: |-
+    This is the OpenAPI description of the internal CrossLab Booking Service REST API.
+  version: 0.0.1
+  x-service-name: Booking Service
+components:
+  schemas:
+    booking:
+      title: Booking
+      type: object
+      properties:
+        url:
+          type: string
+          readOnly: true
+        timeslot:
+          $ref: '#/components/schemas/timeslot'
+        devices:
+          type: array
+          items:
+            type: string
+      required:
+        - url
+        - timeslot
+        - devices
+    schedule: 
+      title: Schedule
+      type: array
+      items:
+        $ref: '#/components/schemas/timeslot'
+    timeslot:
+      title: Timeslot
+      type: object
+      properties:
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+      required:
+        - start
+        - end
+    deviceGroupMapping:
+      type: array
+      items:
+        type: object
+        properties:
+          group:
+            type: string
+          device:
+            type: string
+        required:
+          - group
+          - device
+    bookingChangedEventCallback:
+      title: BookingChangedEventCallback
+      type: object
+      properties:
+        callbackType:
+          type: string
+          const: event
+        eventType:
+          type: string
+          const: booking-changed
+        booking:
+          $ref: "#/components/schemas/booking"
+      required:
+        - callbackType
+        - eventType
+        - booking
+  parameters:
+    bookingId:
+      in: path
+      name: bookingId
+      description: Id of the booking.
+      required: true
+      schema:
+        type: string
+    changedUrl:
+      in: query
+      name: changedUrl
+      description: Url to send "booking-changed" events to for a given booking.
+      required: false
+      schema:
+        type: string
+        format: uri
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |-
+        As this is the API description of the internal Booking API, the only supported security schema is the JWT bearer token.
+        This token will be populated by the API Gateway.
+        To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
+tags:
+  - name: booking
+    description: |-
+      This tag describes the booking resource.
+    x-displayName: Booking
+  - name: schedule
+    description: |-
+      This tag describes the schedule resource.
+    x-displayName: Schedule
+paths:
+  /bookings:
+    get:
+      operationId: list_bookings
+      summary: List bookings
+      tags:
+        - booking
+      security:
+        - JWT:
+            - booking
+            - booking:read
+      responses:
+        200:
+          description: The list of all bookings.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: '#/components/schemas/booking'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+      x-optional-url: true
+    post:
+      operationId: create_booking
+      summary: Create a booking
+      tags:
+        - booking
+      security:
+        - JWT:
+            - booking
+            - booking:create
+      parameters:
+        - $ref: "#/components/parameters/changedUrl"
+      requestBody:
+        description: The booking to be created.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/booking'
+      responses:
+        201:
+          description: The booking was created. A JSON representation of the new booking is returned.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booking'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+      callbacks:
+        changed:
+          '{$request.query.changedUrl}':
+            post:
+              security:
+                - JWT:
+                    - booking
+                    - booking:write
+                    - booking:create
+              summary: Callback for the "booking-changed" event
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/bookingChangedEventCallback"
+              responses:
+                2XX:
+                  description: The event was successfully processed.
+                410:
+                  description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+      x-optional-url: true
+  /bookings/{bookingId}:
+    get:
+      operationId: get_booking
+      summary: View a booking
+      tags:
+        - booking
+      parameters:
+        - $ref: '#/components/parameters/bookingId'
+      security:
+        - JWT:
+            - booking
+            - booking:read
+      responses:
+        200:
+          description: The JSON Representation of the booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booking'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+    patch:
+      operationId: update_booking
+      summary: Update a booking
+      tags:
+        - booking
+      security:
+        - JWT:
+            - booking
+            - booking:write
+      parameters:
+        - $ref: '#/components/parameters/bookingId'
+        - $ref: "#/components/parameters/changedUrl"
+      requestBody:
+        description: Update the booking
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/booking'
+      responses:
+        200:
+          description: The JSON Representation of the changed booking
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/booking'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+      callbacks:
+        changed:
+          '{$request.query.changedUrl}':
+            post:
+              security:
+                - JWT:
+                    - booking
+                    - booking:write
+                    - booking:create
+              summary: Callback for the "booking-changed" event
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/bookingChangedEventCallback"
+              responses:
+                2XX:
+                  description: The event was successfully processed.
+                410:
+                  description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+    delete:
+      operationId: delete_booking
+      summary: Delete a booking
+      tags:
+        - booking
+      security:
+        - JWT:
+            - booking
+            - booking:delete
+      parameters:
+        - $ref: '#/components/parameters/bookingId'
+      responses:
+        204:
+          description: The booking was delete.
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+  /bookings/{bookingId}/lock:
+    put:
+      operationId: lock_booking
+      summary: Lock a booking
+      tags:
+        - booking
+      security:
+        - JWT:
+            - booking
+      parameters:
+        - $ref: '#/components/parameters/bookingId'
+      responses:
+        200:
+          description: The booking was locked successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deviceGroupMapping'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+  /schedule:
+    post:
+      operationId: get_schedule
+      summary: Get a schedule
+      description: |
+        This endpoint can be used to retrieve a schedule that contains all time slots in the
+        requested time frame in which all requested devices are available.
+      tags:
+        - schedule
+      security:
+        - JWT:
+            - booking
+            - booking:read
+      requestBody:
+        description: The schedule request.
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                devices:
+                  description: |
+                    Urls of the devices to be used for creating the schedule.
+                  type: array
+                  items:
+                    type: string
+                timeframe: 
+                  $ref: '#/components/schemas/timeslot'
+                  description: |
+                    The timeframe to be used for creating the schedule.
+              required:
+                - devices
+                - timeframe
+      responses:
+        200:
+          description: The JSON Representation of the schedule
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/schedule'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.

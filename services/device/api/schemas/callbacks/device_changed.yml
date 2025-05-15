@@ -8,7 +8,33 @@ allOf:
         enum:
           - device-changed
       device:
-        $ref: ../devices/device.yml
+        anyOf:
+          - $ref: ../devices/device_cloud_instantiable.yml
+          - $ref: ../devices/device_edge_instantiable.yml
+          - $ref: ../devices/device_concrete.yml
+          - allOf:
+              - $ref: ../devices/device_group.yml
+              - type: object
+                properties:
+                  added:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                  changed:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                  removed:
+                    type: array
+                    items:
+                      type: string
+                      format: uri
+                required:
+                  - added
+                  - changed
+                  - removed
     required:
       - eventType
       - device

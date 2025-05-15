@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Timeslot
+type: object
+properties:
+  start:
+    type: string
+    format: date-time
+  end:
+    type: string
+    format: date-time
+required:
+  - start
+  - end

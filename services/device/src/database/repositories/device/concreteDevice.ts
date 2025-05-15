@@ -2,6 +2,7 @@ import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 
 import { ConcreteDevice, ConcreteDeviceUpdate } from '../../../generated/types.js';
+import { deviceUrlFromId } from '../../../methods/urlFromId.js';
 import { connectedDevices } from '../../../operations/devices/websocket/handling/index.js';
 import { ConcreteDeviceModel } from '../../model.js';
 import { DeviceOverviewRepository } from './deviceOverview.js';
@@ -58,6 +59,9 @@ export class ConcreteDeviceRepository extends AbstractRepository<
       connected: connectedDevices.has(model.uuid),
       experiment: model.experiment ?? undefined,
       services: model.services,
+      instanceOf: model.instanceOf?.uuid
+        ? deviceUrlFromId(model.instanceOf?.uuid)
+        : undefined,
     };
   }
 }

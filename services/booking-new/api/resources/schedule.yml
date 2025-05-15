@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+post:
+  operationId: get_schedule
+  summary: Get a schedule
+  tags:
+    - schedule
+  security:
+    - JWT:
+        - booking
+        - booking:read
+  requestBody:
+    description: The booking to be created.
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            devices:
+              type: array
+              items:
+                type: string
+            timeframe:
+              $ref: ../schemas/timeslot.yml
+          required:
+            - devices
+            - timeframe
+  responses:
+    200:
+      description: The JSON Representation of the schedule
+      content:
+        application/json:
+          $ref: '../content/schedule.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

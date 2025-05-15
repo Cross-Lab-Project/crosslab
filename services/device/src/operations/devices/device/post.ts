@@ -46,6 +46,8 @@ export const postDevicesByDeviceId: postDevicesByDeviceIdSignature = async (
     type: 'device',
   });
 
+  concreteDeviceModel.instanceOf = instantiableDeviceModel;
+
   concreteDeviceModel = (await repositories.device.save(
     concreteDeviceModel,
   )) as ConcreteDeviceModel;

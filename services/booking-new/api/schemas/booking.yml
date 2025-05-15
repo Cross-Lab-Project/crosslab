@@ -1,0 +1,17 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Booking
+type: object
+properties:
+  url:
+    type: string
+    readOnly: true
+  timeslot:
+    $ref: ./timeslot.yml
+  devices:
+    type: array
+    items:
+      type: string
+required:
+  - url
+  - timeslot
+  - devices

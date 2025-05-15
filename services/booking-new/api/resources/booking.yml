@@ -1,0 +1,84 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-resource.json
+get:
+  operationId: get_booking
+  summary: View a booking
+  tags:
+    - booking
+  parameters:
+    - $ref: '../parameters/booking_id.yml'
+  security:
+    - JWT:
+        - booking
+        - booking:read
+  responses:
+    200:
+      description: The JSON Representation of the booking
+      content:
+        application/json:
+          $ref: '../content/booking.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+patch:
+  operationId: update_booking
+  summary: Update a booking
+  tags:
+    - booking
+  security:
+    - JWT:
+        - booking
+        - booking:write
+  parameters:
+    - $ref: '../parameters/booking_id.yml'
+  requestBody:
+    description: Update the booking
+    content:
+      application/json:
+        $ref: '../content/booking.yml'
+  responses:
+    200:
+      description: The JSON Representation of the changed booking
+      content:
+        application/json:
+          $ref: '../content/booking.yml'
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.
+delete:
+  operationId: delete_booking
+  summary: Delete a booking
+  tags:
+    - booking
+  security:
+    - JWT:
+        - booking
+        - booking:delete
+  parameters:
+    - $ref: '../parameters/booking_id.yml'
+  responses:
+    204:
+      description: The booking was delete.
+    400:
+      description: Bad Request.
+    401:
+      description: Unauthorized.
+    403:
+      description: Forbidden.
+    404:
+      description: Resource not found.
+    500:
+      description: Server Error.

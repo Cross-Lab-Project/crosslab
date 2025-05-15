@@ -18,9 +18,9 @@ components:
         This token will be populated by the API Gateway.
         To learn about the general Authentification scheme, please refer to the [Authentication section](https://cross-lab-project.github.io/crosslab/backend.html#authentification) in the CrossLab architecture description.
 tags:
-  - name: device
+  - name: institution
     description: |-
-      This tag describes the device resource.
+      This tag describes the institution resource.
   - name: proxy
     description: |-
       An authorized service can use these endpoints to request external resources that are supplied in the URL query parameters.

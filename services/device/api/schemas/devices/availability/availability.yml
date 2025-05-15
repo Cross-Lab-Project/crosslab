@@ -5,3 +5,6 @@ description: |
 type: array
 items:
   $ref: ./time_slot.yml
+  required:
+    - start
+    - end

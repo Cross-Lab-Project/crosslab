@@ -21,4 +21,6 @@ allOf:
         type: array
         items:
           $ref: ./services/service_description.yml
+      instanceOf:
+        type: string
 x-typeguard: true

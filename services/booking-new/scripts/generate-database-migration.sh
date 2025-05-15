@@ -1,0 +1,1 @@
+../../../common/node/scripts/generate-database-migration.sh
