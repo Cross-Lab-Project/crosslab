@@ -108,3 +108,34 @@ paths:
         201:
           description: |-
             The session was updated.
+  session_by_id_experiment_callback:
+    post:
+      summary: Experiment Changed Callback
+      operationId: update_lti_experiment_callback
+      security: []
+      tags:
+        - lti
+      parameters:
+        - $ref: '#/components/parameters/session_id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                callbackType:
+                  type: string
+                  enum:
+                    - event
+                eventType:
+                  type: string
+                  enum:
+                    - experiment-changed
+              required:
+                - callbackType
+                - eventType
+      responses:
+        201:
+          description: |-
+            The callback was processed.

@@ -37,4 +37,4 @@ if [ "$version" != "$VERSION" ]; then
     exit 1
 fi
 
-npm publish --access=public $file
+npm publish --access=public $file 2>&1 || true

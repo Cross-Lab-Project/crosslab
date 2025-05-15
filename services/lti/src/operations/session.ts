@@ -1,9 +1,10 @@
 
 import { LTISession } from '../business/lti_session.js';
 import {
-    patchLtiSessionBySessionIdExperimentSignature
+  patchLtiSessionBySessionIdExperimentSignature,
+  postLtiSessionBySessionIdExperimentCallbackSignature
 } from '../generated/signatures.js';
-import * as uri from './uris.js';
+import * as uri from '../helper/uris.js';
 
 //function session_to_wire(resource: LTIResource): ResourceObject<'response'> {
 //  return utils.removeNullOrUndefined({
@@ -25,5 +26,12 @@ export const patchLtiSessionBySessionIdExperiment: patchLtiSessionBySessionIdExp
         await session.set_role_mapping(role);
       }
 
+    return { status: 201 };
+  };
+
+export const postLtiSessionBySessionIdExperimentCallback: postLtiSessionBySessionIdExperimentCallbackSignature =
+  async (_req, parameters, _body) => {
+    const session = await LTISession.byId(parameters);
+    await session.update();
     return { status: 201 };
   };

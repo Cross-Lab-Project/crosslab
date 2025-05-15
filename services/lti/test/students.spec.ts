@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { app } from '../src/app.js';
 import { LTIPlatform } from '../src/business/lti_platform.js';
 import { Student } from '../src/generated/types.js';
-import { parse_resource } from '../src/operations/uris.js';
+import { parse_resource } from '../src/helper/uris.js';
 import { chai, resetDatabase } from './helper.js';
 import { launch, PlatformHost } from './platform_host.js';
 

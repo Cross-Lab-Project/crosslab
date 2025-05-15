@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Literal, Union, cast
 
 from aiortc import RTCPeerConnection  # type: ignore
 from aiortc import RTCConfiguration, RTCIceCandidate, RTCSessionDescription
-from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
 from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
 from crosslab.soa_client.connection import (Channel, Connection, DataChannel,
@@ -49,7 +48,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 self.pc.signalingState,
             )
             if self.state != self.pc.connectionState:
-                self.state = self.pc.connectionState
+                # the following assignment is str to typed literal
+                # but str is garantueed to only use the specified values
+                self.state = self.pc.connectionState  # type: ignore
                 self.emit("connectionChanged")
 
         async def datachannel(datachannel):
@@ -90,12 +91,11 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
         create_task(optionsTimeout())
 
-    async def _on_track(self, track: RTCTrackEvent):
-        transeiver = track.transceiver
-        label = transeiver.receiver.track.id
+    async def _on_track(self, track):
+        label = track.id
         channel = self._mediaChannelMap.get(label)
         assert channel is not None  # TODO: handle this
-        channel.emit("track", transeiver.receiver.track)
+        channel.emit("track", track)
 
     async def close(self):
         await self.pc.close()
@@ -250,12 +250,14 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     async def _handleIceCandidate(self, message: SignalingMessage):
         logger.debug("handleIceCandidate")
         try:
-            candidate = candidate_from_sdp(message["content"]["candidate"].split(":", 1)[1])
+            candidate = candidate_from_sdp(
+                message["content"]["candidate"].split(":", 1)[1]
+            )
             candidate.sdpMid = message["content"]["sdpMid"]
             candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
-        except Exception as e:
-            pass
-        await self._acceptIceCandiate(candidate)
+            await self._acceptIceCandiate(candidate)
+        except Exception:
+            pass  # ignore invalid candidates
 
     async def _handleOptions(self, message: SignalingMessage):
         logger.debug("handleOptions")

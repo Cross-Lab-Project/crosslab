@@ -911,3 +911,46 @@ export interface patchLtiSessionBySessionIdExperiment201ResponseType extends Suc
     }
     body?: undefined
 }
+
+/**
+ * Function signature for handling a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export type postLtiSessionBySessionIdExperimentCallbackSignature = (
+        req: express.Request,parameters: postLtiSessionBySessionIdExperimentCallbackParametersType, body: postLtiSessionBySessionIdExperimentCallbackRequestBodyType) => Promise<postLtiSessionBySessionIdExperimentCallbackResponseType> | postLtiSessionBySessionIdExperimentCallbackResponseType
+
+/**
+ * Typing for the parameters of a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export type postLtiSessionBySessionIdExperimentCallbackParametersType = {
+    "session_id": string,
+}
+
+/**
+ * Typing for the request body of a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export type postLtiSessionBySessionIdExperimentCallbackRequestBodyType = {
+	callbackType: "event"
+	eventType: "experiment-changed"
+	[k: string]: unknown
+}
+
+/**
+ * Typing for all possible responses to a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export type postLtiSessionBySessionIdExperimentCallbackResponseType = postLtiSessionBySessionIdExperimentCallbackSuccessResponseType
+
+/**
+ * Typing for all successful responses to a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export type postLtiSessionBySessionIdExperimentCallbackSuccessResponseType = postLtiSessionBySessionIdExperimentCallback201ResponseType
+
+/**
+ * Typing for a response with status 201 to a POST request on /lti/session/{session_id}/experiment_callback
+ */
+export interface postLtiSessionBySessionIdExperimentCallback201ResponseType extends SuccessResponse {
+    status: 201
+    headers?: {
+        [k: string]: string | undefined
+    }
+    body?: undefined
+}

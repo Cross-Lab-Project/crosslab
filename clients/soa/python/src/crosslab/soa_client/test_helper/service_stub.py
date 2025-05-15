@@ -17,8 +17,8 @@ class ServiceStub(Service):
     _hasIncomingTrack: bool
     _hasDataChannel: bool
 
-    _outgoingTrack: MediaStreamTrack
-    _incomingTrack: MediaStreamTrack
+    _outgoingTrack: Optional[MediaStreamTrack]
+    _incomingTrack: Optional[MediaStreamTrack]
 
     channels: List[DataChannel]
     messages: List[str]
@@ -112,7 +112,11 @@ class ServiceStub(Service):
     async def _receive(self):
         while True:
             try:
+                if self._incomingTrack is None:
+                    break
                 result = await self._incomingTrack.recv()
+                if result.pts is None:
+                    continue
                 self.received_frame_pts.append(result.pts)
                 self._wait_for_n_frames -= 1
                 if self._wait_for_n_frames <= 0:

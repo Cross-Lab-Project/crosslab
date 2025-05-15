@@ -11,7 +11,7 @@ import {
   postLtiPlatformByPlatformIdLaunchSignature,
   postLtiPlatformByPlatformIdLoginSignature,
 } from '../generated/signatures.js';
-import * as uri from './uris.js';
+import * as uri from '../helper/uris.js';
 
 export const postLtiPlatformByPlatformIdLogin: postLtiPlatformByPlatformIdLoginSignature =
   async (_req, parameters, body) => {
