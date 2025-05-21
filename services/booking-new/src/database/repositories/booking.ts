@@ -6,6 +6,7 @@ import { Booking } from '../../generated/types.js';
 import { isLocked } from '../../methods/booking.js';
 import { reserveDevice } from '../../methods/reservation.js';
 import { bookingUrlFromId } from '../../methods/urlFromId.js';
+import { repositories } from '../dataSource.js';
 import { BookingModel, DeviceModel } from '../model.js';
 import { CallbackUrlRepository } from './callbackUrl.js';
 import { DeviceRepository } from './device.js';
@@ -42,9 +43,10 @@ export class BookingRepository extends AbstractRepository<
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
     const model = this.repository.create();
-    model.status = 'reserving';
     model.devices = [];
+    model.callbackUrls = [];
     await this.write(model, data);
+    model.status = 'accepted';
 
     return model;
   }
@@ -55,24 +57,30 @@ export class BookingRepository extends AbstractRepository<
     if (data.timeslot?.start !== undefined) model.start = data.timeslot.start;
     if (data.timeslot?.end !== undefined) model.end = data.timeslot.end;
     if (data.devices !== undefined) {
-      const devices = await Promise.all(
-        data.devices.map(deviceUrl => clients.device.getDevice(deviceUrl)),
+      const deviceMap = await Promise.all(
+        Object.entries(data.devices).map(async ([id, device]) => {
+          return {
+            id,
+            device: await clients.device.getDevice(device.url),
+            essential: device.essential,
+          };
+        }),
       );
 
       // sort devices such that device groups come last, this ensures that
       // all other devices are booked first to avoid conflicts that may arise
       // by booking the same device from the device group before
-      devices.sort((deviceA, deviceB) => {
-        if (deviceA.type === 'group' && deviceB.type !== 'group') return 1;
-        if (deviceA.type !== 'group' && deviceB.type === 'group') return -1;
+      deviceMap.sort((deviceA, deviceB) => {
+        if (deviceA.device.type === 'group' && deviceB.device.type !== 'group') return 1;
+        if (deviceA.device.type !== 'group' && deviceB.device.type === 'group') return -1;
         return 0;
       });
 
       const newDevices: DeviceModel[] = [];
-      for (const device of devices) {
+      for (const device of deviceMap) {
         // check if device is already part of the booking
         const index = model.devices.findIndex(
-          deviceModel => deviceModel.url === device.url,
+          deviceModel => deviceModel.id === device.id,
         );
         if (index !== -1) {
           newDevices.push(...model.devices.splice(index, 1));
@@ -80,13 +88,15 @@ export class BookingRepository extends AbstractRepository<
         }
 
         // reserve new device
-        const deviceModel = await this.dependencies.device.create({
-          ...device,
-          essential: !isLocked(model),
-        });
-        deviceModel.reservation = await reserveDevice(model, device);
+        const deviceModel = await this.dependencies.device.create(device);
+        await reserveDevice(model, deviceModel, device.device);
 
         newDevices.push(deviceModel);
+      }
+
+      // delete devices no longer in booking
+      for (const removedDevice of model.devices) {
+        await repositories.device.remove(removedDevice);
       }
 
       model.devices = newDevices;
@@ -116,6 +126,14 @@ export class BookingRepository extends AbstractRepository<
       await this.dependencies.callbackUrl.save(callbackUrl);
     }
 
+    model.status = model.devices.find(device => device.reservation === null)
+      ? isLocked(model)
+        ? 'locked-rejected'
+        : 'rejected'
+      : isLocked(model)
+        ? 'locked-accepted'
+        : 'accepted';
+
     return await this.repository.save(model);
   }
 
@@ -123,12 +141,24 @@ export class BookingRepository extends AbstractRepository<
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
     return {
-      url: bookingUrlFromId(model.id),
-      devices: model.devices.map(device => device.url),
+      url: bookingUrlFromId(model.uuid),
+      status: model.status,
+      devices: Object.fromEntries(
+        model.devices.map(device => {
+          return [device.id, { url: device.url, essential: device.essential }];
+        }),
+      ),
       timeslot: {
         start: model.start,
         end: model.end,
       },
+      lockedDevices: Object.fromEntries(
+        model.devices
+          .map(device => {
+            return [device.id, device.chosenDevice];
+          })
+          .filter(entry => entry[1] !== null && entry[1] !== undefined),
+      ),
     };
   }
 

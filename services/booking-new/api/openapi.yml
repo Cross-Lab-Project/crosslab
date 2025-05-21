@@ -8,23 +8,58 @@ info:
   x-service-name: Booking Service
 components:
   schemas:
-    booking:
-      title: Booking
+    booking_base:
+      title: Booking Base
       type: object
       properties:
         url:
           type: string
           readOnly: true
+        status:
+          type: string
+          readOnly: true
+          enum:
+            - accepted
+            - rejected
+            - locked-accepted
+            - locked-rejected
         timeslot:
           $ref: '#/components/schemas/timeslot'
         devices:
-          type: array
-          items:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              url: 
+                type: string
+                format: uri
+              essential:
+                type: boolean
+            required:
+              - url
+              - essential
+        lockedDevices:
+          type: object
+          additionalProperties:
             type: string
+            format: uri
+          readOnly: true
+    booking:
+      title: Booking
+      $ref: '#/components/schemas/booking_base'
       required:
         - url
+        - status
         - timeslot
         - devices
+        - lockedDevices
+    booking_update:
+      title: Booking Update
+      $ref: '#/components/schemas/booking_base'
+      required:
+        - url
+        - status
+        - lockedDevices
     schedule: 
       title: Schedule
       type: array
@@ -44,17 +79,10 @@ components:
         - start
         - end
     deviceGroupMapping:
-      type: array
-      items:
-        type: object
-        properties:
-          group:
-            type: string
-          device:
-            type: string
-        required:
-          - group
-          - device
+      type: object
+      additionalProperties:
+        type: string
+        format: uri
     bookingChangedEventCallback:
       title: BookingChangedEventCallback
       type: object
@@ -239,7 +267,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/booking'
+              $ref: '#/components/schemas/booking_update'
       responses:
         200:
           description: The JSON Representation of the changed booking

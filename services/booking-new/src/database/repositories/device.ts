@@ -11,7 +11,11 @@ type DeviceRepositoryDependencies = {
 
 export class DeviceRepository extends AbstractRepository<
   DeviceModel,
-  Device & { essential: boolean },
+  {
+    id: string;
+    essential: boolean;
+    device: Device<'response'>;
+  },
   undefined,
   DeviceRepositoryDependencies
 > {
@@ -31,12 +35,17 @@ export class DeviceRepository extends AbstractRepository<
     this.repository = entityManager.getRepository(DeviceModel);
   }
 
-  async create(data: Device<'response'> & { essential: boolean }): Promise<DeviceModel> {
+  async create(data: {
+    id: string;
+    essential: boolean;
+    device: Device<'response'>;
+  }): Promise<DeviceModel> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
     const model = this.repository.create();
-    model.url = data.url;
-    model.type = data.type;
+    model.id = data.id;
+    model.url = data.device.url;
+    model.type = data.device.type;
     model.essential = data.essential;
 
     return model;
@@ -44,7 +53,11 @@ export class DeviceRepository extends AbstractRepository<
 
   async write(
     _model: DeviceModel,
-    _data: Partial<Device<'response'> & { essential: boolean }>,
+    _data: Partial<{
+      id: string;
+      essential: boolean;
+      device: Device<'response'>;
+    }>,
   ) {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
@@ -56,13 +69,17 @@ export class DeviceRepository extends AbstractRepository<
 
     await this.repository.remove(model);
 
-    await this.dependencies.reservation.remove(model.reservation);
+    if (model.reservation) {
+      await this.dependencies.reservation.remove(model.reservation);
+    }
   }
 
   async save(model: DeviceModel): Promise<DeviceModel> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-    await this.dependencies.reservation.save(model.reservation);
+    if (model.reservation) {
+      await this.dependencies.reservation.save(model.reservation);
+    }
 
     return await this.repository.save(model);
   }

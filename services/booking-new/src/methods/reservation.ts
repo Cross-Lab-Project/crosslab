@@ -9,56 +9,56 @@ import {
 } from '../clients/device/types.js';
 import * as clients from '../clients/index.js';
 import { repositories } from '../database/dataSource.js';
-import { BookingModel, ReservationModel } from '../database/model.js';
+import { BookingModel, DeviceModel } from '../database/model.js';
 import { ReservationError } from './errors.js';
 
 export async function reserveDevice(
   bookingModel: BookingModel,
+  deviceModel: DeviceModel,
   device: Device<'response'>,
-): Promise<ReservationModel> {
+) {
   switch (device.type) {
     case 'device':
-      return await reserveConcreteDevice(bookingModel, device);
+      return await reserveConcreteDevice(bookingModel, deviceModel, device);
     case 'group':
-      return await reserveDeviceGroup(bookingModel, device);
+      return await reserveDeviceGroup(bookingModel, deviceModel, device);
     case 'edge instantiable':
-      return await reserveEdgeInstantiableDevice(bookingModel, device);
+      return await reserveEdgeInstantiableDevice(bookingModel, deviceModel, device);
     case 'cloud instantiable':
-      return await reserveCloudInstantiableDevice(bookingModel, device);
+      return await reserveCloudInstantiableDevice(bookingModel, deviceModel, device);
   }
 }
 
 async function reserveDeviceGroup(
   bookingModel: BookingModel,
+  deviceModel: DeviceModel,
   deviceGroup: DeviceGroup<'response'>,
-): Promise<ReservationModel> {
-  let reservation: ReservationModel | undefined = undefined;
-
+) {
   for (const deviceReference of deviceGroup.devices) {
     const device = await clients.device.getDevice(deviceReference.url);
 
     try {
-      reservation = await reserveDevice(bookingModel, device);
+      await reserveDevice(bookingModel, deviceModel, device);
+      deviceModel.chosenDevice = device.url;
       break;
     } catch {
       // empty
     }
   }
 
-  if (!reservation) {
+  if (!deviceModel.reservation) {
     throw new ReservationError(
       `No device from group "${deviceGroup.url}" is available from "${bookingModel.start}" to "${bookingModel.end}"!`,
       400,
     );
   }
-
-  return reservation;
 }
 
 async function reserveConcreteDevice(
   bookingModel: BookingModel,
+  deviceModel: DeviceModel,
   concreteDevice: ConcreteDevice<'response'>,
-): Promise<ReservationModel> {
+) {
   const bookingStart = Date.parse(bookingModel.start);
   const bookingEnd = Date.parse(bookingModel.end);
 
@@ -86,7 +86,10 @@ async function reserveConcreteDevice(
 
   const reservations = (
     await repositories.device.find({
-      where: { url: concreteDevice.url, booking: Not(bookingModel) },
+      where: [
+        { url: concreteDevice.url, booking: Not(bookingModel) },
+        { chosenDevice: concreteDevice.url, booking: Not(bookingModel) },
+      ],
     })
   )
     .map(model => model.reservation)
@@ -118,31 +121,30 @@ async function reserveConcreteDevice(
     );
   }
 
-  const reservation = await repositories.reservation.create({
+  deviceModel.reservation = await repositories.reservation.create({
     start: bookingModel.start,
     end: bookingModel.end,
   });
-  return reservation;
 }
 
 async function reserveEdgeInstantiableDevice(
   bookingModel: BookingModel,
+  deviceModel: DeviceModel,
   _edgeInstantiableDevice: InstantiableBrowserDevice<'response'>,
-): Promise<ReservationModel> {
-  const reservation = await repositories.reservation.create({
+) {
+  deviceModel.reservation = await repositories.reservation.create({
     start: bookingModel.start,
     end: bookingModel.end,
   });
-  return reservation;
 }
 
 async function reserveCloudInstantiableDevice(
   bookingModel: BookingModel,
+  deviceModel: DeviceModel,
   _cloudInstantiableDevice: InstantiableCloudDevice<'response'>,
-): Promise<ReservationModel> {
-  const reservation = await repositories.reservation.create({
+) {
+  deviceModel.reservation = await repositories.reservation.create({
     start: bookingModel.start,
     end: bookingModel.end,
   });
-  return reservation;
 }

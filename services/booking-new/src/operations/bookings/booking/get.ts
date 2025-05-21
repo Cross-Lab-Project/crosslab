@@ -9,7 +9,7 @@ export const getBookingsByBookingId: getBookingsByBookingIdSignature = async (
 
   const bookingModel = await repositories.booking.findOneOrFail({
     where: {
-      id: parameters.bookingId,
+      uuid: parameters.bookingId,
     },
   });
 

@@ -1,5 +1,6 @@
 import { repositories } from '../../../database/dataSource.js';
 import { deleteBookingsByBookingIdSignature } from '../../../generated/signatures.js';
+import { mutexManager } from '../../../methods/mutexManager.js';
 
 export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = async (
   _req,
@@ -7,12 +8,19 @@ export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = asy
 ) => {
   // TODO: authorization
 
-  const bookingModel = await repositories.booking.findOneOrFail({
-    where: { id: parameters.bookingId },
-  });
-  await repositories.booking.remove(bookingModel);
+  const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);
 
-  return {
-    status: 204,
-  };
+  try {
+    const bookingModel = await repositories.booking.findOneOrFail({
+      where: { uuid: parameters.bookingId },
+    });
+
+    await repositories.booking.remove(bookingModel);
+
+    return {
+      status: 204,
+    };
+  } finally {
+    release();
+  }
 };

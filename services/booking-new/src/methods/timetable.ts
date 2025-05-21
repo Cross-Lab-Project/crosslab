@@ -61,7 +61,7 @@ export function removeFromTimetable(
 export function invertTimetable(timetable: Timetable, timeframe: Timeslot) {
   if (timetable.length === 0) return [{ ...timeframe }];
 
-  const preparedTimetable = mergeTimeslots(structuredClone(timetable));
+  const preparedTimetable = mergeTimeslots(timetable);
 
   const invertedTimetable: Timetable = [];
 

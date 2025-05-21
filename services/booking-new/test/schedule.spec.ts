@@ -307,6 +307,136 @@ describe('Schedule Tests', function () {
       ],
     },
   });
+
+  createScheduleTestCase({
+    title: 'device group overlapping timeslots',
+    devices: [
+      {
+        id: 'device-group',
+        type: 'group',
+        devices: [
+          {
+            id: 'device-1',
+            type: 'device',
+            availability: [{ start: 100, end: 300 }],
+            reservations: [],
+          },
+          {
+            id: 'device-2',
+            type: 'device',
+            availability: [{ start: 200, end: 400 }],
+            reservations: [],
+          },
+        ],
+      },
+    ],
+    timeframe: {
+      start: 0,
+      end: 1000,
+    },
+    result: {
+      status: 200,
+      body: [
+        { start: 100, end: 300 },
+        { start: 200, end: 400 },
+      ],
+    },
+  });
+
+  createScheduleTestCase({
+    title: 'device group overlapping timeslots + concrete device (always available)',
+    devices: [
+      {
+        id: 'concrete',
+        type: 'device',
+        availability: [{ start: 0, end: 1000 }],
+        reservations: [],
+      },
+      {
+        id: 'device-group',
+        type: 'group',
+        devices: [
+          {
+            id: 'device-1',
+            type: 'device',
+            availability: [{ start: 100, end: 300 }],
+            reservations: [],
+          },
+          {
+            id: 'device-2',
+            type: 'device',
+            availability: [{ start: 200, end: 400 }],
+            reservations: [],
+          },
+        ],
+      },
+    ],
+    timeframe: { start: 0, end: 1000 },
+    result: {
+      status: 200,
+      body: [
+        { start: 100, end: 300 },
+        { start: 200, end: 400 },
+      ],
+    },
+  });
+
+  createScheduleTestCase({
+    title: 'device group overlapping timeslots + concrete device (limited availability)',
+    devices: [
+      {
+        id: 'concrete',
+        type: 'device',
+        availability: [{ start: 150, end: 350 }],
+        reservations: [],
+      },
+      {
+        id: 'device-group',
+        type: 'group',
+        devices: [
+          {
+            id: 'device-1',
+            type: 'device',
+            availability: [{ start: 100, end: 300 }],
+            reservations: [],
+          },
+          {
+            id: 'device-2',
+            type: 'device',
+            availability: [{ start: 200, end: 400 }],
+            reservations: [],
+          },
+        ],
+      },
+    ],
+    timeframe: { start: 0, end: 1000 },
+    result: {
+      status: 200,
+      body: [
+        { start: 150, end: 300 },
+        { start: 200, end: 350 },
+      ],
+    },
+  });
+
+  createScheduleTestCase({
+    title: 'invalid timeframe',
+    devices: [],
+    timeframe: { start: 0, end: 0 },
+    result: {
+      status: 400,
+    },
+  });
+
+  createScheduleTestCase({
+    title: 'no devices',
+    devices: [],
+    timeframe: { start: 0, end: 1000 },
+    result: {
+      status: 200,
+      body: [],
+    },
+  });
 });
 
 type TestCaseDeviceInit =
@@ -489,7 +619,7 @@ async function generateReservations(
     await supertest(app)
       .post('/bookings')
       .send({
-        devices: [url],
+        devices: { 'device-1': { url, essential: true } },
         timeslot: {
           start: new Date(reservation.start).toISOString(),
           end: new Date(reservation.end).toISOString(),

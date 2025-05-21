@@ -1,5 +1,6 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   JoinTable,
@@ -14,10 +15,10 @@ import {
 @Entity({ name: 'Booking' })
 export class BookingModel {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  uuid!: string;
 
   @Column()
-  status!: 'reserving' | 'accepted' | 'rejected' | 'locked-accepted' | 'locked-rejected';
+  status!: 'accepted' | 'rejected' | 'locked-accepted' | 'locked-rejected';
 
   @Column()
   start!: string;
@@ -31,21 +32,21 @@ export class BookingModel {
   @ManyToMany(() => CallbackUrlModel)
   @JoinTable()
   callbackUrls!: CallbackUrlModel[];
+
+  @CreateDateColumn()
+  createdDate!: Date;
 }
 
 @Entity({ name: 'Reservation' })
 export class ReservationModel {
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  uuid!: string;
 
   @Column()
   start!: string;
 
   @Column()
   end!: string;
-
-  @Column()
-  valid!: boolean;
 
   @Column({ nullable: true })
   remoteBooking?: string;
@@ -54,6 +55,9 @@ export class ReservationModel {
 @Entity({ name: 'Device' })
 export class DeviceModel {
   @PrimaryGeneratedColumn('uuid')
+  uuid!: string;
+
+  @Column()
   id!: string;
 
   @Column()
@@ -73,7 +77,7 @@ export class DeviceModel {
 
   @OneToOne(() => ReservationModel)
   @JoinColumn()
-  reservation?: ReservationModel;
+  reservation!: ReservationModel | null;
 }
 
 @Entity({ name: 'CallbackUrl' })

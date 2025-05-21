@@ -212,10 +212,9 @@ export class Client {
     },
   ) {
     this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl =
-      options.serviceUrl ?
-        options.serviceUrl.endsWith('/') ?
-          options.serviceUrl.slice(0, -1)
+    this.serviceUrl = options.serviceUrl
+      ? options.serviceUrl.endsWith('/')
+        ? options.serviceUrl.slice(0, -1)
         : options.serviceUrl
       : this.baseUrl;
     this.accessToken = options.accessToken ?? '';
@@ -1380,7 +1379,6 @@ export class Client {
        * The status of the peerconnection.
        */
       status: Types.ConnectionStatus<'request'>;
-      [k: string]: unknown;
     },
     device_url: string,
     options?: {

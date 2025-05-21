@@ -1,6 +1,7 @@
 import { repositories } from '../../../../database/dataSource.js';
 import { putBookingsByBookingIdLockSignature } from '../../../../generated/signatures.js';
 import { LockingError } from '../../../../methods/errors.js';
+import { mutexManager } from '../../../../methods/mutexManager.js';
 
 export const putBookingsByBookingIdLock: putBookingsByBookingIdLockSignature = async (
   _req,
@@ -8,38 +9,41 @@ export const putBookingsByBookingIdLock: putBookingsByBookingIdLockSignature = a
 ) => {
   // TODO: authorization
 
-  const bookingModel = await repositories.booking.findOneOrFail({
-    where: { id: parameters.bookingId },
-  });
+  const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);
 
-  const deviceGroupModels = bookingModel.devices.filter(
-    deviceModel => deviceModel.type === 'group',
-  );
-
-  const mapping = [];
-  for (const deviceGroupModel of deviceGroupModels) {
-    if (!deviceGroupModel.chosenDevice) {
-      throw new LockingError(
-        `No device was chosen for the device group "${deviceGroupModel.url}"!`,
-        500, // TODO: check which status code fits best
-      );
-    }
-    mapping.push({
-      group: deviceGroupModel.url,
-      device: deviceGroupModel.chosenDevice,
+  try {
+    const bookingModel = await repositories.booking.findOneOrFail({
+      where: { uuid: parameters.bookingId },
     });
+
+    const deviceGroupModels = bookingModel.devices.filter(
+      deviceModel => deviceModel.type === 'group',
+    );
+
+    const mapping: Record<string, string> = {};
+    for (const deviceGroupModel of deviceGroupModels) {
+      if (!deviceGroupModel.chosenDevice) {
+        throw new LockingError(
+          `No device was chosen for the device group "${deviceGroupModel.url}"!`,
+          500, // TODO: check which status code fits best
+        );
+      }
+      mapping[deviceGroupModel.id] = deviceGroupModel.chosenDevice;
+    }
+
+    if (bookingModel.status === 'accepted') {
+      bookingModel.status = 'locked-accepted';
+    } else if (bookingModel.status === 'rejected') {
+      bookingModel.status = 'locked-rejected';
+    }
+
+    await repositories.booking.save(bookingModel);
+
+    return {
+      status: 200,
+      body: mapping,
+    };
+  } finally {
+    release();
   }
-
-  if (bookingModel.status === 'accepted') {
-    bookingModel.status = 'locked-accepted';
-  } else if (bookingModel.status === 'rejected') {
-    bookingModel.status = 'locked-rejected';
-  }
-
-  await repositories.booking.save(bookingModel);
-
-  return {
-    status: 200,
-    body: mapping,
-  };
 };

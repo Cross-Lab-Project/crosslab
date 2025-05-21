@@ -1,3 +1,5 @@
+import { InvalidValueError } from '@crosslab/service-common';
+
 import {
   ConcreteDevice,
   DeviceGroup,
@@ -10,8 +12,8 @@ import { postScheduleSignature } from '../../generated/signatures.js';
 import { Timeslot } from '../../generated/types.js';
 import {
   Timetable,
-  intersectTimetables,
   removeFromTimetable,
+  sortTimeslots,
 } from '../../methods/timetable.js';
 
 export const postSchedule: postScheduleSignature = async (_req, body) => {
@@ -20,22 +22,57 @@ export const postSchedule: postScheduleSignature = async (_req, body) => {
   const { devices, timeframe } = body;
 
   if (timeframe.end <= timeframe.start) {
-    return {
-      status: 200,
-      body: [],
-    };
+    throw new InvalidValueError('End of timeframe is before its start!', 400);
   }
 
   // TODO: set maximum length of timeframe
 
   const timetables = await getTimetablesForDevices(devices, timeframe);
-  const schedule = intersectTimetables(timetables, timeframe);
+  const schedule = intersectSchedules(timetables);
 
   return {
     status: 200,
     body: schedule,
   };
 };
+
+function intersectSchedules(schedules: Timetable[]): Timetable {
+  if (schedules.length === 0) return [];
+  if (schedules.length === 1) return schedules[0];
+
+  const [scheduleA, scheduleB] = schedules;
+
+  const sortedScheduleA = sortTimeslots(scheduleA);
+  const sortedScheduleB = sortTimeslots(scheduleB);
+
+  const intersectedSchedule: Timetable = [];
+
+  let indexA = 0;
+  let indexB = 0;
+
+  while (indexA < sortedScheduleA.length && indexB < sortedScheduleB.length) {
+    const timeslotA = sortedScheduleA[indexA];
+    const timeslotB = sortedScheduleB[indexB];
+
+    const start = timeslotA.start > timeslotB.start ? timeslotA.start : timeslotB.start;
+    const end = timeslotA.end < timeslotB.end ? timeslotA.end : timeslotB.end;
+
+    if (start < end) {
+      intersectedSchedule.push({ start, end });
+    }
+
+    if (timeslotA.end < timeslotB.end) {
+      indexA++;
+    } else if (timeslotB.end < timeslotA.end) {
+      indexB++;
+    } else {
+      indexA++;
+      indexB++;
+    }
+  }
+
+  return intersectedSchedule;
+}
 
 async function getTimetablesForDevices(
   deviceUrls: string[],

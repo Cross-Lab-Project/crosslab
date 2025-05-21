@@ -3,6 +3,7 @@ import express from 'express';
 
 import { config } from './config.js';
 import { app } from './generated/index.js';
+import { callbackHandling } from './operations/callbacks/index.js';
 
 export function initApp() {
   app.initService({
@@ -15,6 +16,7 @@ export function initApp() {
       },
     ],
     postHandlers: [
+      callbackHandling,
       application => {
         application.get('/booking/status', (_req, res) => {
           res.send({ status: 'ok' });
