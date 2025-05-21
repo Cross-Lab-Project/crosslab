@@ -21,8 +21,14 @@ export function handleObject(
       dependencies = dependencies.concat(td.typeDependencies);
     }
   }
-  if (schema.additionalProperties !== false) {
-    properties.push('[k: string]: unknown');
+  if (schema.additionalProperties) {
+    if (schema.additionalProperties === true) {
+      properties.push('[k: string]: unknown');
+    } else {
+      const td = generateTyping(schema.additionalProperties, options);
+      properties.push(`${td.comment}[k: string]: ${td.typeDeclaration}`);
+      dependencies = dependencies.concat(td.typeDependencies);
+    }
   }
   if (options.inline)
     return {
