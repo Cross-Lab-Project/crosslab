@@ -12,6 +12,10 @@ import { postScheduleResponseType } from '../src/generated/signatures.js';
 import { Booking } from '../src/generated/types.js';
 
 describe('Schedule Tests', function () {
+  before(function () {
+    app.authorization_mock = [{ result: true }];
+  });
+
   this.beforeEach(async function () {
     await AppDataSource.initialize({
       type: 'sqlite',
@@ -20,6 +24,7 @@ describe('Schedule Tests', function () {
       entities: Entities,
     });
     // Sinon.useFakeTimers({ toFake: ['Date'] });
+    Sinon.stub(clients.device, 'updateDevice');
   });
 
   this.afterEach(function () {

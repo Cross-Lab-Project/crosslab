@@ -1,4 +1,4 @@
-import { error, logging } from '@crosslab/service-common';
+import { authorization, error, logging } from '@crosslab/service-common';
 import assert from 'assert';
 import express from 'express';
 import { step } from 'mocha-steps';
@@ -9,6 +9,7 @@ import {
   Availability,
   Device,
   DeviceChangedEventCallback,
+  DeviceDeletedEventCallback,
 } from '../src/clients/device/types.js';
 import * as clients from '../src/clients/index.js';
 import { AppDataSource, repositories } from '../src/database/dataSource.js';
@@ -93,6 +94,7 @@ describe('Concrete Device Tests', function () {
           application.use(express.json());
           application.use(express.urlencoded({ extended: false }));
           application.use(logging.middleware());
+          application.use(authorization.middleware());
         },
       ],
       postHandlers: [
@@ -105,6 +107,8 @@ describe('Concrete Device Tests', function () {
       ],
       errorHandler: error.middleware,
     });
+
+    app.authorization_mock = [{ result: true }];
   });
 
   this.afterEach(function () {
@@ -118,6 +122,7 @@ describe('Concrete Device Tests', function () {
     Sinon.stub(clients.device, 'getDeviceAvailability').callsFake(async url => {
       return devices[url as keyof typeof devices].availability;
     });
+    Sinon.stub(clients.device, 'updateDevice');
   });
 
   describe('Available Concrete Device Tests', function () {
@@ -216,13 +221,31 @@ describe('Concrete Device Tests', function () {
       },
     );
 
-    step('should update the booking successfully (change timeslot)', async function () {
+    step(
+      'should update the booking successfully (change timeslot, still available)',
+      async function () {
+        const response = (await supertest(app)
+          .patch(`/bookings/${bookingId}`)
+          .send({
+            timeslot: {
+              start: new Date(START_TIME + DAY).toISOString(),
+              end: new Date(START_TIME + (WEEK - DAY)).toISOString(),
+            },
+          } satisfies patchBookingsByBookingIdRequestBodyType)) as patchBookingsByBookingIdResponseType;
+
+        assert.strictEqual(response.status, 200);
+        assert.strictEqual(response.body.status, 'accepted');
+        assert.strictEqual(Object.entries(response.body.devices).length, 1);
+      },
+    );
+
+    step('should update the booking successfully (reset timeslot)', async function () {
       const response = (await supertest(app)
         .patch(`/bookings/${bookingId}`)
         .send({
           timeslot: {
-            start: new Date(START_TIME + DAY).toISOString(),
-            end: new Date(START_TIME + (WEEK - DAY)).toISOString(),
+            start: new Date(START_TIME).toISOString(),
+            end: new Date(START_TIME + WEEK).toISOString(),
           },
         } satisfies patchBookingsByBookingIdRequestBodyType)) as patchBookingsByBookingIdResponseType;
 
@@ -230,6 +253,24 @@ describe('Concrete Device Tests', function () {
       assert.strictEqual(response.body.status, 'accepted');
       assert.strictEqual(Object.entries(response.body.devices).length, 1);
     });
+
+    step(
+      'should update the booking successfully (change timeslot, not available)',
+      async function () {
+        const response = (await supertest(app)
+          .patch(`/bookings/${bookingId}`)
+          .send({
+            timeslot: {
+              start: new Date(START_TIME + WEEK).toISOString(),
+              end: new Date(START_TIME + WEEK + DAY).toISOString(),
+            },
+          } satisfies patchBookingsByBookingIdRequestBodyType)) as patchBookingsByBookingIdResponseType;
+
+        assert.strictEqual(response.status, 200);
+        assert.strictEqual(response.body.status, 'rejected');
+        assert.strictEqual(Object.entries(response.body.devices).length, 1);
+      },
+    );
 
     step('should update the booking successfully (reset timeslot)', async function () {
       const response = (await supertest(app)
@@ -344,7 +385,7 @@ describe('Concrete Device Tests', function () {
         const booking = await repositories.booking.findOneOrFail({
           where: { uuid: bookingId },
         });
-        assert.strictEqual(booking.status, 'locked-accepted');
+        assert.strictEqual(booking.status, 'accepted');
         for (const device of booking.devices) {
           assert.notStrictEqual(device.reservation, null);
         }
@@ -370,7 +411,7 @@ describe('Concrete Device Tests', function () {
         const booking = await repositories.booking.findOneOrFail({
           where: { uuid: bookingId },
         });
-        assert.strictEqual(booking.status, 'locked-rejected');
+        assert.strictEqual(booking.status, 'rejected');
         for (const device of booking.devices) {
           assert.strictEqual(device.reservation, null);
         }
@@ -393,7 +434,7 @@ describe('Concrete Device Tests', function () {
         const booking = await repositories.booking.findOneOrFail({
           where: { uuid: bookingId },
         });
-        assert.strictEqual(booking.status, 'locked-accepted');
+        assert.strictEqual(booking.status, 'accepted');
         for (const device of booking.devices) {
           assert.notStrictEqual(device.reservation, null);
         }
@@ -410,6 +451,23 @@ describe('Concrete Device Tests', function () {
       assert.strictEqual(response.status, 200);
 
       assert.deepStrictEqual(responseAll.body[0], response.body);
+    });
+
+    step('should handle device-deleted callback correctly', async function () {
+      const response = await supertest(app)
+        .post('/callbacks/booking')
+        .send({
+          callbackType: 'event',
+          eventType: 'device-deleted',
+          device: devices['https://api.example.com/devices/available'].device,
+        } satisfies DeviceDeletedEventCallback);
+
+      assert.strictEqual(response.status, 200);
+
+      const booking = await repositories.booking.findOneOrFail({
+        where: { uuid: bookingId },
+      });
+      assert.strictEqual(booking.status, 'impossible');
     });
 
     step('should delete the booking', async function () {

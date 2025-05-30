@@ -126,7 +126,6 @@ export type LoginBody = Types.Credentials<'request'> & {
    * Authentication method.
    */
   method?: Types.AuthMethod<'request'>;
-  [k: string]: unknown;
 };
 
 /**
@@ -233,7 +232,6 @@ export type LogoutBody = {
    * The token to be invalidated.
    */
   token?: string;
-  [k: string]: unknown;
 };
 
 /**
@@ -1062,10 +1060,7 @@ export type CreateTokenBody =
        * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
        *
        */
-      claims?: {
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
+      claims?: {};
     }
   | {
       /**
@@ -1076,10 +1071,7 @@ export type CreateTokenBody =
        * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
        *
        */
-      claims?: {
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
+      claims?: {};
     };
 
 /**

@@ -18,7 +18,7 @@ export class BookingModel {
   uuid!: string;
 
   @Column()
-  status!: 'accepted' | 'rejected' | 'locked-accepted' | 'locked-rejected';
+  status!: 'accepted' | 'accepted-essential' | 'rejected' | 'impossible';
 
   @Column()
   start!: string;
@@ -28,6 +28,9 @@ export class BookingModel {
 
   @OneToMany(() => DeviceModel, deviceModel => deviceModel.booking)
   devices!: DeviceModel[];
+
+  @Column()
+  isLocked!: boolean;
 
   @ManyToMany(() => CallbackUrlModel)
   @JoinTable()
@@ -48,8 +51,8 @@ export class ReservationModel {
   @Column()
   end!: string;
 
-  @Column({ nullable: true })
-  remoteBooking?: string;
+  @Column({ type: String, nullable: true })
+  remoteBooking!: string | null;
 }
 
 @Entity({ name: 'Device' })
@@ -69,8 +72,8 @@ export class DeviceModel {
   @Column()
   essential!: boolean;
 
-  @Column({ nullable: true })
-  chosenDevice?: string;
+  @Column({ type: String, nullable: true })
+  selectedDevice!: string | null;
 
   @ManyToOne(() => BookingModel, bookingModel => bookingModel.devices)
   booking!: BookingModel;

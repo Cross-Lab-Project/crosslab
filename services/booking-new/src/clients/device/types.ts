@@ -2594,6 +2594,48 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
               })
         : never;
 
+export type DeviceDeletedEventCallback<T extends 'request' | 'response' | 'all' = 'all'> =
+  T extends 'all'
+    ? {
+        callbackType: string;
+      } & {
+        callbackType: 'event';
+        eventType: string;
+      } & {
+        eventType: 'device-deleted';
+        device: {
+          url: string;
+          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+        };
+      }
+    : T extends 'request'
+      ? {
+          callbackType: string;
+        } & {
+          callbackType: 'event';
+          eventType: string;
+        } & {
+          eventType: 'device-deleted';
+          device: {
+            url: string;
+            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+          };
+        }
+      : T extends 'response'
+        ? {
+            callbackType: string;
+          } & {
+            callbackType: 'event';
+            eventType: string;
+          } & {
+            eventType: 'device-deleted';
+            device: {
+              url: string;
+              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+            };
+          }
+        : never;
+
 export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
     ? {
@@ -3463,6 +3505,22 @@ export function isDeviceChangedEventCallback<
       return BasicValidation.validateDeviceChangedEventCallbackResponse(obj);
     default:
       return BasicValidation.validateDeviceChangedEventCallback(obj);
+  }
+}
+
+export function isDeviceDeletedEventCallback<
+  T extends 'request' | 'response' | 'all' = 'all',
+>(
+  obj: unknown,
+  type: 'request' | 'response' | 'all' | T = 'all',
+): obj is DeviceDeletedEventCallback<T> {
+  switch (type) {
+    case 'request':
+      return BasicValidation.validateDeviceDeletedEventCallbackRequest(obj);
+    case 'response':
+      return BasicValidation.validateDeviceDeletedEventCallbackResponse(obj);
+    default:
+      return BasicValidation.validateDeviceDeletedEventCallback(obj);
   }
 }
 

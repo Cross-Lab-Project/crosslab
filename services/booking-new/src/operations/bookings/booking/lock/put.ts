@@ -1,13 +1,17 @@
 import { repositories } from '../../../../database/dataSource.js';
 import { putBookingsByBookingIdLockSignature } from '../../../../generated/signatures.js';
+import { sendChangedCallbacks } from '../../../../methods/callbacks.js';
 import { LockingError } from '../../../../methods/errors.js';
 import { mutexManager } from '../../../../methods/mutexManager.js';
 
 export const putBookingsByBookingIdLock: putBookingsByBookingIdLockSignature = async (
-  _req,
+  req,
   parameters,
 ) => {
-  // TODO: authorization
+  await req.authorization.check_authorization_or_fail(
+    'edit',
+    `booking:${parameters.bookingId}`,
+  );
 
   const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);
 
@@ -22,22 +26,27 @@ export const putBookingsByBookingIdLock: putBookingsByBookingIdLockSignature = a
 
     const mapping: Record<string, string> = {};
     for (const deviceGroupModel of deviceGroupModels) {
-      if (!deviceGroupModel.chosenDevice) {
+      if (!deviceGroupModel.selectedDevice) {
         throw new LockingError(
           `No device was chosen for the device group "${deviceGroupModel.url}"!`,
-          500, // TODO: check which status code fits best
+          400,
         );
       }
-      mapping[deviceGroupModel.id] = deviceGroupModel.chosenDevice;
+      mapping[deviceGroupModel.id] = deviceGroupModel.selectedDevice;
     }
 
-    if (bookingModel.status === 'accepted') {
-      bookingModel.status = 'locked-accepted';
-    } else if (bookingModel.status === 'rejected') {
-      bookingModel.status = 'locked-rejected';
+    if (bookingModel.isLocked) {
+      return {
+        status: 200,
+        body: mapping,
+      };
     }
+
+    bookingModel.isLocked = true;
 
     await repositories.booking.save(bookingModel);
+
+    sendChangedCallbacks(bookingModel);
 
     return {
       status: 200,

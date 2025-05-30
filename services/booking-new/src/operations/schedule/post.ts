@@ -16,16 +16,14 @@ import {
   sortTimeslots,
 } from '../../methods/timetable.js';
 
-export const postSchedule: postScheduleSignature = async (_req, body) => {
-  // TODO: authorization
+export const postSchedule: postScheduleSignature = async (req, body) => {
+  await req.authorization.check_authorization_or_fail('create', 'schedule');
 
   const { devices, timeframe } = body;
 
   if (timeframe.end <= timeframe.start) {
     throw new InvalidValueError('End of timeframe is before its start!', 400);
   }
-
-  // TODO: set maximum length of timeframe
 
   const timetables = await getTimetablesForDevices(devices, timeframe);
   const schedule = intersectSchedules(timetables);

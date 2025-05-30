@@ -41,6 +41,7 @@ patch:
   parameters:
     - $ref: '../parameters/device_id.yml'
     - $ref: '../parameters/device_changed_url.yml'
+    - $ref: '../parameters/device_deleted_url.yml'
   requestBody:
     description: Updated device.
     content:
@@ -82,6 +83,23 @@ patch:
               description: The event was successfully processed.
             410:
               description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+    deleted:
+      '{$request.query.changedUrl}':
+        post:
+          security:
+            - JWT:
+                - device
+                - device:edit
+                - device:create
+          summary: Callback for the "device-deleted" event
+          requestBody:
+            required: true
+            content:
+              application/json:
+                $ref: '../content/device_deleted_event.yml'
+          responses:
+            2XX:
+              description: The event was successfully processed.
 delete:
   operationId: delete_device
   summary: Delete a registered device

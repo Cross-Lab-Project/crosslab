@@ -2,10 +2,13 @@ import { repositories } from '../../../database/dataSource.js';
 import { getBookingsByBookingIdSignature } from '../../../generated/signatures.js';
 
 export const getBookingsByBookingId: getBookingsByBookingIdSignature = async (
-  _req,
+  req,
   parameters,
 ) => {
-  // TODO: authorization
+  await req.authorization.check_authorization_or_fail(
+    'view',
+    `booking:${parameters.bookingId}`,
+  );
 
   const bookingModel = await repositories.booking.findOneOrFail({
     where: {

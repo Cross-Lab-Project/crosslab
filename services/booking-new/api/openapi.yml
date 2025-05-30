@@ -20,9 +20,12 @@ components:
           readOnly: true
           enum:
             - accepted
+            - accepted-essential
             - rejected
-            - locked-accepted
-            - locked-rejected
+            - impossible
+        isLocked:
+          type: boolean
+          readOnly: true
         timeslot:
           $ref: '#/components/schemas/timeslot'
         devices:
@@ -35,14 +38,20 @@ components:
                 format: uri
               essential:
                 type: boolean
+              isReserved:
+                type: boolean
+                readOnly: true
             required:
               - url
               - essential
-        lockedDevices:
+              - isReserved
+        selectedDevices:
           type: object
           additionalProperties:
-            type: string
-            format: uri
+            anyOf:
+              - type: string
+                format: uri
+              - type: "null"
           readOnly: true
     booking:
       title: Booking
@@ -52,14 +61,16 @@ components:
         - status
         - timeslot
         - devices
-        - lockedDevices
+        - isLocked
+        - selectedDevices
     booking_update:
       title: Booking Update
       $ref: '#/components/schemas/booking_base'
       required:
         - url
         - status
-        - lockedDevices
+        - isLocked
+        - selectedDevices
     schedule: 
       title: Schedule
       type: array
@@ -348,6 +359,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/deviceGroupMapping'
+        400:
+          description: Bad Request.
+        401:
+          description: Unauthorized.
+        403:
+          description: Forbidden.
+        404:
+          description: Resource not found.
+        500:
+          description: Server Error.
+    delete:
+      operationId: unlock_booking
+      summary: Unlock a booking
+      tags:
+        - booking
+      security:
+        - JWT:
+            - booking
+      parameters:
+        - $ref: '#/components/parameters/bookingId'
+      responses:
+        204:
+          description: The booking was unlocked successfully.
         400:
           description: Bad Request.
         401:

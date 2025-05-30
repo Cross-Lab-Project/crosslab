@@ -104,6 +104,13 @@ function handleObject(
     ?.map(oneOfSchema => removeReadOrWriteOnly(oneOfSchema, readOrWriteOnly))
     .filter(oneOfSchema => !oneOfSchema[readOrWriteOnly]);
 
+  if (typeof schema.additionalProperties === 'object') {
+    schema.additionalProperties = removeReadOrWriteOnly(
+      schema.additionalProperties,
+      readOrWriteOnly,
+    );
+  }
+
   return schema;
 }
 

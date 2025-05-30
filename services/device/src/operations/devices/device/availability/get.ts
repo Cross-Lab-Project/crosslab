@@ -35,8 +35,9 @@ export const getDevicesByDeviceIdAvailability: getDevicesByDeviceIdAvailabilityS
     const startTime = parameters.startTime
       ? Date.parse(parameters.startTime)
       : Date.now();
-    const endTime =
-      (parameters.startTime ? Date.parse(parameters.startTime) : startTime) + WEEK;
+    const endTime = parameters.endTime
+      ? Date.parse(parameters.endTime)
+      : startTime + WEEK;
 
     const availability = calculateAvailability(
       deviceModel.availabilityRules,

@@ -1,3 +1,5 @@
+import { Not } from 'typeorm';
+
 import {
   ConcreteDevice,
   Device,
@@ -7,7 +9,7 @@ import {
 } from '../../../clients/device/types.js';
 import * as clients from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
-import { isLocked } from '../../../methods/booking.js';
+import { Booking } from '../../../generated/types.js';
 import { sendChangedCallbacks } from '../../../methods/callbacks.js';
 import { reserveDevice } from '../../../methods/reservation.js';
 
@@ -30,7 +32,21 @@ export async function handleDeviceChangedEventCallback(
 async function handleChangedConcreteDevice(
   concreteDevice: ConcreteDevice<'response'>,
 ): Promise<number> {
-  const affectedBookingModels = await getAffectedBookings(concreteDevice);
+  const affectedDeviceModels = await repositories.device.find({
+    where: [{ url: concreteDevice.url }, { selectedDevice: concreteDevice.url }],
+    relations: {
+      booking: {
+        callbackUrls: true,
+        devices: {
+          reservation: true,
+        },
+      },
+      reservation: true,
+    },
+  });
+  const affectedBookingModels = affectedDeviceModels.map(
+    deviceModel => deviceModel.booking,
+  );
 
   if (affectedBookingModels.length === 0) {
     return 410;
@@ -47,17 +63,14 @@ async function handleChangedConcreteDevice(
     endTime,
   });
 
-  for (const bookingModel of affectedBookingModels) {
-    const deviceModel = bookingModel.devices.find(
-      deviceModel =>
-        deviceModel.url === concreteDevice.url ||
-        deviceModel.chosenDevice === concreteDevice.url,
-    );
-
-    if (!deviceModel) {
-      // TODO: better error with status code
-      throw new Error('Could not find device in booking');
-    }
+  for (const deviceModel of affectedDeviceModels) {
+    const bookingModel = deviceModel.booking;
+    bookingModel.devices = bookingModel.devices.map(device => {
+      if (device.uuid === deviceModel.uuid) {
+        return deviceModel;
+      }
+      return device;
+    });
 
     const reservationPossible = !!availability.find(timeslot => {
       if (Date.parse(timeslot.start) > Date.parse(startTime)) return false;
@@ -70,7 +83,7 @@ async function handleChangedConcreteDevice(
         try {
           await reserveDevice(bookingModel, deviceModel, concreteDevice);
           await repositories.booking.save(bookingModel);
-          await sendChangedCallbacks(bookingModel);
+          sendChangedCallbacks(bookingModel);
         } catch {
           // empty
         }
@@ -83,19 +96,15 @@ async function handleChangedConcreteDevice(
     // delete reservation
     if (deviceModel.reservation) {
       const reservationModel = deviceModel.reservation;
-      deviceModel.chosenDevice = isLocked(bookingModel)
-        ? deviceModel.chosenDevice
-        : undefined;
       deviceModel.reservation = null;
       await repositories.device.save(deviceModel);
       await repositories.reservation.remove(reservationModel);
     }
 
-    // handle locked booking
-    if (isLocked(bookingModel) && bookingModel.status !== 'locked-rejected') {
-      bookingModel.status = 'locked-rejected';
+    // handle accepted locked booking
+    if (bookingModel.isLocked && bookingModel.status === 'accepted') {
       await repositories.booking.save(bookingModel);
-      await sendChangedCallbacks(bookingModel);
+      sendChangedCallbacks(bookingModel);
       continue;
     }
 
@@ -104,26 +113,30 @@ async function handleChangedConcreteDevice(
       if (bookingModel.status === 'rejected') {
         continue;
       }
-      bookingModel.status = 'rejected';
       await repositories.booking.save(bookingModel);
-      await sendChangedCallbacks(bookingModel);
+      sendChangedCallbacks(bookingModel);
       continue;
     }
 
-    // handle concrete device as chosen device
+    // handle concrete device as selected device
     const deviceGroup = await clients.device.getDevice(deviceModel.url, {
       flat_group: true,
     });
     try {
       await reserveDevice(bookingModel, deviceModel, deviceGroup);
     } catch {
-      if (bookingModel.status === 'rejected') {
+      if (!bookingModel.isLocked && deviceModel.selectedDevice === null) {
         continue;
       }
-      bookingModel.status = 'rejected';
+      if (bookingModel.isLocked && bookingModel.status === 'rejected') {
+        continue;
+      }
+      if (!bookingModel.isLocked) {
+        deviceModel.selectedDevice = null;
+      }
     }
     await repositories.booking.save(bookingModel);
-    await sendChangedCallbacks(bookingModel);
+    sendChangedCallbacks(bookingModel);
   }
 
   return 200;
@@ -133,17 +146,17 @@ async function handleChangedConcreteDevice(
 async function handleChangedDeviceGroup(
   deviceGroup: DeviceChangedEventCallback['device'] & { type: 'group' },
 ): Promise<number> {
-  const affectedBookingModels = await getAffectedBookings(deviceGroup, false);
+  const affectedBookingModels = await getAffectedBookings(deviceGroup);
 
   if (affectedBookingModels.length === 0) {
     return 410;
   }
 
   for (const bookingModel of affectedBookingModels) {
-    if (isLocked(bookingModel) && bookingModel.status !== 'locked-rejected') {
-      bookingModel.status = 'locked-rejected';
+    // TODO: this does not seem right
+    if (bookingModel.isLocked && bookingModel.status !== 'rejected') {
       await repositories.booking.save(bookingModel);
-      await sendChangedCallbacks(bookingModel);
+      sendChangedCallbacks(bookingModel);
       continue;
     }
 
@@ -154,11 +167,11 @@ async function handleChangedDeviceGroup(
     for (const deviceGroupModel of affectedDeviceGroupModels) {
       // #region handle removed devices
       const chosenDeviceRemoved =
-        deviceGroupModel.chosenDevice &&
-        deviceGroup.removed.includes(deviceGroupModel.chosenDevice);
+        deviceGroupModel.selectedDevice &&
+        deviceGroup.removed.includes(deviceGroupModel.selectedDevice);
 
       if (chosenDeviceRemoved) {
-        deviceGroupModel.chosenDevice = undefined;
+        deviceGroupModel.selectedDevice = null;
         if (deviceGroupModel.reservation) {
           const reservation = deviceGroupModel.reservation;
           deviceGroupModel.reservation = null;
@@ -171,13 +184,10 @@ async function handleChangedDeviceGroup(
         try {
           await reserveDevice(bookingModel, deviceGroupModel, deviceGroup);
         } catch {
-          if (bookingModel.status === 'rejected') {
-            continue;
-          }
-          bookingModel.status = 'rejected';
+          // empty
         }
         await repositories.booking.save(bookingModel);
-        await sendChangedCallbacks(bookingModel);
+        sendChangedCallbacks(bookingModel);
         continue;
       }
 
@@ -191,9 +201,9 @@ async function handleChangedDeviceGroup(
         const device = await clients.device.getDevice(deviceUrl);
         try {
           await reserveDevice(bookingModel, deviceGroupModel, device);
-          deviceGroupModel.chosenDevice = deviceUrl;
+          deviceGroupModel.selectedDevice = deviceUrl;
           await repositories.booking.save(bookingModel);
-          await sendChangedCallbacks(bookingModel);
+          sendChangedCallbacks(bookingModel);
           break;
         } catch {
           // empty
@@ -234,15 +244,14 @@ async function handleChangedCloudInstantiableDevice(
 // #region Utility Functions
 async function getAffectedBookings(
   device: Device<'response'>,
-  includeChosenDevice = true,
+  status?: Booking<'response'>['status'],
 ) {
   return (
     await repositories.booking.find({
       where: [
         {
-          devices: includeChosenDevice
-            ? [{ url: device.url }, { chosenDevice: device.url }]
-            : { url: device.url },
+          devices: [{ url: device.url }, { selectedDevice: device.url }],
+          status: status ?? Not('impossible'),
         },
       ],
     })

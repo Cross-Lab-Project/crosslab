@@ -232,6 +232,15 @@ export function validateUpdateDeviceInput(
       ).errors;
       return false;
     }
+    if (
+      !BasicValidation.validateDeletedUrlRequest(parameters['deletedUrl']) &&
+      parameters['deletedUrl'] !== undefined
+    ) {
+      (validateUpdateDeviceInput as FunctionWithErrors).errors = (
+        BasicValidation.validateDeletedUrlRequest as FunctionWithErrors
+      ).errors;
+      return false;
+    }
   } else {
     return false;
   }

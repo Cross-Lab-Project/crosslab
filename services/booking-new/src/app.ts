@@ -12,7 +12,7 @@ export function initApp() {
         application.use(express.json());
         application.use(express.urlencoded({ extended: false }));
         application.use(logging.middleware());
-        application.use(authorization.middleware());
+        application.use(authorization.middleware(config));
       },
     ],
     postHandlers: [

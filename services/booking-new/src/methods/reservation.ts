@@ -1,5 +1,3 @@
-import { Not } from 'typeorm';
-
 import {
   ConcreteDevice,
   Device,
@@ -8,6 +6,7 @@ import {
   InstantiableCloudDevice,
 } from '../clients/device/types.js';
 import * as clients from '../clients/index.js';
+import { config } from '../config.js';
 import { repositories } from '../database/dataSource.js';
 import { BookingModel, DeviceModel } from '../database/model.js';
 import { ReservationError } from './errors.js';
@@ -34,12 +33,26 @@ async function reserveDeviceGroup(
   deviceModel: DeviceModel,
   deviceGroup: DeviceGroup<'response'>,
 ) {
+  if (bookingModel.isLocked && deviceModel.selectedDevice) {
+    const device = await clients.device.getDevice(deviceModel.selectedDevice);
+    await reserveDevice(bookingModel, deviceModel, device);
+    return;
+  }
+
   for (const deviceReference of deviceGroup.devices) {
     const device = await clients.device.getDevice(deviceReference.url);
 
     try {
       await reserveDevice(bookingModel, deviceModel, device);
-      deviceModel.chosenDevice = device.url;
+      deviceModel.selectedDevice = device.url;
+      await clients.device.updateDevice(
+        device.url,
+        { type: device.type },
+        {
+          changedUrl: `${config.BASE_URL}/callbacks/booking`,
+          deletedUrl: `${config.BASE_URL}/callbacks/booking`,
+        },
+      );
       break;
     } catch {
       // empty
@@ -86,10 +99,7 @@ async function reserveConcreteDevice(
 
   const reservations = (
     await repositories.device.find({
-      where: [
-        { url: concreteDevice.url, booking: Not(bookingModel) },
-        { chosenDevice: concreteDevice.url, booking: Not(bookingModel) },
-      ],
+      where: [{ url: concreteDevice.url }, { selectedDevice: concreteDevice.url }],
     })
   )
     .map(model => model.reservation)

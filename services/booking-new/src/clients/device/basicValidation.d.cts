@@ -86,6 +86,10 @@ export declare function validateDeviceUpdate<T extends 'request' | 'response' | 
   object: unknown,
 ): DeviceUpdate<T>;
 
+export declare function validateDeviceDeletedEventCallback<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeviceDeletedEventCallback<T>;
+
 export declare function validateAvailabilityRule<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): AvailabilityRule<T>;
@@ -165,6 +169,10 @@ export declare function validateDeviceId<T extends 'request' | 'response' | 'all
 export declare function validateFlatGroup<T extends 'request' | 'response' | 'all'>(
   object: unknown,
 ): FlatGroup<T>;
+
+export declare function validateDeletedUrl<T extends 'request' | 'response' | 'all'>(
+  object: unknown,
+): DeletedUrl<T>;
 
 export declare function validateStartTime<T extends 'request' | 'response' | 'all'>(
   object: unknown,
@@ -438,6 +446,14 @@ export declare function validateDeviceUpdateResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): DeviceUpdateResponse<T>;
 
+export declare function validateDeviceDeletedEventCallbackRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeviceDeletedEventCallbackRequest<T>;
+
+export declare function validateDeviceDeletedEventCallbackResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeviceDeletedEventCallbackResponse<T>;
+
 export declare function validateAvailabilityRuleRequest<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): AvailabilityRuleRequest<T>;
@@ -597,6 +613,14 @@ export declare function validateFlatGroupRequest<
 export declare function validateFlatGroupResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): FlatGroupResponse<T>;
+
+export declare function validateDeletedUrlRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeletedUrlRequest<T>;
+
+export declare function validateDeletedUrlResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeletedUrlResponse<T>;
 
 export declare function validateStartTimeRequest<
   T extends 'request' | 'response' | 'all',

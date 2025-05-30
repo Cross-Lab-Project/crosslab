@@ -1,4 +1,4 @@
-import { error, logging } from '@crosslab/service-common';
+import { authorization, error, logging } from '@crosslab/service-common';
 import assert from 'assert';
 import express from 'express';
 import { step } from 'mocha-steps';
@@ -9,6 +9,7 @@ import {
   Availability,
   Device,
   DeviceChangedEventCallback,
+  DeviceDeletedEventCallback,
   DeviceGroup,
 } from '../src/clients/device/types.js';
 import * as clients from '../src/clients/index.js';
@@ -78,6 +79,7 @@ describe('Device Group Tests', function () {
           application.use(express.json());
           application.use(express.urlencoded({ extended: false }));
           application.use(logging.middleware());
+          application.use(authorization.middleware());
         },
       ],
       postHandlers: [
@@ -90,6 +92,8 @@ describe('Device Group Tests', function () {
       ],
       errorHandler: error.middleware,
     });
+
+    app.authorization_mock = [{ result: true }];
   });
 
   this.afterEach(function () {
@@ -116,6 +120,7 @@ describe('Device Group Tests', function () {
     Sinon.stub(clients.device, 'getDeviceAvailability').callsFake(async url => {
       return devices[url as keyof typeof devices].availability;
     });
+    Sinon.stub(clients.device, 'updateDevice');
   });
 
   describe('Device Group Tests', function () {
@@ -387,7 +392,7 @@ describe('Device Group Tests', function () {
         const booking = await repositories.booking.findOneOrFail({
           where: { uuid: bookingId },
         });
-        assert.strictEqual(booking.status, 'locked-accepted');
+        assert.strictEqual(booking.status, 'accepted');
         for (const device of booking.devices) {
           assert.notStrictEqual(device.reservation, null);
         }
@@ -413,7 +418,7 @@ describe('Device Group Tests', function () {
         const booking = await repositories.booking.findOneOrFail({
           where: { uuid: bookingId },
         });
-        assert.strictEqual(booking.status, 'locked-rejected');
+        assert.strictEqual(booking.status, 'rejected');
         for (const device of booking.devices) {
           assert.strictEqual(device.reservation, null);
         }
@@ -436,7 +441,7 @@ describe('Device Group Tests', function () {
         const booking = await repositories.booking.findOneOrFail({
           where: { uuid: bookingId },
         });
-        assert.strictEqual(booking.status, 'locked-accepted');
+        assert.strictEqual(booking.status, 'accepted');
         for (const device of booking.devices) {
           assert.notStrictEqual(device.reservation, null);
         }
@@ -453,6 +458,43 @@ describe('Device Group Tests', function () {
       assert.strictEqual(response.status, 200);
 
       assert.deepStrictEqual(responseAll.body[0], response.body);
+    });
+
+    step('should handle device-deleted callback correctly', async function () {
+      const response = await supertest(app)
+        .post('/callbacks/booking')
+        .send({
+          callbackType: 'event',
+          eventType: 'device-deleted',
+          device: devices['https://api.example.com/devices/available'].device,
+        } satisfies DeviceDeletedEventCallback);
+
+      assert.strictEqual(response.status, 200);
+
+      const booking = await repositories.booking.findOneOrFail({
+        where: { uuid: bookingId },
+      });
+      assert.strictEqual(booking.status, 'rejected');
+    });
+
+    step('should handle device-deleted callback correctly', async function () {
+      const response = await supertest(app)
+        .post('/callbacks/booking')
+        .send({
+          callbackType: 'event',
+          eventType: 'device-deleted',
+          device: {
+            type: 'group',
+            url: 'https://api.example.com/devices/group',
+          },
+        } satisfies DeviceDeletedEventCallback);
+
+      assert.strictEqual(response.status, 200);
+
+      const booking = await repositories.booking.findOneOrFail({
+        where: { uuid: bookingId },
+      });
+      assert.strictEqual(booking.status, 'impossible');
     });
 
     step('should delete the booking', async function () {

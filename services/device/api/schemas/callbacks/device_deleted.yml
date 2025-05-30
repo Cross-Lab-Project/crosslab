@@ -1,0 +1,29 @@
+title: Device Deleted Event Callback
+allOf:
+  - $ref: ./event_callback.yml
+  - type: object
+    properties:
+      eventType:
+        type: string
+        enum:
+          - device-deleted
+      device:
+        type: object
+        properties:
+          url:
+            type: string
+            format: uri
+          type:
+            type: string
+            enum:
+              - device
+              - group
+              - edge instantiable
+              - cloud instantiable
+        required:
+          - url
+          - type
+    required:
+      - eventType
+      - device
+x-typeguard: true

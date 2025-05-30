@@ -827,10 +827,7 @@ export class Client {
            * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
            *
            */
-          claims?: {
-            [k: string]: unknown;
-          };
-          [k: string]: unknown;
+          claims?: {};
         }
       | {
           /**
@@ -841,10 +838,7 @@ export class Client {
            * The claims that will be added to the token. If left empty, the token will have the full scope of the user.
            *
            */
-          claims?: {
-            [k: string]: unknown;
-          };
-          [k: string]: unknown;
+          claims?: {};
         },
     options?: {
       headers?: [string, string][];

@@ -3,10 +3,13 @@ import { deleteBookingsByBookingIdSignature } from '../../../generated/signature
 import { mutexManager } from '../../../methods/mutexManager.js';
 
 export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = async (
-  _req,
+  req,
   parameters,
 ) => {
-  // TODO: authorization
+  await req.authorization.check_authorization_or_fail(
+    'delete',
+    `booking:${parameters.bookingId}`,
+  );
 
   const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);
 

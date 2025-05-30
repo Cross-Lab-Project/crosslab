@@ -3,11 +3,14 @@ import { patchBookingsByBookingIdSignature } from '../../../generated/signatures
 import { mutexManager } from '../../../methods/mutexManager.js';
 
 export const patchBookingsByBookingId: patchBookingsByBookingIdSignature = async (
-  _req,
+  req,
   parameters,
   body,
 ) => {
-  // TODO: authorization
+  await req.authorization.check_authorization_or_fail(
+    'edit',
+    `booking:${parameters.bookingId}`,
+  );
 
   const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);
 
@@ -18,9 +21,6 @@ export const patchBookingsByBookingId: patchBookingsByBookingIdSignature = async
 
     if (body) {
       await repositories.booking.write(bookingModel, body);
-
-      // TODO: check if booking can be updated as requested
-
       await repositories.booking.save(bookingModel);
     }
 

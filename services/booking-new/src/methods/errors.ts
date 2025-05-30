@@ -13,3 +13,10 @@ export class LockingError extends ErrorWithStatus {
     this.name = 'LockingError';
   }
 }
+
+export class BookingError extends ErrorWithStatus {
+  constructor(message: string, status: number) {
+    super(message, status);
+    this.name = 'BookingError';
+  }
+}

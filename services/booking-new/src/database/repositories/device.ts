@@ -2,6 +2,8 @@ import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager, FindOptionsRelations } from 'typeorm';
 
 import { Device } from '../../clients/device/types.js';
+import * as clients from '../../clients/index.js';
+import { config } from '../../config.js';
 import { DeviceModel } from '../model.js';
 import { ReservationRepository } from './reservation.js';
 
@@ -47,6 +49,15 @@ export class DeviceRepository extends AbstractRepository<
     model.url = data.device.url;
     model.type = data.device.type;
     model.essential = data.essential;
+
+    await clients.device.updateDevice(
+      data.device.type,
+      { type: data.device.type },
+      {
+        changedUrl: `${config.BASE_URL}/callbacks/booking`,
+        deletedUrl: `${config.BASE_URL}/callbacks/booking`,
+      },
+    );
 
     return model;
   }

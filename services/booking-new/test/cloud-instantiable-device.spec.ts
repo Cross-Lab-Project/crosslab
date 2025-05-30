@@ -1,4 +1,4 @@
-import { error, logging } from '@crosslab/service-common';
+import { authorization, error, logging } from '@crosslab/service-common';
 import assert from 'assert';
 import express from 'express';
 import { step } from 'mocha-steps';
@@ -7,6 +7,7 @@ import supertest from 'supertest';
 
 import {
   DeviceChangedEventCallback,
+  DeviceDeletedEventCallback,
   InstantiableCloudDevice,
 } from '../src/clients/device/types.js';
 import * as clients from '../src/clients/index.js';
@@ -51,6 +52,7 @@ describe('Cloud Instantiable Device Tests', function () {
           application.use(express.json());
           application.use(express.urlencoded({ extended: false }));
           application.use(logging.middleware());
+          application.use(authorization.middleware());
         },
       ],
       postHandlers: [
@@ -63,6 +65,8 @@ describe('Cloud Instantiable Device Tests', function () {
       ],
       errorHandler: error.middleware,
     });
+
+    app.authorization_mock = [{ result: true }];
   });
 
   this.afterEach(function () {
@@ -73,11 +77,13 @@ describe('Cloud Instantiable Device Tests', function () {
     Sinon.stub(clients.device, 'getDevice').callsFake(async () => {
       return device;
     });
+    Sinon.stub(clients.device, 'updateDevice');
   });
 
   const bookingIds: string[] = [];
 
   step('should create a booking with one cloud instantiable device', async function () {
+    this.timeout(0);
     const startTime = Date.now();
     const endTime = startTime + HOUR;
 
@@ -176,7 +182,7 @@ describe('Cloud Instantiable Device Tests', function () {
       const booking = await repositories.booking.findOneOrFail({
         where: { uuid: bookingIds[0] },
       });
-      assert.strictEqual(booking.status, 'locked-accepted');
+      assert.strictEqual(booking.status, 'accepted');
       for (const device of booking.devices) {
         assert.notStrictEqual(device.reservation, null);
       }
@@ -204,6 +210,23 @@ describe('Cloud Instantiable Device Tests', function () {
           }
         }),
       );
+    }
+  });
+
+  step('should handle device-deleted callback correctly', async function () {
+    const response = await supertest(app)
+      .post('/callbacks/booking')
+      .send({
+        callbackType: 'event',
+        eventType: 'device-deleted',
+        device,
+      } satisfies DeviceDeletedEventCallback);
+
+    assert.strictEqual(response.status, 200);
+
+    const bookings = await repositories.booking.find();
+    for (const booking of bookings) {
+      assert.strictEqual(booking.status, 'impossible');
     }
   });
 

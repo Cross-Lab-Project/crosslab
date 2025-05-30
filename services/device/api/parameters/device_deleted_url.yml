@@ -1,0 +1,13 @@
+# yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-parameter.json
+name: deletedUrl
+in: query
+required: false
+description: |
+  **An URL that will be called once the device is deleted.**
+
+  Once the device was given a deletedUrl parameter the contained URL will be called once a device is deleted.
+
+  There can be multiple callbacks registered with the same device.
+schema:
+  type: string
+  format: uri
