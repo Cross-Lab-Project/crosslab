@@ -1,0 +1,52 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Platform
+type: object
+properties:
+  uri:
+    type: string
+    format: uri
+    readOnly: true
+  issuer:
+    type: string
+    description: The JWT issuer of the platform.
+  client_id:
+    type: string
+    description: The client ID of the platform.
+  deployment_id:
+    type: string
+    description: The deployment ID of the platform.
+  registration:
+    type: object
+    properties:
+      state:
+        type: string
+        enum:
+          - pending
+          - complete
+        description: The state of the registration.
+      token:
+        type: string
+        description: The registration token used for the manual and dynamic registration.
+    required:
+      - state
+    readOnly: true
+    additionalProperties: false
+  jwks_uri:
+    type: string
+    format: uri
+    description: The JWKS URI of the tool.
+  login_uri:
+    type: string
+    format: uri
+    description: The login URI of the tool.
+  launch_uri:
+    type: string
+    format: uri
+    description: The launch URI of the tool.
+required:
+  - uri
+  - registration
+  - login_uri
+  - launch_uri
+  - jwks_uri
+additionalProperties: false

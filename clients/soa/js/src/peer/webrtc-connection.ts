@@ -90,14 +90,14 @@ export class WebRTCPeerConnection
       this.sendIceCandidate(event.candidate);
     } else if (!event.candidate && !this.trickleIce) {
       logger.log('info', 'IceGatheringComplete');
-      this.iceCandidateResolver && this.iceCandidateResolver();
+      if (this.iceCandidateResolver) this.iceCandidateResolver();
     }
   }
 
   private onicegatheringstatechange() {
     if (this.pc.iceGatheringState === 'complete') {
       logger.log('info', 'IceGatheringComplete');
-      this.iceCandidateResolver && this.iceCandidateResolver();
+      if (this.iceCandidateResolver) this.iceCandidateResolver();
     }
   }
 
@@ -143,7 +143,7 @@ export class WebRTCPeerConnection
     });
 
     setTimeout(() => {
-      this.optionsReceivedResolver && this.optionsReceivedResolver();
+      if (this.optionsReceivedResolver) this.optionsReceivedResolver();
     }, 2000);
   }
 
@@ -214,7 +214,6 @@ export class WebRTCPeerConnection
   private async executeQueue() {
     if (!this.isProcessing) {
       this.isProcessing = true;
-      // eslint-disable-next-line no-constant-condition
       while (true) {
         const message = this.signalingQueue.shift();
         if (!message) break;
@@ -287,7 +286,7 @@ export class WebRTCPeerConnection
     if (msg.content.canTrickle) {
       this.trickleIce = true;
     }
-    this.optionsReceivedResolver && this.optionsReceivedResolver();
+    if (this.optionsReceivedResolver) this.optionsReceivedResolver();
   }
 
   teardown(): void {
@@ -309,12 +308,12 @@ export class WebRTCPeerConnection
     logger.log('trace', 'WebRTCPeerConnection.makeOffer created offer', { offer });
     await this.pc.setLocalDescription(offer);
     if (this.trickleIce) {
-      this.iceCandidateResolver && this.iceCandidateResolver();
+      if (this.iceCandidateResolver) this.iceCandidateResolver();
     }
     setTimeout(() => {
-      this.iceCandidateResolver && this.iceCandidateResolver();
+      if (this.iceCandidateResolver) this.iceCandidateResolver();
     }, 5000);
-    this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
+    if (this.pc.iceGatheringState !== 'complete') await iceCandidatePromise;
     const _offer = this.pc.localDescription;
     if (!_offer) {
       logger.log('info', 'WebRTCPeerConnection.makeOffer failed to create offer');
@@ -343,12 +342,12 @@ export class WebRTCPeerConnection
     logger.log('trace', 'WebRTCPeerConnection.makeAnswer created answer', { answer });
     await this.pc.setLocalDescription(answer); // TODO: gst-webrtc seems to not resolve the promise correctly.
     setTimeout(() => {
-      this.iceCandidateResolver && this.iceCandidateResolver();
+      if (this.iceCandidateResolver) this.iceCandidateResolver();
     }, 5000);
     if (this.trickleIce) {
-      this.iceCandidateResolver && this.iceCandidateResolver();
+      if (this.iceCandidateResolver) this.iceCandidateResolver();
     }
-    this.pc.iceGatheringState === 'complete' || (await iceCandidatePromise);
+    if (this.pc.iceGatheringState !== 'complete') await iceCandidatePromise;
     const _answer = this.pc.localDescription;
     if (!_answer) {
       throw new Error('WebRTCPeerConnection.makeAnswer failed to create answer');
@@ -462,7 +461,11 @@ export class WebRTCPeerConnection
         transceiver,
         label,
       });
-      const channel = this.mediaChannelMap.get(label);
+      let channel = this.mediaChannelMap.get(label);
+      if(channel === undefined && this.mediaChannelMap.size === 1){
+        channel = this.mediaChannelMap.values().next().value; // get the first channel, workaround
+        // TODO: Do a proper out of band signaling for the media channels based on mid
+      }
       if (channel === undefined) {
         logger.log(
           'trace',

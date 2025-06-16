@@ -2,6 +2,7 @@ import { logger } from '@crosslab/service-common';
 import { spawn } from 'child_process';
 import readline from 'readline';
 
+import fetch from 'node-fetch';
 import { fix_object_without_colon, openfgaOpaData } from './openfga.js';
 import { CheckTuple } from './types.js';
 
@@ -86,7 +87,7 @@ export async function opa_check(checks: CheckTuple[]) {
           ...openfgaOpaData,
           response,
         });
-        return response;
+        return response as {result: {allow?: boolean, reason?: string}};
       })
       .then(json => ({
         result: json.result.allow ?? false,

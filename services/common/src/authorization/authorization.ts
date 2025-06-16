@@ -37,7 +37,7 @@ export function authorization_functions(config: AuthorizationConfig) {
         return [];
       }
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuple, action: action!, object: object! }];
     }
     const response = await fetch(config.AUTHORIZATION_SERVER + '/authorize', {
@@ -93,7 +93,7 @@ export function authorization_functions(config: AuthorizationConfig) {
     if (Array.isArray(subject_or_tuples)) {
       tuples = subject_or_tuples;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuples, relation: relation!, object: object! }];
     }
     await update_relations(tuples, []);
@@ -114,7 +114,7 @@ export function authorization_functions(config: AuthorizationConfig) {
     if (Array.isArray(subject_or_tuples)) {
       tuples = subject_or_tuples;
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+       
       tuples = [{ subject: subject_or_tuples, relation: relation!, object: object! }];
     }
     await update_relations([], tuples);

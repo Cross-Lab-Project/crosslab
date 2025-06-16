@@ -1,8 +1,11 @@
 from aiortc import MediaStreamTrack  # type: ignore
+from aiortc.contrib.media import MediaRelay  # type: ignore
 from crosslab.soa_client.connection import Connection, MediaChannel
 from crosslab.soa_client.service import Service
 
 from crosslab.soa_services.webcam.messages import WebcamServiceConfig
+
+relay = MediaRelay()
 
 
 class WebcamService__Producer(Service):
@@ -27,7 +30,9 @@ class WebcamService__Producer(Service):
     def setupConnection(
         self, connection: Connection, serviceConfig: WebcamServiceConfig
     ):
-        channel = MediaChannel(self._track)
+        global relay  # noqa: F824
+        track = relay.subscribe(self._track, buffered=False)
+        channel = MediaChannel(track)
         connection.transmit(serviceConfig, "video", channel)
 
     def teardownConnection(self, connection: Connection):

@@ -328,7 +328,7 @@ type NumericRangeTuple<
 	/**
 	 * List of participants for the service
 	 */
-	participants?: Participant[]
+	participants?: (Participant)[]
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -349,7 +349,7 @@ type NumericRangeTuple<
 	/**
 	 * List of participants for the service
 	 */
-	participants?: Participant<"request">[]
+	participants?: (Participant<"request">)[]
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -370,7 +370,7 @@ type NumericRangeTuple<
 	/**
 	 * List of participants for the service
 	 */
-	participants?: Participant<"response">[]
+	participants?: (Participant<"response">)[]
 	[k: string]: unknown
 }
                     : never
@@ -394,29 +394,29 @@ type NumericRangeTuple<
 	/**
 	 * Devices associated with the experiment
 	 */
-	devices: Device[]
+	devices: (Device)[]
 	/**
 	 * Roles that are used in this experiment
 	 */
-	roles: Role[]
+	roles: (Role)[]
 	/**
 	 * Connections associated with the experiment
 	 */
-	connections: string[]
+	connections: (string)[]
 	/**
 	 * Services associated with the experiment
 	 */
-	serviceConfigurations: ServiceConfiguration[]
+	serviceConfigurations: (ServiceConfiguration)[]
 	/**
 	 * Instantiated devices that need to be started by the user.
 	 */
-	instantiatedDevices: {
+	instantiatedDevices: ({
 		codeUrl: string
 		url: string
 		token: string
 		instanceOf: string
 		[k: string]: unknown
-	}[]
+	})[]
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -432,15 +432,15 @@ type NumericRangeTuple<
 	/**
 	 * Devices associated with the experiment
 	 */
-	devices: Device<"request">[]
+	devices: (Device<"request">)[]
 	/**
 	 * Roles that are used in this experiment
 	 */
-	roles: Role<"request">[]
+	roles: (Role<"request">)[]
 	/**
 	 * Services associated with the experiment
 	 */
-	serviceConfigurations: ServiceConfiguration<"request">[]
+	serviceConfigurations: (ServiceConfiguration<"request">)[]
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -460,29 +460,29 @@ type NumericRangeTuple<
 	/**
 	 * Devices associated with the experiment
 	 */
-	devices: Device<"response">[]
+	devices: (Device<"response">)[]
 	/**
 	 * Roles that are used in this experiment
 	 */
-	roles: Role<"response">[]
+	roles: (Role<"response">)[]
 	/**
 	 * Connections associated with the experiment
 	 */
-	connections: string[]
+	connections: (string)[]
 	/**
 	 * Services associated with the experiment
 	 */
-	serviceConfigurations: ServiceConfiguration<"response">[]
+	serviceConfigurations: (ServiceConfiguration<"response">)[]
 	/**
 	 * Instantiated devices that need to be started by the user.
 	 */
-	instantiatedDevices: {
+	instantiatedDevices: ({
 		codeUrl: string
 		url: string
 		token: string
 		instanceOf: string
 		[k: string]: unknown
-	}[]
+	})[]
 	[k: string]: unknown
 }
                     : never
@@ -565,29 +565,29 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the experiment
 		 */
-		devices: Device[]
+		devices: (Device)[]
 		/**
 		 * Roles that are used in this experiment
 		 */
-		roles: Role[]
+		roles: (Role)[]
 		/**
 		 * Connections associated with the experiment
 		 */
-		connections: string[]
+		connections: (string)[]
 		/**
 		 * Services associated with the experiment
 		 */
-		serviceConfigurations: ServiceConfiguration[]
+		serviceConfigurations: (ServiceConfiguration)[]
 		/**
 		 * Instantiated devices that need to be started by the user.
 		 */
-		instantiatedDevices: {
+		instantiatedDevices: ({
 			codeUrl: string
 			url: string
 			token: string
 			instanceOf: string
 			[k: string]: unknown
-		}[]
+		})[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -614,15 +614,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the experiment
 		 */
-		devices: Device<"request">[]
+		devices: (Device<"request">)[]
 		/**
 		 * Roles that are used in this experiment
 		 */
-		roles: Role<"request">[]
+		roles: (Role<"request">)[]
 		/**
 		 * Services associated with the experiment
 		 */
-		serviceConfigurations: ServiceConfiguration<"request">[]
+		serviceConfigurations: (ServiceConfiguration<"request">)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -653,29 +653,29 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the experiment
 		 */
-		devices: Device<"response">[]
+		devices: (Device<"response">)[]
 		/**
 		 * Roles that are used in this experiment
 		 */
-		roles: Role<"response">[]
+		roles: (Role<"response">)[]
 		/**
 		 * Connections associated with the experiment
 		 */
-		connections: string[]
+		connections: (string)[]
 		/**
 		 * Services associated with the experiment
 		 */
-		serviceConfigurations: ServiceConfiguration<"response">[]
+		serviceConfigurations: (ServiceConfiguration<"response">)[]
 		/**
 		 * Instantiated devices that need to be started by the user.
 		 */
-		instantiatedDevices: {
+		instantiatedDevices: ({
 			codeUrl: string
 			url: string
 			token: string
 			instanceOf: string
 			[k: string]: unknown
-		}[]
+		})[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -716,15 +716,15 @@ type NumericRangeTuple<
 	/**
 	 * Devices associated with the experiment
 	 */
-	devices?: Device[]
+	devices?: (Device)[]
 	/**
 	 * Roles that are used in this experiment
 	 */
-	roles?: Role[]
+	roles?: (Role)[]
 	/**
 	 * Services associated with the experiment
 	 */
-	serviceConfigurations?: ServiceConfiguration[]
+	serviceConfigurations?: (ServiceConfiguration)[]
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -740,15 +740,15 @@ type NumericRangeTuple<
 	/**
 	 * Devices associated with the experiment
 	 */
-	devices?: Device<"request">[]
+	devices?: (Device<"request">)[]
 	/**
 	 * Roles that are used in this experiment
 	 */
-	roles?: Role<"request">[]
+	roles?: (Role<"request">)[]
 	/**
 	 * Services associated with the experiment
 	 */
-	serviceConfigurations?: ServiceConfiguration<"request">[]
+	serviceConfigurations?: (ServiceConfiguration<"request">)[]
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -764,15 +764,15 @@ type NumericRangeTuple<
 	/**
 	 * Devices associated with the experiment
 	 */
-	devices?: Device<"response">[]
+	devices?: (Device<"response">)[]
 	/**
 	 * Roles that are used in this experiment
 	 */
-	roles?: Role<"response">[]
+	roles?: (Role<"response">)[]
 	/**
 	 * Services associated with the experiment
 	 */
-	serviceConfigurations?: ServiceConfiguration<"response">[]
+	serviceConfigurations?: (ServiceConfiguration<"response">)[]
 	[k: string]: unknown
 }
                     : never
@@ -850,15 +850,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the templated experiment
 		 */
-		devices: Device[]
+		devices: (Device)[]
 		/**
 		 * Roles that are used in this templated experiment
 		 */
-		roles: Role[]
+		roles: (Role)[]
 		/**
 		 * Services associated with the templated experiment
 		 */
-		serviceConfigurations: ServiceConfiguration[]
+		serviceConfigurations: (ServiceConfiguration)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -882,15 +882,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the templated experiment
 		 */
-		devices: Device<"request">[]
+		devices: (Device<"request">)[]
 		/**
 		 * Roles that are used in this templated experiment
 		 */
-		roles: Role<"request">[]
+		roles: (Role<"request">)[]
 		/**
 		 * Services associated with the templated experiment
 		 */
-		serviceConfigurations: ServiceConfiguration<"request">[]
+		serviceConfigurations: (ServiceConfiguration<"request">)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -918,15 +918,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the templated experiment
 		 */
-		devices: Device<"response">[]
+		devices: (Device<"response">)[]
 		/**
 		 * Roles that are used in this templated experiment
 		 */
-		roles: Role<"response">[]
+		roles: (Role<"response">)[]
 		/**
 		 * Services associated with the templated experiment
 		 */
-		serviceConfigurations: ServiceConfiguration<"response">[]
+		serviceConfigurations: (ServiceConfiguration<"response">)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -952,15 +952,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the templated experiment
 		 */
-		devices?: Device[]
+		devices?: (Device)[]
 		/**
 		 * Roles that are used in this templated experiment
 		 */
-		roles?: Role[]
+		roles?: (Role)[]
 		/**
 		 * Services associated with the templated experiment
 		 */
-		serviceConfigurations?: ServiceConfiguration[]
+		serviceConfigurations?: (ServiceConfiguration)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -982,15 +982,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the templated experiment
 		 */
-		devices?: Device<"request">[]
+		devices?: (Device<"request">)[]
 		/**
 		 * Roles that are used in this templated experiment
 		 */
-		roles?: Role<"request">[]
+		roles?: (Role<"request">)[]
 		/**
 		 * Services associated with the templated experiment
 		 */
-		serviceConfigurations?: ServiceConfiguration<"request">[]
+		serviceConfigurations?: (ServiceConfiguration<"request">)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -1012,15 +1012,15 @@ type NumericRangeTuple<
 		/**
 		 * Devices associated with the templated experiment
 		 */
-		devices?: Device<"response">[]
+		devices?: (Device<"response">)[]
 		/**
 		 * Roles that are used in this templated experiment
 		 */
-		roles?: Role<"response">[]
+		roles?: (Role<"response">)[]
 		/**
 		 * Services associated with the templated experiment
 		 */
-		serviceConfigurations?: ServiceConfiguration<"response">[]
+		serviceConfigurations?: (ServiceConfiguration<"response">)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown

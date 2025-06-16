@@ -2,22 +2,16 @@ import json
 import logging
 from asyncio import Future, create_task, sleep
 from enum import Enum
-from typing import Any, Dict, List, Literal, cast
+from typing import Any, Dict, List, Literal, Union, cast
 
 from aiortc import RTCPeerConnection  # type: ignore
 from aiortc import RTCConfiguration, RTCIceCandidate, RTCSessionDescription
-from aiortc.events import RTCTrackEvent  # type: ignore
 from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
 from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
-
-from crosslab.soa_client.connection import (
-    Channel,
-    Connection,
-    DataChannel,
-    MediaChannel,
-)
+from crosslab.soa_client.connection import (Channel, Connection, DataChannel,
+                                            MediaChannel)
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
+from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +31,12 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     _trickleIce: bool
     'NOTE: currently not used, since "icecandidate"-event is not implemented in aiortc'
 
-    def __init__(self, options: RTCConfiguration = RTCConfiguration([])):
+    def __init__(self, config: Union[RTCConfiguration, None] = None):
         AsyncIOEventEmitter.__init__(self)
         Connection.__init__(self)
-        self.pc = RTCPeerConnection(options)
+        if config is None:
+            config = RTCConfiguration([])
+        self.pc = RTCPeerConnection(configuration=config)
 
         async def connectionstatechanged():
             if not self.pc:
@@ -52,7 +48,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 self.pc.signalingState,
             )
             if self.state != self.pc.connectionState:
-                self.state = self.pc.connectionState
+                # the following assignment is str to typed literal
+                # but str is garantueed to only use the specified values
+                self.state = self.pc.connectionState  # type: ignore
                 self.emit("connectionChanged")
 
         async def datachannel(datachannel):
@@ -93,12 +91,11 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
         create_task(optionsTimeout())
 
-    async def _on_track(self, track: RTCTrackEvent):
-        transeiver = track.transceiver
-        label = transeiver.receiver.track.id
+    async def _on_track(self, track):
+        label = track.id
         channel = self._mediaChannelMap.get(label)
         assert channel is not None  # TODO: handle this
-        channel.emit("track", transeiver.receiver.track)
+        channel.emit("track", track)
 
     async def close(self):
         await self.pc.close()
@@ -252,10 +249,15 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
     async def _handleIceCandidate(self, message: SignalingMessage):
         logger.debug("handleIceCandidate")
-        candidate = candidate_from_sdp(message["content"]["candidate"].split(":", 1)[1])
-        candidate.sdpMid = message["content"]["sdpMid"]
-        candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
-        await self._acceptIceCandiate(candidate)
+        try:
+            candidate = candidate_from_sdp(
+                message["content"]["candidate"].split(":", 1)[1]
+            )
+            candidate.sdpMid = message["content"]["sdpMid"]
+            candidate.sdpMLineIndex = message["content"]["sdpMLineIndex"]
+            await self._acceptIceCandiate(candidate)
+        except Exception:
+            pass  # ignore invalid candidates
 
     async def _handleOptions(self, message: SignalingMessage):
         logger.debug("handleOptions")
@@ -268,10 +270,9 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             rtpTranseiver = self.pc.addTransceiver(
                 channel.track if channel.track else "video", direction="sendrecv"
             )
-            if channel.track is not None:
-                channel.track.stop()
             videoPreference = filter(
-                lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
+                lambda x: x.name == "H264", RTCRtpSender.getCapabilities(
+                    "video").codecs
             )
             rtpTranseiver.setCodecPreferences(list(videoPreference))
             self._transeiverMap[rtpTranseiver] = label

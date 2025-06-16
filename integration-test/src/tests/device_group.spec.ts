@@ -1,5 +1,5 @@
-/// <reference types="../context" />
-import { ExperimentTest } from '../helper/experimentTest';
+/// <reference types="../context.js" />
+import { ExperimentTest } from '../helper/experimentTest.js';
 
 const experimentConfig = {
   serviceConfigurations: [

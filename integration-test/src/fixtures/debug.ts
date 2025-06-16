@@ -1,6 +1,8 @@
-import { readFileSync } from 'fs';
-import { WriteStream, createWriteStream } from 'fs';
+import { WriteStream, createWriteStream, readFileSync } from 'fs';
 import { resolve } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 
 export interface DebugContext {
   debug?: {
@@ -67,7 +69,6 @@ export const mochaHooks = {
           if (!debug[sub_key as 'jsDevice' | 'jsDeviceHost' | 'pythonDevice']) {
             debug[sub_key as 'jsDevice' | 'jsDeviceHost' | 'pythonDevice'] = {};
           }
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           debug[sub_key as 'jsDevice' | 'jsDeviceHost' | 'pythonDevice']![
             parseInt(index)
           ] = { debug_port: parseInt(value) };
@@ -87,7 +88,7 @@ export const mochaHooks = {
     const testName = this.currentTest?.titlePath().join(': ') ?? 'unknown test';
     for (const file of fileStreams.keys()) {
       const stream = fileStreams.get(file);
-      stream && stream.write('================== ' + testName + '\n');
+      if(stream) stream.write('================== ' + testName + '\n');
     }
     this.log = (file, data, level) => log(file, data, level, testName);
   },

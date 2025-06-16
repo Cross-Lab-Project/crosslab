@@ -2,9 +2,9 @@ import { randomBytes } from 'crypto';
 import { SignJWT } from 'jose';
 import fetch from 'node-fetch';
 
+import { kid, privateKey } from '../business/key_management.js';
 import { ApplicationDataSource } from '../database/datasource.js';
 import { PlatformModel } from '../database/model.js';
-import { kid, privateKey } from '../key_management.js';
 
 export async function grading({
   iss,
@@ -40,7 +40,7 @@ export async function grading({
 
   console.log(jwt);
 
-  const result = await fetch(platform.access_token_url, {
+  const result = await fetch(platform.access_token_url!, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({

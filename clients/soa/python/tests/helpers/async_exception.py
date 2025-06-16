@@ -15,7 +15,7 @@ class AsyncException:
         self._event.set()
 
 
-async def wait(awaitables, exception: AsyncException, timeout=10):
+async def wait(awaitables, exception: AsyncException, timeout=100000):
     cancel = asyncio.Event()
 
     async def wait_for_exception():

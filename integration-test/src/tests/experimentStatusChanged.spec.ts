@@ -1,6 +1,6 @@
-/// <reference types="../context" />
-import { DummyDevice } from '../fixtures/dummyDevice';
-import { ExperimentTest } from '../helper/experimentTest';
+/// <reference types="../context.js" />
+import { DummyDevice } from '../fixtures/dummyDevice.js';
+import { ExperimentTest } from '../helper/experimentTest.js';
 
 const experimentConfig = {
   serviceConfigurations: [

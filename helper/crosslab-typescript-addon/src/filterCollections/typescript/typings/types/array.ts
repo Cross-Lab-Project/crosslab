@@ -26,7 +26,7 @@ export function handleArray(
     typeDeclaration:
       min !== 'undefined' || max !== 'undefined'
         ? `SizedTuple<${td.typeDeclaration},${min},${max}>`
-        : `${td.typeDeclaration}[]`,
+        : `(${td.typeDeclaration})[]`,
     typeDependencies: td.typeDependencies,
     comment: comment,
   };

@@ -351,7 +351,7 @@ export interface ListUsersResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Require<Types.User<"response">, "url" | "id" | "username">[]
+    body: (Require<Types.User<"response">, "url" | "id" | "username">)[]
 }
 
 /**

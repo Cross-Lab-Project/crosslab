@@ -81,7 +81,7 @@ def file(event: FileServiceEvent):
 
 
 async def stdin_reader():
-    global default_signal_state
+    global default_signal_state  # noqa: F824
     loop = asyncio.get_event_loop()
     reader = asyncio.StreamReader(loop=loop)
     protocol = asyncio.StreamReaderProtocol(reader)

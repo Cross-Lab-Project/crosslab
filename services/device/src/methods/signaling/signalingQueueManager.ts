@@ -1,5 +1,6 @@
 import { InvalidValueError, MissingEntityError, logger } from '@crosslab/service-common';
 
+import { config } from '../../config.js';
 import { repositories } from '../../database/dataSource.js';
 import { ConcreteDeviceModel, PeerconnectionModel } from '../../database/model.js';
 import {
@@ -119,6 +120,10 @@ export class SignalingQueueManager {
 
     if (peerconnectionModel.type === 'websocket') {
       delete common.connectionOptions?.webSocketUrls;
+    } else if (peerconnectionModel.type === 'webrtc') {
+      common.config = {
+        iceServers: config.WEBRTC_ICE_SERVERS,
+      };
     }
 
     const deviceA = await getDevice(peerconnectionModel.deviceA);

@@ -5,7 +5,7 @@ class CrosslabTransport {
   log(info: object) {
     try {
       this.upstream(info);
-    } catch (e) {
+    } catch (_e) {
       this.buffer.push(info);
     }
   }
@@ -40,7 +40,9 @@ export class Logger<logLevel extends string> {
 
   constructor(options: LoggerOptions<logLevel>) {
     this.transports = options.transports ? options.transports : [];
-    options.levels && (this.levels = options.levels);
+    if (options.levels) {
+      this.levels = options.levels;
+    }
     this.level =
       options.level ??
       (Object.entries(this.levels)

@@ -1,22 +1,19 @@
 # Build Image
-FROM node:lts-alpine
+FROM node:lts-alpine AS build
 WORKDIR /tmp
 COPY .packages /tmp/packages
 RUN npm install --global /tmp/packages/*
 RUN rm -rf /tmp/packages
 
-COPY assets /app/assets
-RUN apk add dumb-init curl
-ENV NODE_ENV production
-ENV PORT 8080
-EXPOSE 8080/tcp
+RUN apk add dumb-init
 WORKDIR /app
 RUN mkdir db
 RUN chown node:node /app/*
-
-# delete express cookie module, so it will use the one from lti (0.6.0)
-RUN rm -rf /usr/local/lib/node_modules/@crosslab/lti/node_modules/express/node_modules/cookie
-
 USER node
 
+ENV NODE_ENV production
+ENV PORT 3009
+ENV DB_TYPE sqlite
+ENV DB_DATABASE db/lti.db
+EXPOSE 3009/tcp
 CMD ["dumb-init", "crosslab-lti-service"]

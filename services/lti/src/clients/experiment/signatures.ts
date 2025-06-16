@@ -12,6 +12,14 @@ import * as Types from "./types.js"
 import { type Require } from "./types.js"
 
 /**
+ * Typing for the parameters of the request made by listExperiments()
+ * @category listExperiments()
+ */
+export type ListExperimentsParameters = {
+    "experimentStatus"?: string,
+}
+
+/**
  * Typing for all possible responses to the request made by listExperiments()
  * @category listExperiments()
  */
@@ -38,7 +46,7 @@ export interface ListExperimentsResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.ExperimentOverview<"response">[]
+    body: (Types.ExperimentOverview<"response">)[]
 }
 
 /**
@@ -557,7 +565,7 @@ export interface ListTemplateResponse200 extends Types.SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Types.TemplateOverview<"response">[]
+    body: (Types.TemplateOverview<"response">)[]
 }
 
 /**

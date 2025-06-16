@@ -344,7 +344,7 @@ export interface getUsers200ResponseType extends SuccessResponse {
     headers?: {
         [k: string]: string | undefined
     }
-    body: Require<User<"response">, "url" | "id" | "username">[]
+    body: (Require<User<"response">, "url" | "id" | "username">)[]
 }
 
 /**

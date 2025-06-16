@@ -1,12 +1,12 @@
 import { logging } from '@crosslab/service-common';
-import chai from 'chai';
+import * as chaiModule from 'chai';
 import chaiHttp from 'chai-http';
 import { Server } from 'http';
 
-import { init_app } from '../src/app.ts';
-import { init_database } from '../src/database/datasource.ts';
+import { init_app } from '../src/app.js';
+import { init_database } from '../src/database/datasource.js';
 
-chai.use(chaiHttp);
+export const chai = chaiModule.use(chaiHttp);
 chai.should();
 
 let server: Server;

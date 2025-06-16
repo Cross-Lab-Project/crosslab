@@ -1,7 +1,11 @@
 import { logger } from "./logging/index.js";
 
 export function die(reason: string): string {
-  logger.log('error', reason);
+  if(logger){
+    logger.error('error', reason);
+  }else{
+    console.error(reason);
+  }
   process.exit(1);
 }
 

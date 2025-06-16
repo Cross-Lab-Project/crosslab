@@ -1,0 +1,55 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Session
+type: object
+properties:
+  uri:
+    type: string
+    format: uri
+    readOnly: true
+  resource_uri:
+    type: string
+    format: uri
+    readOnly: true
+    description: The URI of the resource.
+  experiment_uri:
+    type: string
+    format: uri
+    readOnly: true
+    description: The URI of the experiment.
+  experiment_change_uri:
+    type: string
+    format: uri
+    readOnly: true
+    description: The URI to change the experiment setting.
+  roles:
+    type: array
+    items:
+      type: string
+      enum:
+        - instructor
+        - student
+    readOnly: true
+    description: The roles of the session.
+  role_mapping:
+    type: array
+    items:
+      type: object
+      properties:
+        role:
+          type: string
+        device:
+          anyOf:
+            - type: string
+              enum:
+                - GROUP
+            - type: string
+              format: uri
+              description: The URI of the device to use instead of the group device.
+      required:
+        - role
+        - device
+required:
+  - uri
+  - resource_uri
+  - roles
+additionalProperties: false

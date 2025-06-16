@@ -17,7 +17,7 @@ After this the Crosslab-API should be available under `http://localhost:8080` an
 
 ## Publishing
 
-run `./scripts/ci.sh --release`
+run `./scripts/ci.sh --download-release`
 
 Create `$HOME/.pypirc` with the following content:
 ```

@@ -13,9 +13,9 @@
   "dependencies": {
     "@cross-lab-project/openapi-codegen": "file:../../../helper/openapi-codegeneration",
     "@trivago/prettier-plugin-sort-imports": "^4.2.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.1.4"
   },
   "devDependencies": {
-    "prettier": "^3.0.3"
+    "prettier": "^3.3.3"
   }
 }

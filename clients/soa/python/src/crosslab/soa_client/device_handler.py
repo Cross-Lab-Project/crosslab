@@ -6,23 +6,19 @@ from typing import Dict, List, Optional
 import aiohttp
 from aiortc import RTCConfiguration, RTCIceServer  # type: ignore
 from crosslab.api_client import APIClient  # type: ignore
-from pyee.asyncio import AsyncIOEventEmitter
-
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.connection_websocket import WebSocketPeerconnection
 from crosslab.soa_client.logging import handler as loggin_handler
-from crosslab.soa_client.messages import (
-    AuthenticationMessage,
-    ClosePeerConnectionMessage,
-    ConfigurationMessage,
-    ConnectionStateChangedMessage,
-    CreatePeerConnectionMessage,
-    ExperimentStatusChangedMessage,
-    LoggingMessage,
-    SignalingMessage,
-)
+from crosslab.soa_client.messages import (AuthenticationMessage,
+                                          ClosePeerConnectionMessage,
+                                          ConfigurationMessage,
+                                          ConnectionStateChangedMessage,
+                                          CreatePeerConnectionMessage,
+                                          ExperimentStatusChangedMessage,
+                                          LoggingMessage, SignalingMessage)
 from crosslab.soa_client.service import Service
+from pyee.asyncio import AsyncIOEventEmitter
 
 logger = logging.getLogger(__name__)
 
