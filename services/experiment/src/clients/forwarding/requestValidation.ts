@@ -53,9 +53,8 @@ export function validateListRoomsOutput(
     return true;
   }
 
-  (
-    validateListRoomsOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateListRoomsOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -113,9 +112,8 @@ export function validateCreateRoomOutput(
     return true;
   }
 
-  (
-    validateCreateRoomOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateCreateRoomOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -177,9 +175,8 @@ export function validateGetRoomOutput(
     return true;
   }
 
-  (
-    validateGetRoomOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateGetRoomOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -251,9 +248,8 @@ export function validateUpdateRoomOutput(
     return true;
   }
 
-  (
-    validateUpdateRoomOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateUpdateRoomOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }
@@ -308,9 +304,8 @@ export function validateDeleteRoomOutput(
     return true;
   }
 
-  (
-    validateDeleteRoomOutput as FunctionWithErrors
-  ).errors = `Response status ${response.status} is unexpected`;
+  (validateDeleteRoomOutput as FunctionWithErrors).errors =
+    `Response status ${response.status} is unexpected`;
 
   return false;
 }

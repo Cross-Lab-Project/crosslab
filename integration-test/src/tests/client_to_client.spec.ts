@@ -1,5 +1,5 @@
 /// <reference types="../context.js" />
-import { clientTypes } from '../fixtures/dummyDevice.js';
+import { clientTypes, connectionTypes } from '../fixtures/dummyDevice.js';
 import { ExperimentTest } from '../helper/experimentTest.js';
 
 const experimentConfig = {

@@ -2,7 +2,7 @@
 import { ExperimentServiceTypes } from '@cross-lab-project/api-client';
 import { expect } from 'chai';
 
-import { clientTypes } from '../fixtures/dummyDevice.js';
+import { clientTypes, connectionTypes } from '../fixtures/dummyDevice.js';
 import { ExperimentTest } from '../helper/experimentTest.js';
 
 const gpioExperimentConfiguration: Omit<

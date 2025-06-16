@@ -6385,3 +6385,29 @@ async def test_update_lti_experiment(aioresponses: aioresponses):
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_lti_experiment(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_update_lti_experiment_callback(aioresponses: aioresponses):
+    url = r'/lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment_callback'
+    url_variant = r'lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment_callback'
+    full_url = BASE_URL+r'/lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment_callback'
+
+    request = json.loads(r'{"callbackType":"event","eventType":"experiment-changed"}')
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment_callback(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment_callback(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment_callback(url=full_url, body=request, **parameters)

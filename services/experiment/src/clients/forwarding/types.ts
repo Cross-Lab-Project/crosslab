@@ -76,8 +76,8 @@ export type SizedTuple<
     ? _SizedTuple<T, NumericRangeTuple<MIN, MAX>>
     : TupleObject<T, NumericRangeTuple<0, MIN>> & T[]
   : MAX extends number
-  ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
-  : T[];
+    ? _SizedTuple<T, NumericRangeTuple<0, MAX>, true>
+    : T[];
 
 type _SizedTuple<T, ARR extends number[], Z extends boolean = false> = ARR extends [
   infer HEAD extends number,
@@ -147,18 +147,18 @@ export type RoomOverview<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        /**
-         * URL of the room
-         */
-        url: string;
-        [k: string]: unknown;
-      }
-    : never;
+      ? {
+          [k: string]: unknown;
+        }
+      : T extends 'response'
+        ? {
+            /**
+             * URL of the room
+             */
+            url: string;
+            [k: string]: unknown;
+          }
+        : never;
 
 export type Participant<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
@@ -170,22 +170,22 @@ export type Participant<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        /**
-         * ID of the participant.
-         */
-        id: string;
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        /**
-         * ID of the participant.
-         */
-        id: string;
-        [k: string]: unknown;
-      }
-    : never;
+      ? {
+          /**
+           * ID of the participant.
+           */
+          id: string;
+          [k: string]: unknown;
+        }
+      : T extends 'response'
+        ? {
+            /**
+             * ID of the participant.
+             */
+            id: string;
+            [k: string]: unknown;
+          }
+        : never;
 
 export type Room<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'
   ? {
@@ -200,23 +200,23 @@ export type Room<T extends 'request' | 'response' | 'all' = 'all'> = T extends '
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      /**
-       * Participants of the room
-       */
-      participants: SizedTuple<Participant<'request'>, 2, undefined>;
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      /**
-       * URL of the room
-       */
-      url: string;
-      /**
-       * Participants of the room
-       */
-      participants: SizedTuple<Participant<'response'>, 2, undefined>;
-      [k: string]: unknown;
-    }
-  : never;
+    ? {
+        /**
+         * Participants of the room
+         */
+        participants: SizedTuple<Participant<'request'>, 2, undefined>;
+        [k: string]: unknown;
+      }
+    : T extends 'response'
+      ? {
+          /**
+           * URL of the room
+           */
+          url: string;
+          /**
+           * Participants of the room
+           */
+          participants: SizedTuple<Participant<'response'>, 2, undefined>;
+          [k: string]: unknown;
+        }
+      : never;

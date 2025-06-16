@@ -222,8 +222,6 @@ export class Client {
     /**
      * List experiments 
 	 * 
-	 * @param options.experimentStatus
-	 * Only retrieve experiments with this status.
 	 * @param options.url
 	 * Url of the  to be used.
      *
@@ -241,22 +239,14 @@ export class Client {
      */
     public async listExperiments(
             options?: {
-                headers?: [string, string][],experimentStatus?: string,url?: string}): Promise<Signatures.ListExperimentsSuccessResponse["body"]> {
+                headers?: [string, string][],url?: string}): Promise<Signatures.ListExperimentsSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/experiments")
 
         
 
         
-        const parameters = {
-            experimentStatus: options?.experimentStatus,
-        }
 
-            const query: [string,string][] = []
-            
-                if (parameters["experimentStatus"]) 
-                    query.push(["experimentStatus", parameters["experimentStatus"].toString()])
-
-        if (!RequestValidation.validateListExperimentsInput(parameters))
+        if (!RequestValidation.validateListExperimentsInput())
             throw new ValidationError(
                 'Request validation failed!', 
                 (RequestValidation.validateListExperimentsInput as Types.FunctionWithErrors).errors
@@ -264,7 +254,7 @@ export class Client {
 
         const authorization: string = `Bearer ${this.accessToken}`
 
-        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) + '?' + new URLSearchParams(query), {
+        const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl) , {
             method: "GET", 
             headers: [
                 ["Content-Type", "application/json"],

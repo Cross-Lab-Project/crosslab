@@ -4376,3 +4376,16 @@ This overwrites any existing role mapping possibles et by the student impersonat
 
 
 UpdateLtiExperimentResponse: TypeAlias = None
+
+
+class UpdateLtiExperimentCallbackRequest(TypedDict):
+    """
+    Properties:
+    - callbackType
+    - eventType
+    """
+    callbackType: Literal["event"]
+    eventType: Literal["experiment-changed"]
+
+
+UpdateLtiExperimentCallbackResponse: TypeAlias = None

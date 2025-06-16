@@ -85,7 +85,9 @@ from crosslab.api_client.schemas import (
     UpdateResourceStudentRequest,
     UpdateResourceStudentResponse,
     UpdateLtiExperimentRequest,
-    UpdateLtiExperimentResponse
+    UpdateLtiExperimentResponse,
+    UpdateLtiExperimentCallbackRequest,
+    UpdateLtiExperimentCallbackResponse
 )
 
 
@@ -1557,6 +1559,28 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 201:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_lti_experiment_callback(self, url: str, body: UpdateLtiExperimentCallbackRequest) -> UpdateLtiExperimentCallbackResponse:  # noqa: E501
+        """
+        Experiment Changed Callback
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/session\/[^?]*?)(\/experiment_callback)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/experiment_callback'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:

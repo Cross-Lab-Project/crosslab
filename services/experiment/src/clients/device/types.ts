@@ -351,22 +351,22 @@ export type ServiceDescription<T extends 'request' | 'response' | 'all' = 'all'>
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        serviceType?: string;
-        supportedConnectionTypes?: string[];
-        serviceId?: string;
-        serviceDirection?: 'consumer' | 'producer' | 'prosumer';
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        serviceType?: string;
-        supportedConnectionTypes?: string[];
-        serviceId?: string;
-        serviceDirection?: 'consumer' | 'producer' | 'prosumer';
-        [k: string]: unknown;
-      }
-    : never;
+      ? {
+          serviceType?: string;
+          supportedConnectionTypes?: string[];
+          serviceId?: string;
+          serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+          [k: string]: unknown;
+        }
+      : T extends 'response'
+        ? {
+            serviceType?: string;
+            supportedConnectionTypes?: string[];
+            serviceId?: string;
+            serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+            [k: string]: unknown;
+          }
+        : never;
 
 export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
@@ -2870,34 +2870,34 @@ export type ServiceConfig<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        serviceType: string;
-        serviceId: string;
-        remoteServiceId: string;
-        remoteServiceDescription: {
-          serviceType?: string;
-          supportedConnectionTypes?: string[];
-          serviceId?: string;
-          serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+      ? {
+          serviceType: string;
+          serviceId: string;
+          remoteServiceId: string;
+          remoteServiceDescription: {
+            serviceType?: string;
+            supportedConnectionTypes?: string[];
+            serviceId?: string;
+            serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+            [k: string]: unknown;
+          };
           [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        serviceType: string;
-        serviceId: string;
-        remoteServiceId: string;
-        remoteServiceDescription: {
-          serviceType?: string;
-          supportedConnectionTypes?: string[];
-          serviceId?: string;
-          serviceDirection?: 'consumer' | 'producer' | 'prosumer';
-          [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      }
-    : never;
+        }
+      : T extends 'response'
+        ? {
+            serviceType: string;
+            serviceId: string;
+            remoteServiceId: string;
+            remoteServiceDescription: {
+              serviceType?: string;
+              supportedConnectionTypes?: string[];
+              serviceId?: string;
+              serviceDirection?: 'consumer' | 'producer' | 'prosumer';
+              [k: string]: unknown;
+            };
+            [k: string]: unknown;
+          }
+        : never;
 
 export type CreatePeerconnectionMessage<
   T extends 'request' | 'response' | 'all' = 'all',
@@ -2921,39 +2921,12 @@ export type CreatePeerconnectionMessage<
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      messageType: string;
-      [k: string]: unknown;
-    } & {
-      messageType: 'command';
-      command: string;
-      [k: string]: unknown;
-    } & {
-      command: 'createPeerconnection';
-      connectionType: 'webrtc' | 'websocket' | 'local';
-      connectionUrl: string;
-      services: ServiceConfig<'request'>[];
-      tiebreaker: boolean;
-      connectionOptions?: {
+    ? {
+        messageType: string;
         [k: string]: unknown;
-      };
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      messageType: string;
-      [k: string]: unknown;
-    } & {
-      messageType: 'command';
-      command: string;
-      [k: string]: unknown;
-    } & {
-      command: 'createPeerconnection';
-      connectionType: 'webrtc' | 'websocket' | 'local';
-      connectionUrl: string;
-      services: ServiceConfig<'response'>[];
-      tiebreaker: boolean;
-      connectionOptions?: {
+      } & {
+        messageType: 'command';
+        command: string;
         [k: string]: unknown;
       } & {
         command: 'createPeerconnection';
@@ -2961,7 +2934,7 @@ export type CreatePeerconnectionMessage<
         connectionUrl: string;
         services: ServiceConfig<'request'>[];
         tiebreaker: boolean;
-        config?: {
+        connectionOptions?: {
           [k: string]: unknown;
         };
         [k: string]: unknown;
@@ -2980,7 +2953,7 @@ export type CreatePeerconnectionMessage<
           connectionUrl: string;
           services: ServiceConfig<'response'>[];
           tiebreaker: boolean;
-          config?: {
+          connectionOptions?: {
             [k: string]: unknown;
           };
           [k: string]: unknown;
@@ -3210,33 +3183,39 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        configuration?: {
+      ? {
+          /**
+           * Type of the peerconnection
+           */
+          type: 'local' | 'webrtc' | 'websocket';
+          configuration?: {
+            [k: string]: unknown;
+          };
           [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        /**
-         * URL of the peerconnection
-         */
-        url: string;
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        /**
-         * The status of the peerconnection.
-         */
-        status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
-      }
-    : never;
+        }
+      : T extends 'response'
+        ? {
+            /**
+             * URL of the peerconnection
+             */
+            url: string;
+            /**
+             * Type of the peerconnection
+             */
+            type: 'local' | 'webrtc' | 'websocket';
+            /**
+             * The status of the peerconnection.
+             */
+            status:
+              | 'new'
+              | 'connecting'
+              | 'connected'
+              | 'disconnected'
+              | 'failed'
+              | 'closed';
+            [k: string]: unknown;
+          }
+        : never;
 
 export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
@@ -3262,39 +3241,45 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        configuration?: {
+      ? {
+          /**
+           * Type of the peerconnection
+           */
+          type: 'local' | 'webrtc' | 'websocket';
+          configuration?: {
+            [k: string]: unknown;
+          };
           [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      } & {
-        devices: SizedTuple<DeviceReference<'request'>, 2, 2>;
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        /**
-         * URL of the peerconnection
-         */
-        url: string;
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        /**
-         * The status of the peerconnection.
-         */
-        status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
-      } & {
-        devices: SizedTuple<DeviceReference<'response'>, 2, 2>;
-        [k: string]: unknown;
-      }
-    : never;
+        } & {
+          devices: SizedTuple<DeviceReference<'request'>, 2, 2>;
+          [k: string]: unknown;
+        }
+      : T extends 'response'
+        ? {
+            /**
+             * URL of the peerconnection
+             */
+            url: string;
+            /**
+             * Type of the peerconnection
+             */
+            type: 'local' | 'webrtc' | 'websocket';
+            /**
+             * The status of the peerconnection.
+             */
+            status:
+              | 'new'
+              | 'connecting'
+              | 'connected'
+              | 'disconnected'
+              | 'failed'
+              | 'closed';
+            [k: string]: unknown;
+          } & {
+            devices: SizedTuple<DeviceReference<'response'>, 2, 2>;
+            [k: string]: unknown;
+          }
+        : never;
 
 export type ConfiguredDeviceReference<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
@@ -3359,39 +3344,45 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
         [k: string]: unknown;
       }
     : T extends 'request'
-    ? {
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        configuration?: {
+      ? {
+          /**
+           * Type of the peerconnection
+           */
+          type: 'local' | 'webrtc' | 'websocket';
+          configuration?: {
+            [k: string]: unknown;
+          };
           [k: string]: unknown;
-        };
-        [k: string]: unknown;
-      } & {
-        devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
-        [k: string]: unknown;
-      }
-    : T extends 'response'
-    ? {
-        /**
-         * URL of the peerconnection
-         */
-        url: string;
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        /**
-         * The status of the peerconnection.
-         */
-        status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
-      } & {
-        devices: SizedTuple<ConfiguredDeviceReference<'response'>, 2, 2>;
-        [k: string]: unknown;
-      }
-    : never;
+        } & {
+          devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
+          [k: string]: unknown;
+        }
+      : T extends 'response'
+        ? {
+            /**
+             * URL of the peerconnection
+             */
+            url: string;
+            /**
+             * Type of the peerconnection
+             */
+            type: 'local' | 'webrtc' | 'websocket';
+            /**
+             * The status of the peerconnection.
+             */
+            status:
+              | 'new'
+              | 'connecting'
+              | 'connected'
+              | 'disconnected'
+              | 'failed'
+              | 'closed';
+            [k: string]: unknown;
+          } & {
+            devices: SizedTuple<ConfiguredDeviceReference<'response'>, 2, 2>;
+            [k: string]: unknown;
+          }
+        : never;
 
 export type PeerconnectionClosedEventCallback<
   T extends 'request' | 'response' | 'all' = 'all',
@@ -3429,53 +3420,12 @@ export type PeerconnectionClosedEventCallback<
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      callbackType: string;
-      [k: string]: unknown;
-    } & {
-      callbackType: 'event';
-      eventType: string;
-      [k: string]: unknown;
-    } & {
-      eventType: 'peerconnection-closed';
-      peerconnection: {
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        configuration?: {
-          [k: string]: unknown;
-        };
+    ? {
+        callbackType: string;
         [k: string]: unknown;
       } & {
-        devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      callbackType: string;
-      [k: string]: unknown;
-    } & {
-      callbackType: 'event';
-      eventType: string;
-      [k: string]: unknown;
-    } & {
-      eventType: 'peerconnection-closed';
-      peerconnection: {
-        /**
-         * URL of the peerconnection
-         */
-        url: string;
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        /**
-         * The status of the peerconnection.
-         */
-        status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        callbackType: 'event';
+        eventType: string;
         [k: string]: unknown;
       } & {
         eventType: 'peerconnection-closed';
@@ -3483,7 +3433,10 @@ export type PeerconnectionClosedEventCallback<
           /**
            * Type of the peerconnection
            */
-          type: 'local' | 'webrtc';
+          type: 'local' | 'webrtc' | 'websocket';
+          configuration?: {
+            [k: string]: unknown;
+          };
           [k: string]: unknown;
         } & {
           devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
@@ -3509,7 +3462,7 @@ export type PeerconnectionClosedEventCallback<
             /**
              * Type of the peerconnection
              */
-            type: 'local' | 'webrtc';
+            type: 'local' | 'webrtc' | 'websocket';
             /**
              * The status of the peerconnection.
              */
@@ -3565,53 +3518,12 @@ export type PeerconnectionStatusChangedEventCallback<
       [k: string]: unknown;
     }
   : T extends 'request'
-  ? {
-      callbackType: string;
-      [k: string]: unknown;
-    } & {
-      callbackType: 'event';
-      eventType: string;
-      [k: string]: unknown;
-    } & {
-      eventType: 'peerconnection-status-changed';
-      peerconnection: {
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        configuration?: {
-          [k: string]: unknown;
-        };
+    ? {
+        callbackType: string;
         [k: string]: unknown;
       } & {
-        devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
-        [k: string]: unknown;
-      };
-      [k: string]: unknown;
-    }
-  : T extends 'response'
-  ? {
-      callbackType: string;
-      [k: string]: unknown;
-    } & {
-      callbackType: 'event';
-      eventType: string;
-      [k: string]: unknown;
-    } & {
-      eventType: 'peerconnection-status-changed';
-      peerconnection: {
-        /**
-         * URL of the peerconnection
-         */
-        url: string;
-        /**
-         * Type of the peerconnection
-         */
-        type: 'local' | 'webrtc' | 'websocket';
-        /**
-         * The status of the peerconnection.
-         */
-        status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
+        callbackType: 'event';
+        eventType: string;
         [k: string]: unknown;
       } & {
         eventType: 'peerconnection-status-changed';
@@ -3619,7 +3531,10 @@ export type PeerconnectionStatusChangedEventCallback<
           /**
            * Type of the peerconnection
            */
-          type: 'local' | 'webrtc';
+          type: 'local' | 'webrtc' | 'websocket';
+          configuration?: {
+            [k: string]: unknown;
+          };
           [k: string]: unknown;
         } & {
           devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
@@ -3645,7 +3560,7 @@ export type PeerconnectionStatusChangedEventCallback<
             /**
              * Type of the peerconnection
              */
-            type: 'local' | 'webrtc';
+            type: 'local' | 'webrtc' | 'websocket';
             /**
              * The status of the peerconnection.
              */
