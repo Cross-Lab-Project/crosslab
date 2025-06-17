@@ -75,7 +75,6 @@ export class WebSocketPeerConnection
         const channel = this._channels.get(parsedMessage.channel);
 
         if (channel?.channel_type === 'DataChannel' && channel.ondata) {
-          console.log(JSON.stringify(parsedMessage, null, 4));
           switch (parsedMessage.type) {
             case 'string': {
               channel.ondata(parsedMessage.content);

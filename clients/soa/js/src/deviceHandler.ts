@@ -33,10 +33,25 @@ export interface DeviceHandlerEvents {
 
 export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   ws!: WebSocket;
-  bufferedLocalConnection?: CreatePeerConnectionMessage & { connectionType: 'local' };
+  bufferedLocalConnection?: CreatePeerConnectionMessage & {
+    connectionType: 'local';
+  };
   connections = new Map<string, PeerConnection>();
   services = new Map<string, Service>();
   supportedConnectionTypes: string[] = ['webrtc'];
+  private isReady: Promise<void>;
+  private isReadyResolver?: () => void;
+
+  constructor(ready = true) {
+    super();
+    this.isReady = new Promise<void>(resolve => {
+      if (ready) {
+        resolve();
+      } else {
+        this.isReadyResolver = resolve;
+      }
+    });
+  }
 
   async connect(connectOptions: { endpoint: string; id: string; token: string }) {
     this.ws = new WebSocket(connectOptions.endpoint);
@@ -57,7 +72,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     const p = new Promise<void>((resolve, reject) => {
       this.ws.onmessage = authenticationEvent => {
         const authenticationMessage = JSON.parse(authenticationEvent.data as string);
-        console.log(JSON.stringify(authenticationMessage, null, 4));
         if (authenticationMessage.messageType === 'authenticate') {
           if (authenticationMessage.authenticated) {
             resolve();
@@ -71,47 +85,58 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     });
 
     this.ws.onclose = event => {
-      logger.log('info', 'ws closed', { reason: event.reason, code: event.code });
+      logger.log('info', 'ws closed', {
+        reason: event.reason,
+        code: event.code,
+      });
     };
 
     this.ws.onerror = event => {
-      logger.log('error', event.message, { type: event.type, error: event.error });
+      logger.log('error', event.message, {
+        type: event.type,
+        error: event.error,
+      });
     };
 
     await p;
 
     this.ws.onmessage = event => {
       const message = JSON.parse(event.data as string);
-      console.log(JSON.stringify(message, null, 4));
+      console.log('soa-client: received message', message);
 
       if (isCommandMessage(message)) {
         if (isCreatePeerConnectionMessage(message)) {
-          this.handleCreatePeerConnectionMessage(message);
+          return this.handleCreatePeerConnectionMessage(message);
         } else if (isClosePeerConnectionMessage(message)) {
-          this.handleClosePeerConnectionMessage(message);
+          return this.handleClosePeerConnectionMessage(message);
         }
+      } else if (isSignalingMessage(message)) {
+        return this.handleSignalingMessage(message);
+      } else if (isConfigurationMessage(message)) {
+        return this.handleConfigurationMessage(message);
+      } else if (isExperimentStatusChangedMessage(message)) {
+        return this.handleExperimentStatusChangedMessage(message);
       }
-      if (isSignalingMessage(message)) {
-        this.handleSignalingMessage(message);
-      }
-      if (isConfigurationMessage(message)) {
-        this.handleConfigurationMessage(message);
-      }
-      if (isExperimentStatusChangedMessage(message)) {
-        this.handleExperimentStatusChangedMessage(message);
-      }
+
+      console.log('soa-client: received unknown message', message);
     };
+  }
+
+  setReady() {
+    if (!this.isReadyResolver) return;
+
+    this.isReadyResolver();
   }
 
   addService(service: Service) {
     this.services.set(service.serviceId, service);
   }
 
-  private handleCreatePeerConnectionMessage(message: CreatePeerConnectionMessage) {
+  private async handleCreatePeerConnectionMessage(message: CreatePeerConnectionMessage) {
+    await this.isReady;
     if (this.connections.has(message.connectionUrl)) {
       throw Error('Can not create a connection. Connection Id is already present');
     }
-    console.log(JSON.stringify(message, null, 4));
 
     if (message.connectionType === 'local' && !this.bufferedLocalConnection) {
       this.bufferedLocalConnection = message;
@@ -151,7 +176,9 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     for (const serviceConfig of serviceConfigs) {
       const service = this.services.get(serviceConfig.serviceId);
       if (service === undefined) {
-        throw Error('No Service for the service config was found');
+        throw Error(
+          `No Service for the service config was found: "${serviceConfig.serviceId}"`,
+        );
       }
       service.setupConnection(connection, serviceConfig);
     }
@@ -189,7 +216,8 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   private handleClosePeerConnectionMessage(message: ClosePeerConnectionMessage) {
     const connection = this.connections.get(message.connectionUrl);
     if (!connection) {
-      throw Error('Cannot close a connection. Connection Id is not present');
+      return;
+      //throw Error("Cannot close a connection. Connection Id is not present");
     }
     logger.log('info', 'closing connection', message);
     connection.teardown();

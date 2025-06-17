@@ -67,6 +67,40 @@ helper/cli:
     tags:
       - test
 
+helper/abstract-messaging-channel:
+  - script: build
+  - script: lint
+    dependencies:
+      - helper/abstract-messaging-channel:build
+    tags:
+      - test
+
+helper/crosslab-messaging-channel:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+  - script: lint
+    dependencies:
+      - helper/crosslab-messaging-channel:build
+    tags:
+      - test
+
+helper/filesystem-schemas:
+  - script: build
+  - script: lint
+    dependencies:
+      - helper/filesystem-schemas:build
+    tags:
+      - test
+
+helper/promise-manager:
+  - script: build
+  - script: lint
+    dependencies:
+      - helper/promise-manager:build
+    tags:
+      - test
+
 ################################################################################
 # Backend ######################################################################
 ################################################################################
@@ -508,6 +542,127 @@ clients/soa_services/parameter/js:
       - clients/soa_services/message/js:build
     tags:
       - test
+
+clients/soa_services/collaboration/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/collaboration/js:build
+    tags:
+      -test
+
+clients/soa_services/compilation/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/filesystem-schemas:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/compilation/js:build
+    tags:
+      -test
+      
+clients/soa_services/debugging-adapter/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/filesystem-schemas:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/debugging-adapter/js:build
+    tags:
+      -test
+      
+clients/soa_services/debugging-target/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/debugging-target/js:build
+    tags:
+      -test
+      
+clients/soa_services/filesystem/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/filesystem-schemas:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/filesystem/js:build
+    tags:
+      -test
+      
+clients/soa_services/lsp/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/filesystem-schemas:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/lsp/js:build
+    tags:
+      -test
+      
+clients/soa_services/messaging/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/messaging/js:build
+    tags:
+      -test
+      
+clients/soa_services/programming/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/filesystem-schemas:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/programming/js:build
+    tags:
+      -test
+      
+clients/soa_services/testing/js:
+  - script: build
+    dependencies:
+      - helper/abstract-messaging-channel:build
+      - helper/crosslab-messaging-channel:build
+      - helper/promise-manager:build
+      - clients/soa/js:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/testing/js:build
+    tags:
+      -test
+      
 
 ################################################################################
 # Integration Tests ############################################################
