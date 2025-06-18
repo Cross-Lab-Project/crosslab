@@ -79,6 +79,7 @@ helper/crosslab-messaging-channel:
   - script: build
     dependencies:
       - helper/abstract-messaging-channel:build
+      - clients/soa/js:build
   - script: lint
     dependencies:
       - helper/crosslab-messaging-channel:build
