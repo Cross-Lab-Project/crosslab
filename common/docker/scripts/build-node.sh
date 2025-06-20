@@ -30,12 +30,18 @@ function get_local_dependencies() {
     dependencies=$(echo "$dependencies" | grep -E '^file:')
     # remove file: prefix
     dependencies=$(echo "$dependencies" | sed 's/file://' | sed 's/\/dist\/npm-latest.tgz//')
+    # convert to absolute paths
+    i=0
+    newdependencies=()
+    for dependency in $dependencies; do
+        absolutepath=$(readlink -f "$(dirname "$1")/$dependency")
+        newdependencies[i++]="$absolutepath"
+    done
+    dependencies=$(IFS=$'\n' ; echo "${newdependencies[*]}")
 
     # for each dependency, recursively call this function
     for dependency in $dependencies; do
         d=$(get_local_dependencies $dependency/package.json)
-        # prefix dependency path to each line
-        d=$(echo "$d" | sed 's~^~'$dependency/'~')
         # append to dependencies
         dependencies="$dependencies"$'\n'"$d"
     done

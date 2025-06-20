@@ -14,9 +14,9 @@ import {
   CollaborationType,
   CollaborationTypeName,
   CollaborationUpdateEventType,
-} from './collaborationTypes';
-import { collaborationProtocol } from './protocol';
-import { Room } from './room';
+} from './collaborationTypes.js';
+import { collaborationProtocol } from './protocol.js';
+import { Room } from './room.js';
 
 const serviceConfigurationSchema = z.object({
   serviceType: z.string(),

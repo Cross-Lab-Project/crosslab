@@ -8,7 +8,7 @@ import {
   CollaborationObject,
   CollaborationString,
   CollaborationTypeName,
-} from '../../collaborationTypes';
+} from '../../collaborationTypes.js';
 
 export type YjsCollaborationType<
   T extends CollaborationTypeName | undefined = undefined,

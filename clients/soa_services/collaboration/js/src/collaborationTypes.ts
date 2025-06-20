@@ -2,7 +2,7 @@ import { Message, ProtocolMessage } from '@cross-lab-project/abstract-messaging-
 import deepEqual from 'deep-equal';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-import { collaborationProtocol } from './protocol';
+import { collaborationProtocol } from './protocol.js';
 
 export interface Awareness {
   getLocalState: () => Record<string, unknown> | null;

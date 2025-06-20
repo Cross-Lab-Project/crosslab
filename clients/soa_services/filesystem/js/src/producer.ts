@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { FileSystemProtocol, fileSystemProtocol } from './protocol';
 
-interface FileSystemService__ProducerEvents {
+interface FileSystemServiceProducerEvents {
   'new-consumer': (consumerId: string) => void;
   request: (
     consumerId: string,
@@ -23,8 +23,8 @@ interface FileSystemService__ProducerEvents {
   ) => void;
 }
 
-export class FileSystemService__Producer
-  extends TypedEmitter<FileSystemService__ProducerEvents>
+export class FileSystemServiceProducer
+  extends TypedEmitter<FileSystemServiceProducerEvents>
   implements Service
 {
   private _consumers: Map<

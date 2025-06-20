@@ -1,7 +1,7 @@
 import { JSONSchema7, JSONSchema7Definition, JSONSchema7Type } from 'json-schema';
 import * as Y from 'yjs';
 
-import { CollaborationServiceProsumer } from './prosumer';
+import { CollaborationServiceProsumer } from './prosumer.js';
 
 export type FromSchema<
   T extends JSONSchema7,

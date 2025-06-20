@@ -14,9 +14,9 @@ import {
   CollaborationProvider,
   CollaborationTypeName,
   CollaborationUpdateEventType,
-} from '../../collaborationTypes';
-import { collaborationProtocol } from '../../protocol';
-import { yjsCollaborationProtocol } from './protocol';
+} from '../../collaborationTypes.js';
+import { collaborationProtocol } from '../../protocol.js';
+import { yjsCollaborationProtocol } from './protocol.js';
 import {
   YjsCollaborationArray,
   YjsCollaborationBoolean,
@@ -26,7 +26,7 @@ import {
   YjsCollaborationString,
   YjsCollaborationType,
   yjsToCollaborationType,
-} from './types';
+} from './types.js';
 
 export class YjsCollaborationProvider extends CollaborationProvider {
   private _document: Y.Doc = new Y.Doc();

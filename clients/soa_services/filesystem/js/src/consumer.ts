@@ -29,7 +29,7 @@ interface FileSystemServiceConsumerEvents {
   'new-producer': (producerId: string) => void;
 }
 
-export class FileSystemService__Consumer
+export class FileSystemServiceConsumer
   extends TypedEmitter<FileSystemServiceConsumerEvents>
   implements Service
 {

@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@cross-lab-project/soa-service-collaboration",
   "description": "A crosslab service for collaboration.",
   "types": "./lib/types/index.d.ts",
@@ -20,7 +21,8 @@
   "exports": {
     ".": {
       "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js"
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
     }
   },
   "author": "Pierre Helbing",

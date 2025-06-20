@@ -1,15 +1,15 @@
 import { CrossLabMessagingChannel } from '@cross-lab-project/crosslab-messaging-channel';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-import { YjsCollaborationProvider } from './collaborationProviders/index';
+import { YjsCollaborationProvider } from './collaborationProviders/index.js';
 import {
   Awareness,
   AwarenessProvider,
   CollaborationProvider,
   CollaborationType,
   CollaborationUpdateEventType,
-} from './collaborationTypes';
-import { collaborationProtocol } from './protocol';
+} from './collaborationTypes.js';
+import { collaborationProtocol } from './protocol.js';
 
 interface RoomEvents {
   update: (events: CollaborationUpdateEventType[]) => void;
