@@ -3,6 +3,7 @@ import { RequestHandler } from 'express';
 import { config } from '../config.js';
 import { Client as BookingClient } from './booking/client.js';
 import { Client as DeviceClient } from './device/client.js';
+import { Client as ForwardingClient } from './forwarding/client.js';
 
 export const device = new DeviceClient(config.BASE_URL, {
   serviceUrl: config.DEVICE_SERVICE_URL,
@@ -12,7 +13,11 @@ export const booking = new BookingClient(config.BASE_URL, {
   serviceUrl: config.BOOKING_SERVICE_URL,
   fixedHeaders: [['x-request-authentication', 'experiment-service']],
 });
-export const clients = { device, booking };
+export const forwarding = new ForwardingClient(config.BASE_URL, {
+  serviceUrl: config.FORWARDING_SERVICE_URL,
+  fixedHeaders: [['x-request-authentication', 'experiment-service']],
+});
+export const clients = { device, booking, forwarding };
 export type Clients = typeof clients;
 
 declare global {
@@ -44,7 +49,16 @@ export const middleware: RequestHandler = (req, _res, next) => {
     fixedHeaders: fixed_headers,
   });
 
-  req.clients = { device: bound_device, booking: bound_booking };
+  const bound_forwarding = new ForwardingClient(config.BASE_URL, {
+    serviceUrl: config.FORWARDING_SERVICE_URL,
+    fixedHeaders: fixed_headers,
+  });
+
+  req.clients = {
+    device: bound_device,
+    booking: bound_booking,
+    forwarding: bound_forwarding,
+  };
 
   next();
 };

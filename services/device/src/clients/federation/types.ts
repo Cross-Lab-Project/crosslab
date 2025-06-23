@@ -105,7 +105,7 @@ type TupleObject<T, N extends number[]> = N extends [
   ...infer TAIL extends number[],
 ]
   ? TAIL extends []
-    ? Record<string, never>
+    ? T[]
     : { [P in HEAD]: T } & TupleObject<T, TAIL>
   : Record<string, never>;
 

@@ -9,7 +9,7 @@ relay = MediaRelay()
 
 
 class WebcamService__Producer(Service):
-    service_type = "http://api.goldi-labs.de/serviceTypes/webcam"
+    service_type = "https://api.goldi-labs.de/serviceTypes/webcam"
     service_direction = "producer"
     service_id: str
 
@@ -24,6 +24,7 @@ class WebcamService__Producer(Service):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ['webrtc'],
         }
 
     def setupConnection(

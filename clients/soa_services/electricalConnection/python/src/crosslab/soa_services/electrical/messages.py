@@ -21,11 +21,12 @@ SignalInterfaceConfig = GPIOInterfaceConfig
 
 
 class ElectricalServiceConfig(TypedDict):
-    serviceType: Literal["http://api.goldi-labs.de/serviceTypes/electrical"]
+    serviceType: Literal["https://api.goldi-labs.de/serviceTypes/electrical"]
     interfaces: List[SignalInterfaceConfig]
 
 
-State = Literal["unknown", "error", "strongL", "strongH", "highZ", "weakL", "weakH"]
+State = Literal["unknown", "error", "strongL",
+                "strongH", "highZ", "weakL", "weakH"]
 
 
 class GPIOInterfaceData(TypedDict):

@@ -58,6 +58,8 @@ export class PeerconnectionRepository extends AbstractRepository<
       model.deviceA = { ...deviceA, status: 'new' };
       model.deviceB = { ...deviceB, status: 'new' };
     }
+
+    model.configuration = data.configuration ?? {};
   }
 
   async format(model: PeerconnectionModel): Promise<Peerconnection<'response'>> {

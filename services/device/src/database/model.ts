@@ -49,6 +49,9 @@ export abstract class DeviceOverviewModel {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+
+  @Column({ type: 'simple-json' })
+  additionalAttributes!: object;
 }
 
 @ChildEntity()
@@ -119,7 +122,7 @@ export abstract class PeerconnectionModel {
   uuid!: string;
 
   @Column()
-  type!: 'local' | 'webrtc';
+  type!: 'local' | 'webrtc' | 'websocket';
 
   @Column('varchar')
   status!: ConnectionStatus;
@@ -129,6 +132,9 @@ export abstract class PeerconnectionModel {
 
   @Column('simple-json')
   deviceB!: ConfiguredDeviceReference & { status: ConnectionStatus };
+
+  @Column('simple-json')
+  configuration!: Record<string, unknown>;
 
   @DeleteDateColumn()
   deletedAt?: Date;

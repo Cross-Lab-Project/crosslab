@@ -43,9 +43,22 @@ export class DeviceGroupRepository extends AbstractRepository<
   ): Promise<void> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
+    const {
+      type: _type,
+      description: _description,
+      devices,
+      isPublic: _isPublic,
+      name: _name,
+      owner: _owner,
+      viewer: _viewer,
+      ...additionalAttributes
+    } = { ...model.additionalAttributes, ...data };
+
     await this.dependencies.deviceOverview.write(model, data);
 
-    if (data.devices) model.devices = data.devices;
+    if (devices) model.devices = devices;
+
+    model.additionalAttributes = additionalAttributes;
   }
 
   async format(model: DeviceGroupModel): Promise<DeviceGroup<'response'>> {
@@ -54,6 +67,7 @@ export class DeviceGroupRepository extends AbstractRepository<
     const devices: DeviceReference[] = model.devices;
 
     return {
+      ...model.additionalAttributes,
       ...(await this.dependencies.deviceOverview.format(model)),
       type: 'group',
       devices: devices.filter(

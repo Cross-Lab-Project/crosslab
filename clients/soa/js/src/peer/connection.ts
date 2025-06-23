@@ -9,7 +9,7 @@ export type ServiceConfig = {
   remoteServiceId: string;
 };
 export interface PeerConnectionEvents {
-  signalingMessage(msg: Omit<SignalingMessage, 'connectionUrl'>): void;
+  signalingMessage(msg: Omit<SignalingMessage, 'connectionUrl' | 'messageType'>): void;
   connectionChanged(): void;
 }
 export interface PeerConnection extends TypedEmitter<PeerConnectionEvents> {

@@ -3,8 +3,9 @@ from typing import Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
-from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEvent
 from pyee.asyncio import AsyncIOEventEmitter
+
+from crosslab.soa_services.file.messages import FileServiceConfig, FileServiceEvent
 
 
 class FileService__Producer(Service):
@@ -20,6 +21,7 @@ class FileService__Producer(Service):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ["webrtc", "websocket"],
         }
 
     def setupConnection(self, connection: Connection, serviceConfig: FileServiceConfig):
@@ -39,7 +41,6 @@ class FileService__Producer(Service):
         chunkSize = 8192
         for i in range(0, len(content), chunkSize):
             chunk = bytes(content[i : i + chunkSize])
-            print(len(chunk))
             self.channel.send(chunk)
 
 
@@ -57,6 +58,7 @@ class FileService__Consumer(Service, AsyncIOEventEmitter):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ["webrtc", "websocket"],
         }
 
     def setupConnection(self, connection: Connection, serviceConfig: FileServiceConfig):

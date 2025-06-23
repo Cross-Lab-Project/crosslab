@@ -1,0 +1,11 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+title: Room Overview
+properties:
+  url:
+    type: string
+    description: URL of the room
+    format: uri
+    readOnly: true
+required:
+  - url

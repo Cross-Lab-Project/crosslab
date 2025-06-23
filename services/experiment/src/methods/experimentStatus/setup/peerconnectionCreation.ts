@@ -7,7 +7,7 @@ import { InvalidStateError, MalformedExperimentError } from '../../../types/erro
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { createPeerconnections } from '../../peerconnection.js';
 import { sendStatusUpdateMessages } from '../../statusUpdateMessage.js';
-import { experimentUrlFromId } from '../../url.js';
+import { experimentUrlFromId, getUrlOrInstanceUrl } from '../../url.js';
 
 async function checkDevices(
   experimentModel: ExperimentModel,
@@ -16,7 +16,7 @@ async function checkDevices(
 ) {
   await Promise.all(
     experimentModel.devices.map(async device => {
-      const deviceUrl = device.instance?.url ?? device.resolvedDevice ?? device.url;
+      const deviceUrl = getUrlOrInstanceUrl(device);
       try {
         const resolvedDevice = await clients.device.getDevice(deviceUrl);
         if (resolvedDevice.type !== 'device') {
@@ -57,16 +57,15 @@ export async function createPeerconnectionsExperiment(
           resolve();
           clearInterval(connectionInterval);
         } else if (i === 6) {
-          reject('Devices did not connect in time');
-          sendStatusUpdateMessages(
-            experimentModel,
+          const errorMessage =
             `The following devices did not connect in time: "` +
-              Array.from(connectedMap.entries())
-                .filter(entry => !entry[1])
-                .map(entry => entry[0])
-                .join('", "') +
-              '"',
-          );
+            Array.from(connectedMap.entries())
+              .filter(entry => !entry[1])
+              .map(entry => entry[0])
+              .join('", "') +
+            '"';
+          reject(errorMessage);
+          sendStatusUpdateMessages(experimentModel, errorMessage);
           clearInterval(connectionInterval);
         } else {
           i++;
@@ -75,16 +74,14 @@ export async function createPeerconnectionsExperiment(
     });
 
   for (const device of experimentModel.devices) {
-    await globalClients.device.sendSignalingMessage(
-      device.instance?.url ?? device.resolvedDevice ?? device.url,
-      {
-        messageType: 'configuration',
-        configuration: {
-          experimentUrl: experimentUrlFromId(experimentModel.uuid),
-          ...experimentModel.roles.find(role => role.name === device.role)?.configuration,
-        },
+    await globalClients.device.sendSignalingMessage(getUrlOrInstanceUrl(device), {
+      messageType: 'configuration',
+      configuration: {
+        role: device.role,
+        experimentUrl: experimentUrlFromId(experimentModel.uuid),
+        ...experimentModel.roles.find(role => role.name === device.role)?.configuration,
       },
-    );
+    });
   }
 
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);

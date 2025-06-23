@@ -4,6 +4,7 @@ import { UnsuccessfulRequestError } from '../clients/device/client.js';
 import { clients } from '../clients/index.js';
 import { repositories } from '../database/dataSource.js';
 import { ExperimentModel } from '../database/model.js';
+import { getUrlOrInstanceUrl } from './url.js';
 
 export async function sendStatusUpdateMessages(
   experimentModel: ExperimentModel,
@@ -12,7 +13,7 @@ export async function sendStatusUpdateMessages(
   const formattedExperiment = await repositories.experiment.format(experimentModel);
 
   for (const device of experimentModel.devices) {
-    const url = device.instance?.url ?? device.resolvedDevice ?? device.url;
+    const url = getUrlOrInstanceUrl(device);
 
     try {
       await clients.device.sendSignalingMessage(url, {

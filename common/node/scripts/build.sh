@@ -33,6 +33,10 @@ fi
 rm -rf app
 
 if { [ ! -d node_modules ]; }; then
+  local_packages=$(cat package.json | jq -r -c '.dependencies + .devDependencies + .peerDependencies | to_entries | map(select((.value | startswith("file:")) and (.value | endswith("/npm-latest.tgz")))) | .[]')
+  for local_package in $local_packages; do
+    npm install $(echo "$local_package" | jq -r '.value')
+  done
   npm ci
 fi
 npm run build

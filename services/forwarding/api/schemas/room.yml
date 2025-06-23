@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+type: object
+title: Room
+properties:
+  url:
+    type: string
+    description: URL of the room
+    format: uri
+    readOnly: true
+  participants:
+    type: array
+    items:
+      $ref: './participant.yml'
+    minItems: 2
+    description: Participants of the room
+required:
+  - url
+  - participants

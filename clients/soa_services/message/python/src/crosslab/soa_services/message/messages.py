@@ -7,4 +7,4 @@ class MessageServiceEvent(TypedDict):
 
 
 class MessageServiceConfig(TypedDict):
-    serviceType: Literal["http://api.goldi-labs.de/serviceTypes/message"]
+    serviceType: Literal["https://api.goldi-labs.de/serviceTypes/message"]

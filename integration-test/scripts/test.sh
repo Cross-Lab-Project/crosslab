@@ -10,6 +10,7 @@ export DEVICE_IMAGE=$(docker load -i ../services/device/dist/docker-image.tar | 
 export EXPERIMENT_IMAGE=$(docker load -i ../services/experiment/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export FEDERATION_IMAGE=$(docker load -i ../services/federation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export BOOKING_IMAGE=$(docker load -i ../services/booking-new/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export FORWARDING_IMAGE=$(docker load -i ../services/forwarding/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 
 mkdir -p db
 rm -rf db/*
@@ -30,7 +31,7 @@ ctrl_c () {
 virtualenv venv && venv/bin/pip install -r requirements.txt
 npm ci
 
-for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/authorization/status" "http://localhost/federation/status" "http://localhost/experiment/status" "http://localhost/booking/status"; do
+for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/authorization/status" "http://localhost/federation/status" "http://localhost/experiment/status" "http://localhost/booking/status" "http://localhost/forwarding/status"; do
     while true; do
         if curl --output /dev/null --silent --head --fail "$url"; then
             break  # Exit the loop if the URL is accessible

@@ -7,25 +7,17 @@
 version: '3'
 
 x-config: &common-config
-  AUTHORIZATION_SERVER: 'http://localhost:3010'
-  AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:?}'
-  LOGGING: '${LOGGING_LEVEL:-warn}'
-  BASE_URL: ${API_BASE_URL}
-  DB_TYPE: mariadb
-  DB_HOST: localhost
-  DB_PORT: 3306
-  AUTH_SERVICE_URL: 'http://localhost:3000'
-  DEVICE_SERVICE_URL: 'http://localhost:3001'
-  EXPERIMENT_SERVICE_URL: 'http://localhost:3002'
-  FEDERATION_SERVICE_URL: 'http://localhost:3003'
-  BOOKING_SERVICE_URL: 'http://localhost:3004'
-  AUTH_SERVICE_DOMAIN: 'localhost:3000'
-  DEVICE_SERVICE_DOMAIN: 'localhost:3001'
-  EXPERIMENT_SERVICE_DOMAIN: 'localhost:3002'
-  FEDERATION_SERVICE_DOMAIN: 'localhost:3003'
-  BOOKING_SERVICE_DOMAIN: 'localhost:3004'
-  AUTHORIZATION_SERVICE_DOMAIN: 'localhost:3010'
-  LTI_SERVICE_DOMAIN: '127.0.0.2:3005'
+  AUTHORIZATION_SERVER: 'http://127.0.0.1:3010'
+  AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:-TestPSK}'
+  LOGGING: '${LOGGING:-info}'
+  AUTH_SERVICE_URL: 'http://127.0.0.1:3000'
+  DEVICE_SERVICE_URL: 'http://127.0.0.1:3001'
+  EXPERIMENT_SERVICE_URL: 'http://127.0.0.1:3002'
+  FEDERATION_SERVICE_URL: 'http://127.0.0.1:3003'
+  BOOKING_SERVICE_URL: 'http://127.0.0.1:3004'
+  FORWARDING_SERVICE_URL: 'http://127.0.0.1:3005'
+  LTI_SERVICE_URL: 'http://127.0.0.1:3006'
+  BASE_URL: 'http://localhost'
 
 services:
   # Database
@@ -46,6 +38,16 @@ services:
       - '${API_PORT}:80'
     environment:
       <<: *common-config
+      SERVER_NAME: 'localhost'
+      AUTH_SERVICE_DOMAIN: '127.0.0.1:3000'
+      DEVICE_SERVICE_DOMAIN: '127.0.0.1:3001'
+      EXPERIMENT_SERVICE_DOMAIN: '127.0.0.1:3002'
+      FEDERATION_SERVICE_DOMAIN: '127.0.0.1:3003'
+      BOOKING_SERVICE_DOMAIN: '127.0.0.1:3004'
+      FORWARDING_SERVICE_DOMAIN: '127.0.0.1:3005'
+      AUTHORIZATION_SERVICE_DOMAIN: '127.0.0.1:3010'
+      FORWARDING_SERVICE_DOMAIN: '127.0.0.1:3020'
+      LTI_SERVICE_DOMAIN: '127.0.0.2:3006'
     network_mode: 'host'
     depends_on:
       db:
@@ -101,11 +103,13 @@ services:
         condition: service_healthy
     restart: on-failure
   experiment:
-    image: ${EXPERIMENT_IMAGE:?}
+    image: '${EXPERIMENT_IMAGE:?}'
     environment:
       <<: *common-config
-      DB_USERNAME: experiment
-      DB_DATABASE: experiment
+      STUN_SERVER_URL: 'stun:stun.goldi-labs.de:3478'
+      TURN_SERVER_URL: 'turn:turn.goldi-labs.de:3478'
+      TURN_SERVER_USERNAME: 'goldi'
+      TURN_SERVER_CREDENTIAL: 'goldi'
     network_mode: 'host'
     depends_on:
       db:
@@ -122,3 +126,7 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
+  forwarding:
+    image: '${FORWARDING_IMAGE}'
+    environment: *common-config
+    network_mode: 'host'

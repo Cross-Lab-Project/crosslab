@@ -103,7 +103,7 @@ type TupleObject<T, N extends number[]> = N extends [
     ...infer TAIL extends number[]
 ]
     ? TAIL extends []
-        ? Record<string, never>
+        ? T[]
         : { [P in HEAD]: T } & TupleObject<T, TAIL>
     : Record<string, never>;
 
@@ -340,6 +340,7 @@ type NumericRangeTuple<
                 export type ServiceDescription<T extends "request"|"response"|"all" = "all"> = T extends "all" 
                     ? {
 	serviceType?: string
+	supportedConnectionTypes?: (string)[]
 	serviceId?: string
 	serviceDirection?: "consumer" | "producer" | "prosumer"
 	[k: string]: unknown
@@ -347,6 +348,7 @@ type NumericRangeTuple<
                     : T extends "request" 
                     ? {
 	serviceType?: string
+	supportedConnectionTypes?: (string)[]
 	serviceId?: string
 	serviceDirection?: "consumer" | "producer" | "prosumer"
 	[k: string]: unknown
@@ -354,6 +356,7 @@ type NumericRangeTuple<
                     : T extends "response"
                     ? {
 	serviceType?: string
+	supportedConnectionTypes?: (string)[]
 	serviceId?: string
 	serviceDirection?: "consumer" | "producer" | "prosumer"
 	[k: string]: unknown
@@ -2839,6 +2842,13 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	serviceType: string
 	serviceId: string
 	remoteServiceId: string
+	remoteServiceDescription: {
+		serviceType?: string
+		supportedConnectionTypes?: (string)[]
+		serviceId?: string
+		serviceDirection?: "consumer" | "producer" | "prosumer"
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -2846,6 +2856,13 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	serviceType: string
 	serviceId: string
 	remoteServiceId: string
+	remoteServiceDescription: {
+		serviceType?: string
+		supportedConnectionTypes?: (string)[]
+		serviceId?: string
+		serviceDirection?: "consumer" | "producer" | "prosumer"
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -2853,6 +2870,13 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	serviceType: string
 	serviceId: string
 	remoteServiceId: string
+	remoteServiceDescription: {
+		serviceType?: string
+		supportedConnectionTypes?: (string)[]
+		serviceId?: string
+		serviceDirection?: "consumer" | "producer" | "prosumer"
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 }
                     : never
@@ -2873,7 +2897,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	connectionUrl: string
 	services: (ServiceConfig)[]
 	tiebreaker: boolean
-	config?: {
+	connectionOptions?: {
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -2892,7 +2916,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	connectionUrl: string
 	services: (ServiceConfig<"request">)[]
 	tiebreaker: boolean
-	config?: {
+	connectionOptions?: {
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -2911,7 +2935,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	connectionUrl: string
 	services: (ServiceConfig<"response">)[]
 	tiebreaker: boolean
-	config?: {
+	connectionOptions?: {
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -3136,11 +3160,14 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
 	/**
 	 * The status of the peerconnection.
 	 */
 	status: "new" | "connecting" | "connected" | "disconnected" | "failed" | "closed"
+	configuration?: {
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -3148,7 +3175,10 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
+	configuration?: {
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -3160,7 +3190,7 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
 	/**
 	 * The status of the peerconnection.
 	 */
@@ -3180,11 +3210,14 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
 	/**
 	 * The status of the peerconnection.
 	 */
 	status: "new" | "connecting" | "connected" | "disconnected" | "failed" | "closed"
+	configuration?: {
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 } & {
 	devices: SizedTuple<DeviceReference,2,2>
@@ -3195,7 +3228,10 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
+	configuration?: {
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 } & {
 	devices: SizedTuple<DeviceReference<"request">,2,2>
@@ -3210,7 +3246,7 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
 	/**
 	 * The status of the peerconnection.
 	 */
@@ -3273,11 +3309,14 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
 	/**
 	 * The status of the peerconnection.
 	 */
 	status: "new" | "connecting" | "connected" | "disconnected" | "failed" | "closed"
+	configuration?: {
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 } & {
 	devices: SizedTuple<ConfiguredDeviceReference,2,2>
@@ -3288,7 +3327,10 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
+	configuration?: {
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 } & {
 	devices: SizedTuple<ConfiguredDeviceReference<"request">,2,2>
@@ -3303,7 +3345,7 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 	/**
 	 * Type of the peerconnection
 	 */
-	type: "local" | "webrtc"
+	type: "local" | "webrtc" | "websocket"
 	/**
 	 * The status of the peerconnection.
 	 */
@@ -3335,11 +3377,14 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 		/**
 		 * Type of the peerconnection
 		 */
-		type: "local" | "webrtc"
+		type: "local" | "webrtc" | "websocket"
 		/**
 		 * The status of the peerconnection.
 		 */
 		status: "new" | "connecting" | "connected" | "disconnected" | "failed" | "closed"
+		configuration?: {
+			[k: string]: unknown
+		}
 		[k: string]: unknown
 	} & {
 		devices: SizedTuple<ConfiguredDeviceReference,2,2>
@@ -3361,7 +3406,10 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 		/**
 		 * Type of the peerconnection
 		 */
-		type: "local" | "webrtc"
+		type: "local" | "webrtc" | "websocket"
+		configuration?: {
+			[k: string]: unknown
+		}
 		[k: string]: unknown
 	} & {
 		devices: SizedTuple<ConfiguredDeviceReference<"request">,2,2>
@@ -3387,7 +3435,7 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 		/**
 		 * Type of the peerconnection
 		 */
-		type: "local" | "webrtc"
+		type: "local" | "webrtc" | "websocket"
 		/**
 		 * The status of the peerconnection.
 		 */
@@ -3421,11 +3469,14 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 		/**
 		 * Type of the peerconnection
 		 */
-		type: "local" | "webrtc"
+		type: "local" | "webrtc" | "websocket"
 		/**
 		 * The status of the peerconnection.
 		 */
 		status: "new" | "connecting" | "connected" | "disconnected" | "failed" | "closed"
+		configuration?: {
+			[k: string]: unknown
+		}
 		[k: string]: unknown
 	} & {
 		devices: SizedTuple<ConfiguredDeviceReference,2,2>
@@ -3447,7 +3498,10 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 		/**
 		 * Type of the peerconnection
 		 */
-		type: "local" | "webrtc"
+		type: "local" | "webrtc" | "websocket"
+		configuration?: {
+			[k: string]: unknown
+		}
 		[k: string]: unknown
 	} & {
 		devices: SizedTuple<ConfiguredDeviceReference<"request">,2,2>
@@ -3473,7 +3527,7 @@ export type ConnectionStatus<T extends "request"|"response"|"all" = "all"> = T e
 		/**
 		 * Type of the peerconnection
 		 */
-		type: "local" | "webrtc"
+		type: "local" | "webrtc" | "websocket"
 		/**
 		 * The status of the peerconnection.
 		 */

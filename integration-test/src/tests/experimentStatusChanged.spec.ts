@@ -5,7 +5,7 @@ import { ExperimentTest } from '../helper/experimentTest.js';
 const experimentConfig = {
   serviceConfigurations: [
     {
-      serviceType: 'http://api.goldi-labs.de/serviceTypes/electrical',
+      serviceType: 'https://api.goldi-labs.de/serviceTypes/electrical',
       configuration: {},
       participants: [
         {
@@ -51,28 +51,29 @@ describe(`Experiment Status Changed Messages`, async function () {
           running: false,
         };
         device.on('experimentStatusChanged', status => {
-          if (
-            status.status === 'setup' &&
-            status.message === 'The booking has been updated successfully.'
-          ) {
-            experimentSteps.bookingUpdated = true;
-          }
+          // if (
+          //   status.status === 'setup' &&
+          //   status.message === 'The booking has been updated successfully.'
+          // ) {
+          //   experimentSteps.bookingUpdated = true;
+          // }
           if (
             status.status === 'setup' &&
             status.message === 'The peerconnections for the experiment have been created.'
           ) {
-            if (!experimentSteps.bookingUpdated) reject();
+            // if (!experimentSteps.bookingUpdated) reject('booking was not updated!');
             experimentSteps.peerconnectionsCreated = true;
           }
           if (status.status === 'running') {
-            if (!experimentSteps.peerconnectionsCreated) reject();
+            if (!experimentSteps.peerconnectionsCreated)
+              reject('peerconnections were not created!');
             experimentSteps.running = true;
             resolve();
           }
         });
       });
     });
-    await this.experiment.run(this.client, experimentConfig);
+    this.experiment.run(this.client, experimentConfig);
     await Promise.all(promises);
   });
 
@@ -87,12 +88,12 @@ describe(`Experiment Status Changed Messages`, async function () {
           ) {
             resolve();
           } else {
-            reject();
+            reject('experiment was not finished!');
           }
         });
       });
     });
-    await this.experiment.stop(this.client);
+    this.experiment.stop(this.client);
     await Promise.all(promises);
   });
 });

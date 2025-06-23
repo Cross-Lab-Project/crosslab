@@ -52,6 +52,7 @@ export class ParameterService__Producer
       serviceType: this.serviceType,
       serviceId: this.serviceId,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc', 'websocket'],
     };
   }
 
@@ -99,6 +100,7 @@ export class ParameterService__Consumer
       serviceType: this.serviceType,
       serviceId: this.serviceId,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc', 'websocket'],
       parameters: this.parameterDescriptions,
     };
   }

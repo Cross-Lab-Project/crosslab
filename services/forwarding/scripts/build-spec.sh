@@ -1,0 +1,1 @@
+../../../common/spec/scripts/build.sh

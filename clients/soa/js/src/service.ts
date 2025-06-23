@@ -12,6 +12,7 @@ export interface Service<T extends string = string> {
     serviceId: string;
     serviceType: T;
     serviceDirection: ServiceDirection;
+    supportedConnectionTypes: string[];
   };
   serviceType: T;
   serviceId: string;

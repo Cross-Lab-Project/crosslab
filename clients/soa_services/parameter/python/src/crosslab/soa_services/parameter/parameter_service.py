@@ -30,6 +30,7 @@ class ParameterService__Producer(Service):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ['webrtc', 'websocket'],
             "parameters": self.parameter_descriptions,
         }
 
@@ -75,6 +76,7 @@ class ParameterService__Consumer(Service, AsyncIOEventEmitter):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": ['webrtc', 'websocket'],
         }
 
     def setupConnection(

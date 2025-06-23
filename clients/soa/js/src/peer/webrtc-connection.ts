@@ -69,7 +69,7 @@ export class WebRTCPeerConnection
   private transeiverMap = new Map<RTCRtpTransceiver, string>();
   private mediaChannelMap = new Map<string, MediaChannel>();
   private trickleIce = false;
-  tiebreaker!: boolean;
+  tiebreaker: boolean;
   pc: RTCPeerConnection;
   state: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
 
@@ -101,10 +101,11 @@ export class WebRTCPeerConnection
     }
   }
 
-  constructor(configuration: RTCConfiguration) {
+  constructor(configuration: RTCConfiguration & { tiebreaker: boolean }) {
     super();
 
     this.state = 'connecting';
+    this.tiebreaker = configuration.tiebreaker;
     this.pc = new RTCPeerConnection(configuration);
     this.pc.onicecandidate = event => this.onicecandidate(event);
     this.pc.onicegatheringstatechange = _ => this.onicegatheringstatechange();
@@ -461,7 +462,7 @@ export class WebRTCPeerConnection
         label,
       });
       let channel = this.mediaChannelMap.get(label);
-      if(channel === undefined && this.mediaChannelMap.size === 1){
+      if (channel === undefined && this.mediaChannelMap.size === 1) {
         channel = this.mediaChannelMap.values().next().value; // get the first channel, workaround
         // TODO: Do a proper out of band signaling for the media channels based on mid
       }

@@ -271,7 +271,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 channel.track if channel.track else "video", direction="sendrecv"
             )
             videoPreference = filter(
-                lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
+                lambda x: x.name == "H264", RTCRtpSender.getCapabilities(
+                    "video").codecs
             )
             rtpTranseiver.setCodecPreferences(list(videoPreference))
             self._transeiverMap[rtpTranseiver] = label
@@ -308,4 +309,5 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
             if media.msid is None:
                 raise Exception("No msid found")
             media.msid = media.msid.split(" ")[0] + " " + label
+        return str(sdp)
         return str(sdp)

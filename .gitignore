@@ -6,3 +6,4 @@ docs/Gem*
 **/node_modules
 *.env
 *.env-cmdrc
+.buildsystem

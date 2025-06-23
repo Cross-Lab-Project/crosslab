@@ -307,10 +307,12 @@ class CreateDeviceRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -369,10 +371,12 @@ class CreateDeviceRequestAlt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -429,10 +433,12 @@ class CreateDeviceRequestAlt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -530,10 +536,12 @@ class CreateDeviceResponse201Alt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -592,10 +600,12 @@ class CreateDeviceResponse201Alt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -652,10 +662,12 @@ class CreateDeviceResponse201Alt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -756,10 +768,12 @@ class GetDeviceResponse200Alt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -818,10 +832,12 @@ class GetDeviceResponse200Alt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -878,10 +894,12 @@ class GetDeviceResponse200Alt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -982,10 +1000,12 @@ class UpdateDeviceRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1032,10 +1052,12 @@ class UpdateDeviceRequestAlt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1082,10 +1104,12 @@ class UpdateDeviceRequestAlt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1179,10 +1203,12 @@ class UpdateDeviceResponse200Alt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1241,10 +1267,12 @@ class UpdateDeviceResponse200Alt2ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1301,10 +1329,12 @@ class UpdateDeviceResponse200Alt3ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1418,10 +1448,12 @@ class InstantiateDeviceResponse201InstanceServicesItems(TypedDict):
     """
     Properties:
     - serviceType
+    - supportedConnectionTypes
     - serviceId
     - serviceDirection
     """
     serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
     serviceId: NotRequired[str]
     serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
@@ -1521,19 +1553,35 @@ CreateWebsocketTokenResponse200: TypeAlias = str
 CreateWebsocketTokenResponse: TypeAlias = CreateWebsocketTokenResponse200
 
 
+class SendSignalingMessageRequestAlt1ServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class SendSignalingMessageRequestAlt1ServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: NotRequired[SendSignalingMessageRequestAlt1ServicesItemsRemoteservicedescription]
 
 
-class SendSignalingMessageRequestAlt1Config(TypedDict):
+class SendSignalingMessageRequestAlt1Connectionoptions(TypedDict):
     """
     Properties:
     """
@@ -1548,7 +1596,7 @@ class SendSignalingMessageRequestAlt1(TypedDict):
     - connectionUrl
     - services
     - tiebreaker
-    - config
+    - connectionOptions
     """
     messageType: Literal["command"]
     command: Literal["createPeerconnection"]
@@ -1556,7 +1604,7 @@ class SendSignalingMessageRequestAlt1(TypedDict):
     connectionUrl: str
     services: List[SendSignalingMessageRequestAlt1ServicesItems]
     tiebreaker: bool
-    config: NotRequired[SendSignalingMessageRequestAlt1Config]
+    connectionOptions: NotRequired[SendSignalingMessageRequestAlt1Connectionoptions]
 
 
 class SendSignalingMessageRequestAlt2(TypedDict):
@@ -1641,6 +1689,12 @@ SendSignalingMessageRequest = Union[SendSignalingMessageRequestAlt1, SendSignali
 SendSignalingMessageResponse: TypeAlias = None
 
 
+class ListPeerconnectionsResponse200ItemsConfiguration(TypedDict):
+    """
+    Properties:
+    """
+
+
 class ListPeerconnectionsResponse200ItemsDevicesItems(TypedDict):
     """
     Properties:
@@ -1655,11 +1709,13 @@ class ListPeerconnectionsResponse200Items(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[ListPeerconnectionsResponse200ItemsConfiguration]
     devices: List[ListPeerconnectionsResponse200ItemsDevicesItems]
 
 
@@ -1669,16 +1725,38 @@ ListPeerconnectionsResponse200: TypeAlias = List[ListPeerconnectionsResponse200I
 ListPeerconnectionsResponse: TypeAlias = ListPeerconnectionsResponse200
 
 
+class CreatePeerconnectionRequestConfiguration(TypedDict):
+    """
+    Properties:
+    """
+
+
+class CreatePeerconnectionRequestDevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
+
+
 class CreatePeerconnectionRequestDevicesItemsConfigServicesItems(TypedDict):
     """
     Properties:
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: CreatePeerconnectionRequestDevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class CreatePeerconnectionRequestDevicesItemsConfig(TypedDict):
@@ -1705,12 +1783,34 @@ class CreatePeerconnectionRequest(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[CreatePeerconnectionRequestConfiguration]
     devices: List[CreatePeerconnectionRequestDevicesItems]
+
+
+class CreatePeerconnectionResponse201Configuration(TypedDict):
+    """
+    Properties:
+    """
+
+
+class CreatePeerconnectionResponse201DevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
@@ -1719,10 +1819,12 @@ class CreatePeerconnectionResponse201DevicesItemsConfigServicesItems(TypedDict):
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: CreatePeerconnectionResponse201DevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class CreatePeerconnectionResponse201DevicesItemsConfig(TypedDict):
@@ -1749,12 +1851,34 @@ class CreatePeerconnectionResponse201(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[CreatePeerconnectionResponse201Configuration]
     devices: List[CreatePeerconnectionResponse201DevicesItems]
+
+
+class CreatePeerconnectionResponse202Configuration(TypedDict):
+    """
+    Properties:
+    """
+
+
+class CreatePeerconnectionResponse202DevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
@@ -1763,10 +1887,12 @@ class CreatePeerconnectionResponse202DevicesItemsConfigServicesItems(TypedDict):
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: CreatePeerconnectionResponse202DevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class CreatePeerconnectionResponse202DevicesItemsConfig(TypedDict):
@@ -1793,15 +1919,37 @@ class CreatePeerconnectionResponse202(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[CreatePeerconnectionResponse202Configuration]
     devices: List[CreatePeerconnectionResponse202DevicesItems]
 
 
 CreatePeerconnectionResponse: TypeAlias = Union[CreatePeerconnectionResponse201, CreatePeerconnectionResponse202]
+
+
+class GetPeerconnectionResponse200Configuration(TypedDict):
+    """
+    Properties:
+    """
+
+
+class GetPeerconnectionResponse200DevicesItemsConfigServicesItemsRemoteservicedescription(TypedDict):
+    """
+    Properties:
+    - serviceType
+    - supportedConnectionTypes
+    - serviceId
+    - serviceDirection
+    """
+    serviceType: NotRequired[str]
+    supportedConnectionTypes: NotRequired[List[str]]
+    serviceId: NotRequired[str]
+    serviceDirection: NotRequired[Literal["consumer", "producer", "prosumer"]]
 
 
 class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
@@ -1810,10 +1958,12 @@ class GetPeerconnectionResponse200DevicesItemsConfigServicesItems(TypedDict):
     - serviceType
     - serviceId
     - remoteServiceId
+    - remoteServiceDescription
     """
     serviceType: str
     serviceId: str
     remoteServiceId: str
+    remoteServiceDescription: GetPeerconnectionResponse200DevicesItemsConfigServicesItemsRemoteservicedescription
 
 
 class GetPeerconnectionResponse200DevicesItemsConfig(TypedDict):
@@ -1840,11 +1990,13 @@ class GetPeerconnectionResponse200(TypedDict):
     - url: URL of the peerconnection
     - type: Type of the peerconnection
     - status: The status of the peerconnection.
+    - configuration
     - devices
     """
     url: str
-    type: Literal["local", "webrtc"]
+    type: Literal["local", "webrtc", "websocket"]
     status: Literal["new", "connecting", "connected", "disconnected", "failed", "closed"]
+    configuration: NotRequired[GetPeerconnectionResponse200Configuration]
     devices: List[GetPeerconnectionResponse200DevicesItems]
 
 

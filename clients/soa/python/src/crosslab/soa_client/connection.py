@@ -2,8 +2,9 @@ import asyncio
 from abc import ABC, abstractmethod
 from typing import Any, Literal, Optional, Union
 
-from crosslab.soa_client.messages import SignalingMessage
 from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
+
+from crosslab.soa_client.messages import SignalingMessage
 
 MediaStreamTrack = Any
 

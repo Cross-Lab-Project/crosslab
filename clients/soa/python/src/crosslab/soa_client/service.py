@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Awaitable, Literal, Union
+from typing import Awaitable, List, Literal, Union
 
 from crosslab.soa_client.connection import Connection
 
@@ -8,6 +8,7 @@ class Service(ABC):
     service_type: str
     service_direction: Literal["producer", "consumer", "prosumer"]
     service_id: str
+    supportedConnectionTypes: List[str]
 
     @abstractmethod
     def getMeta(self) -> dict:
@@ -15,6 +16,7 @@ class Service(ABC):
             "serviceId": self.service_id,
             "serviceType": self.service_type,
             "serviceDirection": self.service_direction,
+            "supportedConnectionTypes": self.supportedConnectionTypes,
         }
 
     @abstractmethod

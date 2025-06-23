@@ -26,8 +26,8 @@ interface ElectricalServiceMessage {
   data: unknown;
 }
 
-type ServiceType = 'goldi/electrical';
-const ServiceType: ServiceType = 'goldi/electrical';
+type ServiceType = 'https://api.goldi-labs.de/serviceTypes/electrical';
+const ServiceType: ServiceType = 'https://api.goldi-labs.de/serviceTypes/electrical';
 
 export interface ElectricalServiceConfiguration extends ServiceConfiguration {
   serviceType: ServiceType;
@@ -84,6 +84,7 @@ export class ElectricalConnectionService
       serviceType: ServiceType,
       serviceId: this.serviceId,
       serviceDirection: this.serviceDirection,
+      supportedConnectionTypes: ['webrtc', 'websocket'],
       interfaces: interfaceDescriptions,
     };
   }

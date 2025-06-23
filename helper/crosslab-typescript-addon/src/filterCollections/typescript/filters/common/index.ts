@@ -9,6 +9,7 @@ import { deleteFilter } from './delete';
 import { endsWithFilter } from './endsWith';
 import { flattenFilter } from './flatten';
 import { includesFilter } from './includes';
+import { logFilter } from './log';
 import { sortByAttributeFilter } from './sortByAttribute';
 import { splitFilter } from './split';
 import { startsWithFilter } from './startsWith';
@@ -32,4 +33,5 @@ export const commonFilters: Filter[] = [
   stringifyFilter,
   toStringsFilter,
   uniqueFilter,
+  logFilter,
 ];

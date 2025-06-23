@@ -1,7 +1,7 @@
 from crosslab.soa_services.parameter.messages import ParameterServiceConfig
 
 serviceConfig: ParameterServiceConfig = {
-    "serviceType": "http://api.goldi-labs.de/serviceTypes/parameter",
+    "serviceType": "https://api.goldi-labs.de/serviceTypes/parameter",
     "parameters": [
         {
             "name": "test",
