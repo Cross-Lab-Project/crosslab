@@ -2,6 +2,7 @@ import { repositories } from '../../../database/dataSource.js';
 import { deleteBookingsByBookingIdSignature } from '../../../generated/signatures.js';
 import { sendDeletedCallbacks } from '../../../methods/callbacks.js';
 import { mutexManager } from '../../../methods/mutexManager.js';
+import { bookingUrlFromId } from '../../../methods/urlFromId.js';
 
 export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = async (
   req,
@@ -9,7 +10,7 @@ export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = asy
 ) => {
   await req.authorization.check_authorization_or_fail(
     'delete',
-    `booking:${parameters.bookingId}`,
+    `booking:${bookingUrlFromId(parameters.bookingId)}`,
   );
 
   const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);

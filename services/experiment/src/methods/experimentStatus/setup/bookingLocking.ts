@@ -30,16 +30,12 @@ export async function lockBookingExperiment(
     );
 
   // TODO: error handling
-  const lockedDevices = await clients.booking.backend.lockBooking(
-    experimentModel.bookingID,
-  );
+  const lockedDevices = await clients.booking.lockBooking(experimentModel.bookingID);
 
   for (const [index, resolvedDevice] of resolvedDevices.entries()) {
     if (resolvedDevice.type !== 'group') continue;
 
-    const lockedDeviceUrl = lockedDevices.find(
-      mapping => mapping.Requested === resolvedDevice.url,
-    )?.Selected;
+    const lockedDeviceUrl = lockedDevices[resolvedDevice.model.uuid];
 
     if (!lockedDeviceUrl)
       throw new MissingEntityError(

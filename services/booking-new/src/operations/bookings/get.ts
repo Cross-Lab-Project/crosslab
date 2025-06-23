@@ -2,7 +2,7 @@ import { repositories } from '../../database/dataSource.js';
 import { getBookingsSignature } from '../../generated/signatures.js';
 
 export const getBookings: getBookingsSignature = async req => {
-  await req.authorization.check_authorization_or_fail('read', 'booking');
+  await req.authorization.check_authorization_or_fail('view', 'booking');
 
   const bookingModels = await repositories.booking.find();
 

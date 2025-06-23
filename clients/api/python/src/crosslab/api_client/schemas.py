@@ -361,8 +361,8 @@ class CreateDeviceRequestAlt2AnnouncedavailabilityItems(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 class CreateDeviceRequestAlt2ServicesItems(TypedDict):
@@ -393,6 +393,7 @@ class CreateDeviceRequestAlt2(TypedDict):
 
     - experiment
     - services
+    - instanceOf
     """
     url: str
     name: str
@@ -405,6 +406,7 @@ class CreateDeviceRequestAlt2(TypedDict):
     announcedAvailability: NotRequired[List[CreateDeviceRequestAlt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[CreateDeviceRequestAlt2ServicesItems]]
+    instanceOf: NotRequired[str]
 
 
 class CreateDeviceRequestAlt3ViewerItems(TypedDict):
@@ -582,8 +584,8 @@ class CreateDeviceResponse201Alt2AnnouncedavailabilityItems(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 class CreateDeviceResponse201Alt2ServicesItems(TypedDict):
@@ -614,6 +616,7 @@ class CreateDeviceResponse201Alt2(TypedDict):
 
     - experiment
     - services
+    - instanceOf
     """
     url: str
     name: str
@@ -626,6 +629,7 @@ class CreateDeviceResponse201Alt2(TypedDict):
     announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[CreateDeviceResponse201Alt2ServicesItems]]
+    instanceOf: NotRequired[str]
 
 
 class CreateDeviceResponse201Alt3ViewerItems(TypedDict):
@@ -806,8 +810,8 @@ class GetDeviceResponse200Alt2AnnouncedavailabilityItems(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 class GetDeviceResponse200Alt2ServicesItems(TypedDict):
@@ -838,6 +842,7 @@ class GetDeviceResponse200Alt2(TypedDict):
 
     - experiment
     - services
+    - instanceOf
     """
     url: str
     name: str
@@ -850,6 +855,7 @@ class GetDeviceResponse200Alt2(TypedDict):
     announcedAvailability: NotRequired[List[GetDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[GetDeviceResponse200Alt2ServicesItems]]
+    instanceOf: NotRequired[str]
 
 
 class GetDeviceResponse200Alt3ViewerItems(TypedDict):
@@ -1227,8 +1233,8 @@ class UpdateDeviceResponse200Alt2AnnouncedavailabilityItems(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 class UpdateDeviceResponse200Alt2ServicesItems(TypedDict):
@@ -1259,6 +1265,7 @@ class UpdateDeviceResponse200Alt2(TypedDict):
 
     - experiment
     - services
+    - instanceOf
     """
     url: str
     name: str
@@ -1271,6 +1278,7 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[UpdateDeviceResponse200Alt2ServicesItems]]
+    instanceOf: NotRequired[str]
 
 
 class UpdateDeviceResponse200Alt3ViewerItems(TypedDict):
@@ -1402,8 +1410,8 @@ class InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 class InstantiateDeviceResponse201InstanceServicesItems(TypedDict):
@@ -1434,6 +1442,7 @@ class InstantiateDeviceResponse201Instance(TypedDict):
 
     - experiment
     - services
+    - instanceOf
     """
     url: str
     name: str
@@ -1446,6 +1455,7 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     announcedAvailability: NotRequired[List[InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems]]
     experiment: NotRequired[str]
     services: NotRequired[List[InstantiateDeviceResponse201InstanceServicesItems]]
+    instanceOf: NotRequired[str]
 
 
 class InstantiateDeviceResponse201(TypedDict):
@@ -1467,8 +1477,8 @@ class GetDeviceAvailabilityResponse200Items(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 GetDeviceAvailabilityResponse200: TypeAlias = List[GetDeviceAvailabilityResponse200Items]
@@ -1495,8 +1505,8 @@ class AddDeviceAvailabilityRulesResponse200Items(TypedDict):
     - start
     - end
     """
-    start: NotRequired[str]
-    end: NotRequired[str]
+    start: str
+    end: str
 
 
 AddDeviceAvailabilityRulesResponse200: TypeAlias = List[AddDeviceAvailabilityRulesResponse200Items]
@@ -3645,276 +3655,313 @@ UpdateInstitutionResponse: TypeAlias = UpdateInstitutionResponse200
 DeleteInstitutionResponse: TypeAlias = None
 
 
-class ScheduleRequestExperimentDevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class ScheduleRequestExperiment(TypedDict):
-    """
-    An experiment describes a set of devices and how they should be connected (potentially among other metadata).Properties:
-    - Devices: List of devices used in experiment.
-    - Description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
-
-    """
-    Devices: List[ScheduleRequestExperimentDevicesItems]
-    Description: NotRequired[str]
-
-
-class ScheduleRequestTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleRequest(TypedDict):
+class ListBookingsResponse200ItemsTimeslot(TypedDict):
     """
     Properties:
-    - Experiment: An experiment describes a set of devices and how they should be connected (potentially among other metadata).
-    - Time: A time slot represents a slice of time used for bookings.
-    - Combined: If true, show only one timetable per device instead of one for all available physical devices.
-    - onlyOwn: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
+    - start
+    - end
     """
-    Experiment: ScheduleRequestExperiment
-    Time: ScheduleRequestTime
-    Combined: NotRequired[bool]
-    onlyOwn: NotRequired[bool]
+    start: str
+    end: str
 
 
-class ScheduleResponse200ItemsBookedItems(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleResponse200ItemsFreeItems(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class ScheduleResponse200Items(TypedDict):
+class ListBookingsResponse200ItemsDevices(TypedDict):
     """
     Properties:
-    - Device: ID of the device (or * if combined).
-    - Booked: Array of booked times.
-    - Free: Array of free times.
     """
-    Device: str
-    Booked: List[ScheduleResponse200ItemsBookedItems]
-    Free: List[ScheduleResponse200ItemsFreeItems]
 
 
-ScheduleResponse200: TypeAlias = List[ScheduleResponse200Items]
-
-
-ScheduleResponse404: TypeAlias = str
-
-
-ScheduleResponse422: TypeAlias = str
-
-
-ScheduleResponse500: TypeAlias = str
-
-
-ScheduleResponse: TypeAlias = Union[ScheduleResponse200, ScheduleResponse404, ScheduleResponse422, ScheduleResponse500]
-
-
-class NewBookingRequestDevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class NewBookingRequestTime(TypedDict):
-    """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
-    """
-    Start: str
-    End: str
-
-
-class NewBookingRequest(TypedDict):
+class ListBookingsResponse200ItemsSelecteddevices(TypedDict):
     """
     Properties:
-    - Devices: List of devices which should be added.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
     """
-    Devices: List[NewBookingRequestDevicesItems]
-    Time: NewBookingRequestTime
-    Type: NotRequired[Literal["normal"]]
 
 
-class NewBookingResponse200(TypedDict):
+class ListBookingsResponse200Items(TypedDict):
     """
     Properties:
-    - BookingID: ID at which the booking can be managed.
+    - url
+    - status
+    - isLocked
+    - timeslot
+    - devices
+    - selectedDevices
     """
-    BookingID: str
+    url: NotRequired[str]
+    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
+    isLocked: NotRequired[bool]
+    timeslot: NotRequired[ListBookingsResponse200ItemsTimeslot]
+    devices: NotRequired[ListBookingsResponse200ItemsDevices]
+    selectedDevices: NotRequired[ListBookingsResponse200ItemsSelecteddevices]
 
 
-NewBookingResponse500: TypeAlias = str
+ListBookingsResponse200: TypeAlias = List[ListBookingsResponse200Items]
 
 
-NewBookingResponse: TypeAlias = Union[NewBookingResponse200, NewBookingResponse500]
+ListBookingsResponse: TypeAlias = ListBookingsResponse200
 
 
-class UpdateBookingRequestAlt1DevicesItems(TypedDict):
-    """
-    A device might either be a physical/virtual device or a group of device.Properties:
-    - ID: Unique ID of the device. Contains the institution (by having an end point at that institution)
-    """
-    ID: str
-
-
-class UpdateBookingRequestAlt1(TypedDict):
-    """
-    Use this request for adding devices.Properties:
-    - Locked: Expresses whether the devices should be locked. Must match current status of booking. Is assumed to be false if not set.
-    - Devices: List of devices which should be added.
-    """
-    Locked: NotRequired[bool]
-    Devices: NotRequired[List[UpdateBookingRequestAlt1DevicesItems]]
-
-
-class UpdateBookingRequestAlt2(TypedDict):
-    """
-    Use this request for adding callbacks.Properties:
-    - Callback: Callback which should be called at changes.
-    """
-    Callback: NotRequired[str]
-
-
-UpdateBookingRequest = Union[UpdateBookingRequestAlt1, UpdateBookingRequestAlt2]
-
-
-class UpdateBookingResponse200(TypedDict):
+class CreateBookingRequestTimeslot(TypedDict):
     """
     Properties:
-    - BookingID
+    - start
+    - end
     """
-    BookingID: str
+    start: str
+    end: str
 
 
-UpdateBookingResponse400: TypeAlias = str
-
-
-UpdateBookingResponse500: TypeAlias = str
-
-
-UpdateBookingResponse: TypeAlias = Union[UpdateBookingResponse200, UpdateBookingResponse400, UpdateBookingResponse500]
-
-
-DeleteBookingResponse500: TypeAlias = str
-
-
-DeleteBookingResponse: TypeAlias = DeleteBookingResponse500
-
-
-class GetBookingResponse200BookingTime(TypedDict):
+class CreateBookingRequestDevices(TypedDict):
     """
-    A time slot represents a slice of time used for bookings.Properties:
-    - Start: Start time of the booking.
-    - End: End time of the booking.
+    Properties:
     """
-    Start: str
-    End: str
 
 
-class GetBookingResponse200Booking(TypedDict):
+class CreateBookingRequestSelecteddevices(TypedDict):
     """
-    A booking in the booking system.Properties:
-    - ID: Unique ID of the booking.
-    - Time: A time slot represents a slice of time used for bookings.
-    - Devices
-    - Type: Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-    - Status: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+    Properties:
+    """
 
-    - You: If true, this booking was done by you.
-    - External: Shows whether the booking was done by an external institution.
-    - Message: User readable notes about the status of the booking (e.g. if devices are unknown).
+
+class CreateBookingRequest(TypedDict):
     """
-    ID: str
-    Time: GetBookingResponse200BookingTime
-    Devices: List[str]
-    Type: NotRequired[Literal["normal"]]
-    Status: Literal["pending", "booked", "rejected", "cancelled", "active", "active-pending", "active-rejected"]
-    You: bool
-    External: bool
-    Message: NotRequired[str]
+    Properties:
+    - url
+    - status
+    - isLocked
+    - timeslot
+    - devices
+    - selectedDevices
+    """
+    url: NotRequired[str]
+    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
+    isLocked: NotRequired[bool]
+    timeslot: NotRequired[CreateBookingRequestTimeslot]
+    devices: NotRequired[CreateBookingRequestDevices]
+    selectedDevices: NotRequired[CreateBookingRequestSelecteddevices]
+
+
+class CreateBookingResponse201Timeslot(TypedDict):
+    """
+    Properties:
+    - start
+    - end
+    """
+    start: str
+    end: str
+
+
+class CreateBookingResponse201Devices(TypedDict):
+    """
+    Properties:
+    """
+
+
+class CreateBookingResponse201Selecteddevices(TypedDict):
+    """
+    Properties:
+    """
+
+
+class CreateBookingResponse201(TypedDict):
+    """
+    Properties:
+    - url
+    - status
+    - isLocked
+    - timeslot
+    - devices
+    - selectedDevices
+    """
+    url: NotRequired[str]
+    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
+    isLocked: NotRequired[bool]
+    timeslot: NotRequired[CreateBookingResponse201Timeslot]
+    devices: NotRequired[CreateBookingResponse201Devices]
+    selectedDevices: NotRequired[CreateBookingResponse201Selecteddevices]
+
+
+CreateBookingResponse: TypeAlias = CreateBookingResponse201
+
+
+class GetBookingResponse200Timeslot(TypedDict):
+    """
+    Properties:
+    - start
+    - end
+    """
+    start: str
+    end: str
+
+
+class GetBookingResponse200Devices(TypedDict):
+    """
+    Properties:
+    """
+
+
+class GetBookingResponse200Selecteddevices(TypedDict):
+    """
+    Properties:
+    """
 
 
 class GetBookingResponse200(TypedDict):
     """
     Properties:
-    - Booking: A booking in the booking system.
-    - Locked: Shows if the booking is in a locked status.
+    - url
+    - status
+    - isLocked
+    - timeslot
+    - devices
+    - selectedDevices
     """
-    Booking: GetBookingResponse200Booking
-    Locked: bool
+    url: NotRequired[str]
+    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
+    isLocked: NotRequired[bool]
+    timeslot: NotRequired[GetBookingResponse200Timeslot]
+    devices: NotRequired[GetBookingResponse200Devices]
+    selectedDevices: NotRequired[GetBookingResponse200Selecteddevices]
 
 
-GetBookingResponse500: TypeAlias = str
+GetBookingResponse: TypeAlias = GetBookingResponse200
 
 
-GetBookingResponse: TypeAlias = Union[GetBookingResponse200, GetBookingResponse500]
-
-
-DestroyBookingResponse500: TypeAlias = str
-
-
-DestroyBookingResponse: TypeAlias = DestroyBookingResponse500
-
-
-class LockBookingResponse200Items(TypedDict):
+class UpdateBookingRequestTimeslot(TypedDict):
     """
     Properties:
-    - Requested
-    - Selected
+    - start
+    - end
     """
-    Requested: str
-    Selected: str
+    start: str
+    end: str
 
 
-LockBookingResponse200: TypeAlias = List[LockBookingResponse200Items]
+class UpdateBookingRequestDevices(TypedDict):
+    """
+    Properties:
+    """
 
 
-LockBookingResponse500: TypeAlias = str
+class UpdateBookingRequestSelecteddevices(TypedDict):
+    """
+    Properties:
+    """
 
 
-LockBookingResponse: TypeAlias = Union[LockBookingResponse200, LockBookingResponse500]
+class UpdateBookingRequest(TypedDict):
+    """
+    Properties:
+    - url
+    - status
+    - isLocked
+    - timeslot
+    - devices
+    - selectedDevices
+    """
+    url: NotRequired[str]
+    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
+    isLocked: NotRequired[bool]
+    timeslot: NotRequired[UpdateBookingRequestTimeslot]
+    devices: NotRequired[UpdateBookingRequestDevices]
+    selectedDevices: NotRequired[UpdateBookingRequestSelecteddevices]
 
 
-UnlockBookingResponse500: TypeAlias = str
+class UpdateBookingResponse200Timeslot(TypedDict):
+    """
+    Properties:
+    - start
+    - end
+    """
+    start: str
+    end: str
 
 
-UnlockBookingResponse: TypeAlias = UnlockBookingResponse500
+class UpdateBookingResponse200Devices(TypedDict):
+    """
+    Properties:
+    """
 
 
-BookingCallbackResponse500: TypeAlias = str
+class UpdateBookingResponse200Selecteddevices(TypedDict):
+    """
+    Properties:
+    """
 
 
-BookingCallbackResponse: TypeAlias = BookingCallbackResponse500
+class UpdateBookingResponse200(TypedDict):
+    """
+    Properties:
+    - url
+    - status
+    - isLocked
+    - timeslot
+    - devices
+    - selectedDevices
+    """
+    url: NotRequired[str]
+    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
+    isLocked: NotRequired[bool]
+    timeslot: NotRequired[UpdateBookingResponse200Timeslot]
+    devices: NotRequired[UpdateBookingResponse200Devices]
+    selectedDevices: NotRequired[UpdateBookingResponse200Selecteddevices]
+
+
+UpdateBookingResponse: TypeAlias = UpdateBookingResponse200
+
+
+DeleteBookingResponse: TypeAlias = None
+
+
+class LockBookingResponse200(TypedDict):
+    """
+    Properties:
+    """
+
+
+LockBookingResponse: TypeAlias = LockBookingResponse200
+
+
+UnlockBookingResponse: TypeAlias = None
+
+
+class GetScheduleRequestTimeframe(TypedDict):
+    """
+    The timeframe to be used for creating the schedule.
+    Properties:
+    - start
+    - end
+    """
+    start: str
+    end: str
+
+
+class GetScheduleRequest(TypedDict):
+    """
+    Properties:
+    - devices: Urls of the devices to be used for creating the schedule.
+
+    - timeframe: The timeframe to be used for creating the schedule.
+
+    """
+    devices: List[str]
+    timeframe: GetScheduleRequestTimeframe
+
+
+class GetScheduleResponse200Items(TypedDict):
+    """
+    Properties:
+    - start
+    - end
+    """
+    start: str
+    end: str
+
+
+GetScheduleResponse200: TypeAlias = List[GetScheduleResponse200Items]
+
+
+GetScheduleResponse: TypeAlias = GetScheduleResponse200
 
 
 class ListPlatformResponse200ItemsRegistration(TypedDict):
@@ -4496,3 +4543,16 @@ This overwrites any existing role mapping possibles et by the student impersonat
 
 
 UpdateLtiExperimentResponse: TypeAlias = None
+
+
+class UpdateLtiExperimentCallbackRequest(TypedDict):
+    """
+    Properties:
+    - callbackType
+    - eventType
+    """
+    callbackType: Literal["event"]
+    eventType: Literal["experiment-changed"]
+
+
+UpdateLtiExperimentCallbackResponse: TypeAlias = None

@@ -66,8 +66,8 @@ export class BookingRepository extends AbstractRepository<
       if (data.timeslot.start >= data.timeslot.end) {
         throw new BookingError('start must be before end', 400);
       }
-      model.start = Date.parse(data.timeslot.start);
-      model.end = Date.parse(data.timeslot.end);
+      model.start = data.timeslot.start;
+      model.end = data.timeslot.end;
 
       for (const deviceModel of model.devices) {
         const reservation = deviceModel.reservation;
@@ -79,6 +79,7 @@ export class BookingRepository extends AbstractRepository<
           continue;
         } else if (reservation) {
           deviceModel.reservation = null;
+          // TODO: repositories seems wrong here (should be dependency?)
           await repositories.device.save(deviceModel);
           await repositories.reservation.remove(reservation);
         }

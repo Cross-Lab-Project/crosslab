@@ -328,6 +328,7 @@ export interface GetDeviceResponse500 extends Types.ErrorResponse {
 export type UpdateDeviceParameters = {
   device_id: string;
   changedUrl?: string;
+  deletedUrl?: string;
 };
 
 /**
@@ -584,7 +585,6 @@ export interface InstantiateDeviceResponse201 extends Types.SuccessResponse {
   body: {
     instance: Types.ConcreteDevice<'response'>;
     deviceToken: string;
-    [k: string]: unknown;
   };
 }
 
@@ -1662,7 +1662,6 @@ export type PatchPeerconnectionDeviceStatusBody = {
    * The status of the peerconnection.
    */
   status: Types.ConnectionStatus<'request'>;
-  [k: string]: unknown;
 };
 
 /**

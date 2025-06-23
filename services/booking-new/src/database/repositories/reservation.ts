@@ -1,12 +1,12 @@
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 
-import { Timeslot } from '../../methods/timetable.js';
+import { TimeSlot } from '../../clients/device/types.js';
 import { ReservationModel } from '../model.js';
 
 export class ReservationRepository extends AbstractRepository<
   ReservationModel,
-  Timeslot,
+  TimeSlot,
   undefined
 > {
   protected dependencies: Partial<Record<string, never>> = {};
@@ -23,7 +23,7 @@ export class ReservationRepository extends AbstractRepository<
     this.repository = entityManager.getRepository(ReservationModel);
   }
 
-  async write(model: ReservationModel, data: Partial<Timeslot>): Promise<void> {
+  async write(model: ReservationModel, data: Partial<TimeSlot>): Promise<void> {
     if (data.start !== undefined) model.start = data.start;
     if (data.end !== undefined) model.end = data.end;
   }

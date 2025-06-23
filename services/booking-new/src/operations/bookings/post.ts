@@ -6,11 +6,17 @@ export const postBookings: postBookingsSignature = async (req, parameters, body)
 
   const bookingModel = await repositories.booking.create(body);
   if (parameters.changedUrl) {
-    const callbackUrlModel = await repositories.callbackUrl.create(parameters.changedUrl);
+    const callbackUrlModel = await repositories.callbackUrl.create({
+      type: 'changed',
+      url: parameters.changedUrl,
+    });
     bookingModel.callbackUrls.push(callbackUrlModel);
   }
   if (parameters.deletedUrl) {
-    const callbackUrlModel = await repositories.callbackUrl.create(parameters.deletedUrl);
+    const callbackUrlModel = await repositories.callbackUrl.create({
+      type: 'deleted',
+      url: parameters.deletedUrl,
+    });
     bookingModel.callbackUrls.push(callbackUrlModel);
   }
   await repositories.booking.save(bookingModel);

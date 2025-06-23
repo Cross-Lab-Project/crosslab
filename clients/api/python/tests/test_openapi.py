@@ -1811,7 +1811,7 @@ async def test_update_device(aioresponses: aioresponses):
 
     request = json.loads(r'{"type":"edge instantiable","viewer":[{"url":"http://vpVKkfvqGjq.fhhkfKLuAJ..ErHHZQBjGPTLhfKOsofFUiVw9qoSFqWEoS2UcQxHikW1utUrk"},{"url":"https://MQEgzZbslDTVoYeqOXtD.heqzJf4,1pJGc31LvmJCrOQHaVpQ6VddniG0eLpBIg-emg8ddOyKAELq3f0gOBTyerGwtJ4UD9"}],"name":"laborum consequat nisi nulla pariatur","services":[{"serviceId":"incididunt in ex","serviceType":"http://RgMFIACCx.sog+0cdhWuuss3nb5d-NIKkpf0N362kFADTcfhzzE2X+l","serviceDirection":"consumer"},{"serviceDirection":"prosumer","serviceId":"dolor nisi veniam in","serviceType":"http://WxWOmEAtnZbAfAAoJrvUCiVhcQJg.pcsavDQsghdYadkz"},{"serviceDirection":"prosumer","serviceType":"https://TuWsaDfrYzlbivgvBH.yowsKVBUC.,QKwo+uuN-riVHk","serviceId":"dolor"}],"codeUrl":"http://HhVqsFsAYQVbQqwXGR.ayogMOUygyVhlBFw,X2j5W+aHoVFivduRB-m9GcHEpSJ1M,","owner":[{"url":"https://JejsoSPriGdgCDBkPDnBCZtEzhGSXve.czbrp9D1jhQNMCbmln"},{"url":"https://HDCrnCqYHXCVnc.ufrpDXH2i2IwKvChK5dk.9HFW4bvLDBzstFKc"},{"url":"https://IPrmmkkP.eazuuVshmzUf6n-CzW,xKELfQ5fYJpogi3QPGbtsWbqUDPSnbzZn"}],"description":"elit","isPublic":true}')
 
-    parameter_list = [{"changedUrl": "test_string", }, {}, ]
+    parameter_list = [{"changedUrl": "test_string", "deletedUrl": "test_string", }, {"deletedUrl": "test_string", }, {"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
         response_200_dict = json.loads(r'{"url":"https://KMlhNcfBAeYBDdlNWpqiS.uhisZnfxWisWyA346eVjpoeK4BZYjE6oK.ZDneOU1atITfp","type":"group","name":"deserunt est sint magna labore","isPublic":false,"devices":[{"url":"https://YOSZZLZEKMazHeFvjzy.gajTDGgI0e.7QLRAyQNvsosnxLXxQSwdSjMZxmIrHvBPiS307XfTFj"},{"url":"https://whIdyVWYlqjGvFh.laf9x.hv8W"},{"url":"https://ArxHAialfPGZWvcvzmXeBBci.qftdxpbzFf0kcgN3,iyJvCKIeH3"}],"description":"ullamco voluptate","owner":[{"url":"http://LzJabypElGcrYPpoRwUMrR.egvcVYYKiO3vR"},{"url":"https://pO.oyfalCavEYnWwwa"},{"url":"https://YaDyTldBsEGNQkRLRSJXERGYXt.eyRdoDLiiFKUzJ"},{"url":"https://MXGuntpubSQBEWaFeD.rnlWp4EV3uCrfkIbi4uyKVsM2f8Y.I.N+8VVCJDodc+0qPPltOEcKiJfWd"},{"url":"http://zkxkKeJlGcaYu.udivLLttm6JR"}],"viewer":[{"url":"http://AEyxcJP.swmuJJqo6Vy-HPro8lm3WqKE3XOIfbopdGzXwAOsfaxcOlmihCF5aqk,F2"},{"url":"https://uUYlDOKMyeYnpfdudQZJODtjcpYIno.dxovc.5ldQCWcwLC4eTyRTGL9UHyN+U9wDarJbTwAUPO4ZV+fxGmoG6vfXuPFI"}]}')
@@ -2048,21 +2048,21 @@ async def test_instantiate_device(aioresponses: aioresponses):
     parameter_list = [{"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"url":"https://QXgchCqYONXUzAPMGRmTeYIQPH.teqoxG6A,","type":"device","name":"ut","isPublic":false,"services":[{"serviceDirection":"prosumer","serviceId":"qui"},{"serviceType":"https://farzjvMniZnNgZjFBlEPjd.xdcJlbVTd4ha7fdzBswHgBVXkun1bYFt4-W+cLaDmUm4NdFK5","serviceId":"fugiat commodo consectetur laborum officia","serviceDirection":"prosumer"},{"serviceId":"proident Lorem dolore enim eu","serviceType":"http://lGUlpUhSJkIblJFycFQKfNQXOXMnaGha.adqxair-Uw4wcN","serviceDirection":"producer"}],"viewer":[{"url":"https://rAgfDW.jeoReoqYH-ujUVRCNUQJl.H.DSGkgIf"}],"announcedAvailability":[{"start":"1962-06-24T01:12:14.0Z"},{"start":"1965-03-17T03:46:48.0Z"}],"connected":false,"description":"quis ad commodo nostrud dolor","owner":[{"url":"http://MOaPANKswMkLZU.gayowe-SJNQJJxwE91c"},{"url":"https://meHdIB.gtfohNXE2I.rYJB-M8lMOtQ.mNipN"},{"url":"http://LcMoQeSljZaYB.loz2engzXdRwWO"},{"url":"http://EhxkkgEUEzpVEW.tndkAtRmkLqm-llTcHmNW-xEQ4pZWb8DvDLtQyXJB1cSLVF4nQ-a3OPVNlMJjDnRSf2tBL"},{"url":"https://CFMhjTLrFIlCpjRPR.kdg3IhlruqyIIOwp6l6xrbCcT4slJ,15WIvaddW6qQCBVR5BG,KZj"}],"experiment":"http://tNjWjnLfGseMnTGbIPMHHQe.yyPMcOI"},"deviceToken":"Excepteur magna pariatur in"}')
+        response_201_dict = json.loads(r'{"instance":{"url":"http://HSkbwlfjGsIgPsHRGlAgBXZfgfpmVvN.gtwzA,Y1+idjKqZY+7GH0WP3mf-S11QSXkHvnBkELuZWdN","type":"device","name":"laborum in","isPublic":true,"instanceOf":"incididunt aute","announcedAvailability":[{"start":"2021-09-12T01:48:42.0Z","end":"1961-07-24T07:59:20.0Z"},{"start":"1984-04-20T14:23:41.0Z","end":"1992-05-27T08:01:27.0Z"},{"start":"1952-09-25T19:03:01.0Z","end":"1954-06-22T20:06:55.0Z"},{"start":"1944-12-20T10:38:23.0Z","end":"1964-09-12T08:52:06.0Z"},{"start":"1947-01-20T16:41:10.0Z","end":"2019-08-12T09:03:25.0Z"}],"services":[{"serviceId":"dolore","serviceDirection":"prosumer","serviceType":"http://lrWjjdO.ecmsw-pza8oCKVdaF4"},{"serviceId":"proident Lorem dolore enim eu","serviceType":"http://lGUlpUhSJkIblJFycFQKfNQXOXMnaGha.adqxair-Uw4wcN","serviceDirection":"producer"},{"serviceId":"pariatur tempor dolor occaecat","serviceDirection":"consumer","serviceType":"https://vfVRNhjaguCrPrluqArMdYfFXshS.ipcl0+tS9TpTmTXpvAN"}],"owner":[{"url":"http://BFHJeJzsry.vbbkbH-ABrre-5"},{"url":"https://LcMoQeSljZaYB.loaHXTxCWnVZwpb+0vsJhFE2R7.rYJwM8lWAOtQ.pwipNlpgHIKqYpgfz2engzXdRwWO"}],"viewer":[{"url":"https://Hz.ptDtRmkDPm-iT"},{"url":"https://iZaHRFGLFjMjBjUwkIIeQpvDuEhx.fdEQ4pZWb8DvDLtQyXJB1cSLVF4n"},{"url":"https://cACFMh.wsEt7M9GMiT3iGRhlrAnmSIIOr6oDxrbCc6q4slJ,15WIvaddW6qQCBVR5BG,KZ"}],"experiment":"http://eqWXKKyJelqOfDmRxnJPzuJBtlB.qhIJtj03eAkCb0AEFTyXm+jVgGfXrTbS0WQQ","description":"ipsum","connected":true},"deviceToken":"adipisicing in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"url":"https://QXgchCqYONXUzAPMGRmTeYIQPH.teqoxG6A,","type":"device","name":"ut","isPublic":false,"services":[{"serviceDirection":"prosumer","serviceId":"qui"},{"serviceType":"https://farzjvMniZnNgZjFBlEPjd.xdcJlbVTd4ha7fdzBswHgBVXkun1bYFt4-W+cLaDmUm4NdFK5","serviceId":"fugiat commodo consectetur laborum officia","serviceDirection":"prosumer"},{"serviceId":"proident Lorem dolore enim eu","serviceType":"http://lGUlpUhSJkIblJFycFQKfNQXOXMnaGha.adqxair-Uw4wcN","serviceDirection":"producer"}],"viewer":[{"url":"https://rAgfDW.jeoReoqYH-ujUVRCNUQJl.H.DSGkgIf"}],"announcedAvailability":[{"start":"1962-06-24T01:12:14.0Z"},{"start":"1965-03-17T03:46:48.0Z"}],"connected":false,"description":"quis ad commodo nostrud dolor","owner":[{"url":"http://MOaPANKswMkLZU.gayowe-SJNQJJxwE91c"},{"url":"https://meHdIB.gtfohNXE2I.rYJB-M8lMOtQ.mNipN"},{"url":"http://LcMoQeSljZaYB.loz2engzXdRwWO"},{"url":"http://EhxkkgEUEzpVEW.tndkAtRmkLqm-llTcHmNW-xEQ4pZWb8DvDLtQyXJB1cSLVF4nQ-a3OPVNlMJjDnRSf2tBL"},{"url":"https://CFMhjTLrFIlCpjRPR.kdg3IhlruqyIIOwp6l6xrbCcT4slJ,15WIvaddW6qQCBVR5BG,KZj"}],"experiment":"http://tNjWjnLfGseMnTGbIPMHHQe.yyPMcOI"},"deviceToken":"Excepteur magna pariatur in"}')
+        response_201_dict = json.loads(r'{"instance":{"url":"http://HSkbwlfjGsIgPsHRGlAgBXZfgfpmVvN.gtwzA,Y1+idjKqZY+7GH0WP3mf-S11QSXkHvnBkELuZWdN","type":"device","name":"laborum in","isPublic":true,"instanceOf":"incididunt aute","announcedAvailability":[{"start":"2021-09-12T01:48:42.0Z","end":"1961-07-24T07:59:20.0Z"},{"start":"1984-04-20T14:23:41.0Z","end":"1992-05-27T08:01:27.0Z"},{"start":"1952-09-25T19:03:01.0Z","end":"1954-06-22T20:06:55.0Z"},{"start":"1944-12-20T10:38:23.0Z","end":"1964-09-12T08:52:06.0Z"},{"start":"1947-01-20T16:41:10.0Z","end":"2019-08-12T09:03:25.0Z"}],"services":[{"serviceId":"dolore","serviceDirection":"prosumer","serviceType":"http://lrWjjdO.ecmsw-pza8oCKVdaF4"},{"serviceId":"proident Lorem dolore enim eu","serviceType":"http://lGUlpUhSJkIblJFycFQKfNQXOXMnaGha.adqxair-Uw4wcN","serviceDirection":"producer"},{"serviceId":"pariatur tempor dolor occaecat","serviceDirection":"consumer","serviceType":"https://vfVRNhjaguCrPrluqArMdYfFXshS.ipcl0+tS9TpTmTXpvAN"}],"owner":[{"url":"http://BFHJeJzsry.vbbkbH-ABrre-5"},{"url":"https://LcMoQeSljZaYB.loaHXTxCWnVZwpb+0vsJhFE2R7.rYJwM8lWAOtQ.pwipNlpgHIKqYpgfz2engzXdRwWO"}],"viewer":[{"url":"https://Hz.ptDtRmkDPm-iT"},{"url":"https://iZaHRFGLFjMjBjUwkIIeQpvDuEhx.fdEQ4pZWb8DvDLtQyXJB1cSLVF4n"},{"url":"https://cACFMh.wsEt7M9GMiT3iGRhlrAnmSIIOr6oDxrbCc6q4slJ,15WIvaddW6qQCBVR5BG,KZ"}],"experiment":"http://eqWXKKyJelqOfDmRxnJPzuJBtlB.qhIJtj03eAkCb0AEFTyXm+jVgGfXrTbS0WQQ","description":"ipsum","connected":true},"deviceToken":"adipisicing in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"instance":{"url":"https://QXgchCqYONXUzAPMGRmTeYIQPH.teqoxG6A,","type":"device","name":"ut","isPublic":false,"services":[{"serviceDirection":"prosumer","serviceId":"qui"},{"serviceType":"https://farzjvMniZnNgZjFBlEPjd.xdcJlbVTd4ha7fdzBswHgBVXkun1bYFt4-W+cLaDmUm4NdFK5","serviceId":"fugiat commodo consectetur laborum officia","serviceDirection":"prosumer"},{"serviceId":"proident Lorem dolore enim eu","serviceType":"http://lGUlpUhSJkIblJFycFQKfNQXOXMnaGha.adqxair-Uw4wcN","serviceDirection":"producer"}],"viewer":[{"url":"https://rAgfDW.jeoReoqYH-ujUVRCNUQJl.H.DSGkgIf"}],"announcedAvailability":[{"start":"1962-06-24T01:12:14.0Z"},{"start":"1965-03-17T03:46:48.0Z"}],"connected":false,"description":"quis ad commodo nostrud dolor","owner":[{"url":"http://MOaPANKswMkLZU.gayowe-SJNQJJxwE91c"},{"url":"https://meHdIB.gtfohNXE2I.rYJB-M8lMOtQ.mNipN"},{"url":"http://LcMoQeSljZaYB.loz2engzXdRwWO"},{"url":"http://EhxkkgEUEzpVEW.tndkAtRmkLqm-llTcHmNW-xEQ4pZWb8DvDLtQyXJB1cSLVF4nQ-a3OPVNlMJjDnRSf2tBL"},{"url":"https://CFMhjTLrFIlCpjRPR.kdg3IhlruqyIIOwp6l6xrbCcT4slJ,15WIvaddW6qQCBVR5BG,KZj"}],"experiment":"http://tNjWjnLfGseMnTGbIPMHHQe.yyPMcOI"},"deviceToken":"Excepteur magna pariatur in"}')
+        response_201_dict = json.loads(r'{"instance":{"url":"http://HSkbwlfjGsIgPsHRGlAgBXZfgfpmVvN.gtwzA,Y1+idjKqZY+7GH0WP3mf-S11QSXkHvnBkELuZWdN","type":"device","name":"laborum in","isPublic":true,"instanceOf":"incididunt aute","announcedAvailability":[{"start":"2021-09-12T01:48:42.0Z","end":"1961-07-24T07:59:20.0Z"},{"start":"1984-04-20T14:23:41.0Z","end":"1992-05-27T08:01:27.0Z"},{"start":"1952-09-25T19:03:01.0Z","end":"1954-06-22T20:06:55.0Z"},{"start":"1944-12-20T10:38:23.0Z","end":"1964-09-12T08:52:06.0Z"},{"start":"1947-01-20T16:41:10.0Z","end":"2019-08-12T09:03:25.0Z"}],"services":[{"serviceId":"dolore","serviceDirection":"prosumer","serviceType":"http://lrWjjdO.ecmsw-pza8oCKVdaF4"},{"serviceId":"proident Lorem dolore enim eu","serviceType":"http://lGUlpUhSJkIblJFycFQKfNQXOXMnaGha.adqxair-Uw4wcN","serviceDirection":"producer"},{"serviceId":"pariatur tempor dolor occaecat","serviceDirection":"consumer","serviceType":"https://vfVRNhjaguCrPrluqArMdYfFXshS.ipcl0+tS9TpTmTXpvAN"}],"owner":[{"url":"http://BFHJeJzsry.vbbkbH-ABrre-5"},{"url":"https://LcMoQeSljZaYB.loaHXTxCWnVZwpb+0vsJhFE2R7.rYJwM8lWAOtQ.pwipNlpgHIKqYpgfz2engzXdRwWO"}],"viewer":[{"url":"https://Hz.ptDtRmkDPm-iT"},{"url":"https://iZaHRFGLFjMjBjUwkIIeQpvDuEhx.fdEQ4pZWb8DvDLtQyXJB1cSLVF4n"},{"url":"https://cACFMh.wsEt7M9GMiT3iGRhlrAnmSIIOr6oDxrbCc6q4slJ,15WIvaddW6qQCBVR5BG,KZ"}],"experiment":"http://eqWXKKyJelqOfDmRxnJPzuJBtlB.qhIJtj03eAkCb0AEFTyXm+jVgGfXrTbS0WQQ","description":"ipsum","connected":true},"deviceToken":"adipisicing in"}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.instantiate_device(url=full_url, **parameters)
@@ -2168,21 +2168,21 @@ async def test_get_device_availability(aioresponses: aioresponses):
     parameter_list = [{"startTime": "test_string", "endTime": "test_string", }, {"endTime": "test_string", }, {"startTime": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        response_200_dict = json.loads(r'[{"start":"1970-02-05T07:11:50.0Z","end":"1961-05-01T19:59:41.0Z"},{"start":"2021-11-22T13:22:11.0Z","end":"2020-04-28T13:02:24.0Z"},{"start":"1987-02-21T07:58:44.0Z","end":"1945-12-03T01:41:49.0Z"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device_availability(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        response_200_dict = json.loads(r'[{"start":"1970-02-05T07:11:50.0Z","end":"1961-05-01T19:59:41.0Z"},{"start":"2021-11-22T13:22:11.0Z","end":"2020-04-28T13:02:24.0Z"},{"start":"1987-02-21T07:58:44.0Z","end":"1945-12-03T01:41:49.0Z"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device_availability(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        response_200_dict = json.loads(r'[{"start":"1970-02-05T07:11:50.0Z","end":"1961-05-01T19:59:41.0Z"},{"start":"2021-11-22T13:22:11.0Z","end":"2020-04-28T13:02:24.0Z"},{"start":"1987-02-21T07:58:44.0Z","end":"1945-12-03T01:41:49.0Z"}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_device_availability(url=full_url, **parameters)
@@ -2404,21 +2404,21 @@ async def test_add_device_availability_rules(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        response_200_dict = json.loads(r'[{"start":"1970-02-05T07:11:50.0Z","end":"1961-05-01T19:59:41.0Z"},{"start":"2021-11-22T13:22:11.0Z","end":"2020-04-28T13:02:24.0Z"},{"start":"1987-02-21T07:58:44.0Z","end":"1945-12-03T01:41:49.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.add_device_availability_rules(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        response_200_dict = json.loads(r'[{"start":"1970-02-05T07:11:50.0Z","end":"1961-05-01T19:59:41.0Z"},{"start":"2021-11-22T13:22:11.0Z","end":"2020-04-28T13:02:24.0Z"},{"start":"1987-02-21T07:58:44.0Z","end":"1945-12-03T01:41:49.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.add_device_availability_rules(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"end":"1992-10-14T09:14:27.0Z"},{"start":"1978-02-16T19:07:22.0Z","end":"2008-06-15T01:24:43.0Z"},{"end":"1972-02-03T10:17:33.0Z"},{"start":"1973-01-02T03:15:47.0Z","end":"1987-10-14T09:42:59.0Z"},{"end":"1980-02-28T18:27:09.0Z","start":"1991-04-19T08:25:57.0Z"}]')
+        response_200_dict = json.loads(r'[{"start":"1970-02-05T07:11:50.0Z","end":"1961-05-01T19:59:41.0Z"},{"start":"2021-11-22T13:22:11.0Z","end":"2020-04-28T13:02:24.0Z"},{"start":"1987-02-21T07:58:44.0Z","end":"1945-12-03T01:41:49.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.add_device_availability_rules(url=full_url, body=request, **parameters)
@@ -5575,1275 +5575,1068 @@ async def test_delete_institution(aioresponses: aioresponses):
 
 
 @pytest.mark.asyncio
-async def test_schedule(aioresponses: aioresponses):
+async def test_list_bookings(aioresponses: aioresponses):
+    url = r'/bookings'
+    url_variant = r'bookings'
+    full_url = BASE_URL+r'/bookings'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_bookings(**parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_bookings(url=url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_bookings(url=url_variant, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.list_bookings(url=full_url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(**parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.list_bookings(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_create_booking(aioresponses: aioresponses):
+    url = r'/bookings'
+    url_variant = r'bookings'
+    full_url = BASE_URL+r'/bookings'
+
+    request = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+
+    parameter_list = [{"changedUrl": "test_string", "deletedUrl": "test_string", }, {"deletedUrl": "test_string", }, {"changedUrl": "test_string", }, {}, ]
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_booking(body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_booking(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_booking(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.create_booking(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_201_dict)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.create_booking(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_get_booking(aioresponses: aioresponses):
+    url = r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_booking(url=url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_booking(url=url_variant, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.get_booking(url=full_url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.get_booking(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_update_booking(aioresponses: aioresponses):
+    url = r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    request = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+
+    parameter_list = [{"changedUrl": "test_string", "deletedUrl": "test_string", }, {"deletedUrl": "test_string", }, {"changedUrl": "test_string", }, {}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_booking(url=url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_booking(url=url_variant, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_booking(url=full_url, body=request, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=full_url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.update_booking(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_delete_booking(aioresponses: aioresponses):
+    url = r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    url_variant = r'bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+    full_url = BASE_URL+r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.delete_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.delete_booking(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_lock_booking(aioresponses: aioresponses):
+    url = r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
+    url_variant = r'bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
+    full_url = BASE_URL+r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{}')
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.lock_booking(url=url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{}')
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.lock_booking(url=url_variant, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        response_200_dict = json.loads(r'{}')
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.lock_booking(url=full_url, **parameters)
+            assert normalize_result(resp) == normalize_result(response_200_dict)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.lock_booking(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_unlock_booking(aioresponses: aioresponses):
+    url = r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
+    url_variant = r'bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
+    full_url = BASE_URL+r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.unlock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.unlock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=204)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.unlock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=full_url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=url_variant, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
+        async with APIClient(BASE_URL) as client:
+            with pytest.raises(Exception):
+                resp = await client.unlock_booking(url=full_url, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_get_schedule(aioresponses: aioresponses):
     url = r'/schedule'
     url_variant = r'schedule'
     full_url = BASE_URL+r'/schedule'
 
-    request = json.loads(r'{"Experiment":{"Devices":[{"ID":"https://eoKzcaLEO.jigrLrN,QtmSeOrwdDkjY4"},{"ID":"https://dJaL.omM0GRYOmeEyMOG8,lOwfYgxMRtEfPZWHiX,HISaF0nFZxn37U4ILuINMGozBLrh.aOLN8uc6"}],"Description":"in dolore pariatur ut"},"Time":{"Start":"1981-06-10T04:14:08.0Z","End":"1951-06-17T02:47:39.0Z"}}')
+    request = json.loads(r'{"devices":["Excepteur in sunt","velit cillum","amet cupidatat","do labore consequat voluptate","nulla aliqua anim incididunt nostrud"],"timeframe":{"start":"1967-01-28T23:58:10.0Z","end":"1998-08-19T08:22:08.0Z"}}')
 
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Device":"deserunt","Booked":[{"Start":"1948-05-28T02:28:12.0Z","End":"2011-12-30T01:38:02.0Z"},{"Start":"1985-12-18T10:09:01.0Z","End":"1978-01-18T18:32:01.0Z"}],"Free":[{"Start":"1961-12-22T19:04:41.0Z","End":"2001-11-27T06:05:08.0Z"},{"Start":"2012-02-02T16:18:57.0Z","End":"1966-03-15T22:35:31.0Z"},{"Start":"1982-08-02T04:58:59.0Z","End":"1994-05-06T05:04:50.0Z"},{"Start":"2008-12-26T17:21:24.0Z","End":"1983-12-05T17:38:55.0Z"}]},{"Device":"voluptate sed","Booked":[{"Start":"2013-11-17T05:48:45.0Z","End":"1998-12-07T01:30:34.0Z"},{"Start":"1984-09-11T04:11:16.0Z","End":"1970-10-28T01:19:38.0Z"},{"Start":"1958-04-10T07:56:51.0Z","End":"1960-07-18T04:47:46.0Z"}],"Free":[{"Start":"1982-08-29T04:12:21.0Z","End":"1968-11-30T13:07:01.0Z"}]},{"Device":"irure laboris consequat minim","Booked":[{"Start":"2010-02-25T04:35:02.0Z","End":"1959-09-10T01:34:53.0Z"}],"Free":[{"Start":"2001-04-09T22:29:19.0Z","End":"2005-06-04T08:28:39.0Z"},{"Start":"1979-01-07T05:35:26.0Z","End":"2019-06-10T21:57:56.0Z"},{"Start":"1971-01-18T04:03:03.0Z","End":"1960-05-19T05:07:48.0Z"}]},{"Device":"est et","Booked":[{"Start":"1969-01-26T21:55:52.0Z","End":"2014-09-15T10:37:51.0Z"},{"Start":"1976-11-11T14:44:42.0Z","End":"2013-12-15T19:03:32.0Z"}],"Free":[{"Start":"1963-05-16T13:25:55.0Z","End":"2011-06-21T19:03:17.0Z"},{"Start":"1944-05-29T20:44:47.0Z","End":"1962-03-04T14:52:27.0Z"},{"Start":"1977-04-02T14:22:19.0Z","End":"2011-07-11T16:07:14.0Z"}]}]')
+        response_200_dict = json.loads(r'[{"start":"1985-02-04T03:27:15.0Z","end":"2005-05-15T16:08:57.0Z"},{"start":"1949-08-18T22:29:50.0Z","end":"2017-02-27T04:06:50.0Z"},{"start":"1971-10-25T16:21:06.0Z","end":"1949-01-11T17:05:29.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.schedule(body=request, **parameters)
+            resp = await client.get_schedule(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Device":"deserunt","Booked":[{"Start":"1948-05-28T02:28:12.0Z","End":"2011-12-30T01:38:02.0Z"},{"Start":"1985-12-18T10:09:01.0Z","End":"1978-01-18T18:32:01.0Z"}],"Free":[{"Start":"1961-12-22T19:04:41.0Z","End":"2001-11-27T06:05:08.0Z"},{"Start":"2012-02-02T16:18:57.0Z","End":"1966-03-15T22:35:31.0Z"},{"Start":"1982-08-02T04:58:59.0Z","End":"1994-05-06T05:04:50.0Z"},{"Start":"2008-12-26T17:21:24.0Z","End":"1983-12-05T17:38:55.0Z"}]},{"Device":"voluptate sed","Booked":[{"Start":"2013-11-17T05:48:45.0Z","End":"1998-12-07T01:30:34.0Z"},{"Start":"1984-09-11T04:11:16.0Z","End":"1970-10-28T01:19:38.0Z"},{"Start":"1958-04-10T07:56:51.0Z","End":"1960-07-18T04:47:46.0Z"}],"Free":[{"Start":"1982-08-29T04:12:21.0Z","End":"1968-11-30T13:07:01.0Z"}]},{"Device":"irure laboris consequat minim","Booked":[{"Start":"2010-02-25T04:35:02.0Z","End":"1959-09-10T01:34:53.0Z"}],"Free":[{"Start":"2001-04-09T22:29:19.0Z","End":"2005-06-04T08:28:39.0Z"},{"Start":"1979-01-07T05:35:26.0Z","End":"2019-06-10T21:57:56.0Z"},{"Start":"1971-01-18T04:03:03.0Z","End":"1960-05-19T05:07:48.0Z"}]},{"Device":"est et","Booked":[{"Start":"1969-01-26T21:55:52.0Z","End":"2014-09-15T10:37:51.0Z"},{"Start":"1976-11-11T14:44:42.0Z","End":"2013-12-15T19:03:32.0Z"}],"Free":[{"Start":"1963-05-16T13:25:55.0Z","End":"2011-06-21T19:03:17.0Z"},{"Start":"1944-05-29T20:44:47.0Z","End":"1962-03-04T14:52:27.0Z"},{"Start":"1977-04-02T14:22:19.0Z","End":"2011-07-11T16:07:14.0Z"}]}]')
+        response_200_dict = json.loads(r'[{"start":"1985-02-04T03:27:15.0Z","end":"2005-05-15T16:08:57.0Z"},{"start":"1949-08-18T22:29:50.0Z","end":"2017-02-27T04:06:50.0Z"},{"start":"1971-10-25T16:21:06.0Z","end":"1949-01-11T17:05:29.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.schedule(url=url, body=request, **parameters)
+            resp = await client.get_schedule(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Device":"deserunt","Booked":[{"Start":"1948-05-28T02:28:12.0Z","End":"2011-12-30T01:38:02.0Z"},{"Start":"1985-12-18T10:09:01.0Z","End":"1978-01-18T18:32:01.0Z"}],"Free":[{"Start":"1961-12-22T19:04:41.0Z","End":"2001-11-27T06:05:08.0Z"},{"Start":"2012-02-02T16:18:57.0Z","End":"1966-03-15T22:35:31.0Z"},{"Start":"1982-08-02T04:58:59.0Z","End":"1994-05-06T05:04:50.0Z"},{"Start":"2008-12-26T17:21:24.0Z","End":"1983-12-05T17:38:55.0Z"}]},{"Device":"voluptate sed","Booked":[{"Start":"2013-11-17T05:48:45.0Z","End":"1998-12-07T01:30:34.0Z"},{"Start":"1984-09-11T04:11:16.0Z","End":"1970-10-28T01:19:38.0Z"},{"Start":"1958-04-10T07:56:51.0Z","End":"1960-07-18T04:47:46.0Z"}],"Free":[{"Start":"1982-08-29T04:12:21.0Z","End":"1968-11-30T13:07:01.0Z"}]},{"Device":"irure laboris consequat minim","Booked":[{"Start":"2010-02-25T04:35:02.0Z","End":"1959-09-10T01:34:53.0Z"}],"Free":[{"Start":"2001-04-09T22:29:19.0Z","End":"2005-06-04T08:28:39.0Z"},{"Start":"1979-01-07T05:35:26.0Z","End":"2019-06-10T21:57:56.0Z"},{"Start":"1971-01-18T04:03:03.0Z","End":"1960-05-19T05:07:48.0Z"}]},{"Device":"est et","Booked":[{"Start":"1969-01-26T21:55:52.0Z","End":"2014-09-15T10:37:51.0Z"},{"Start":"1976-11-11T14:44:42.0Z","End":"2013-12-15T19:03:32.0Z"}],"Free":[{"Start":"1963-05-16T13:25:55.0Z","End":"2011-06-21T19:03:17.0Z"},{"Start":"1944-05-29T20:44:47.0Z","End":"1962-03-04T14:52:27.0Z"},{"Start":"1977-04-02T14:22:19.0Z","End":"2011-07-11T16:07:14.0Z"}]}]')
+        response_200_dict = json.loads(r'[{"start":"1985-02-04T03:27:15.0Z","end":"2005-05-15T16:08:57.0Z"},{"start":"1949-08-18T22:29:50.0Z","end":"2017-02-27T04:06:50.0Z"},{"start":"1971-10-25T16:21:06.0Z","end":"1949-01-11T17:05:29.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.schedule(url=url_variant, body=request, **parameters)
+            resp = await client.get_schedule(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Device":"deserunt","Booked":[{"Start":"1948-05-28T02:28:12.0Z","End":"2011-12-30T01:38:02.0Z"},{"Start":"1985-12-18T10:09:01.0Z","End":"1978-01-18T18:32:01.0Z"}],"Free":[{"Start":"1961-12-22T19:04:41.0Z","End":"2001-11-27T06:05:08.0Z"},{"Start":"2012-02-02T16:18:57.0Z","End":"1966-03-15T22:35:31.0Z"},{"Start":"1982-08-02T04:58:59.0Z","End":"1994-05-06T05:04:50.0Z"},{"Start":"2008-12-26T17:21:24.0Z","End":"1983-12-05T17:38:55.0Z"}]},{"Device":"voluptate sed","Booked":[{"Start":"2013-11-17T05:48:45.0Z","End":"1998-12-07T01:30:34.0Z"},{"Start":"1984-09-11T04:11:16.0Z","End":"1970-10-28T01:19:38.0Z"},{"Start":"1958-04-10T07:56:51.0Z","End":"1960-07-18T04:47:46.0Z"}],"Free":[{"Start":"1982-08-29T04:12:21.0Z","End":"1968-11-30T13:07:01.0Z"}]},{"Device":"irure laboris consequat minim","Booked":[{"Start":"2010-02-25T04:35:02.0Z","End":"1959-09-10T01:34:53.0Z"}],"Free":[{"Start":"2001-04-09T22:29:19.0Z","End":"2005-06-04T08:28:39.0Z"},{"Start":"1979-01-07T05:35:26.0Z","End":"2019-06-10T21:57:56.0Z"},{"Start":"1971-01-18T04:03:03.0Z","End":"1960-05-19T05:07:48.0Z"}]},{"Device":"est et","Booked":[{"Start":"1969-01-26T21:55:52.0Z","End":"2014-09-15T10:37:51.0Z"},{"Start":"1976-11-11T14:44:42.0Z","End":"2013-12-15T19:03:32.0Z"}],"Free":[{"Start":"1963-05-16T13:25:55.0Z","End":"2011-06-21T19:03:17.0Z"},{"Start":"1944-05-29T20:44:47.0Z","End":"1962-03-04T14:52:27.0Z"},{"Start":"1977-04-02T14:22:19.0Z","End":"2011-07-11T16:07:14.0Z"}]}]')
+        response_200_dict = json.loads(r'[{"start":"1985-02-04T03:27:15.0Z","end":"2005-05-15T16:08:57.0Z"},{"start":"1949-08-18T22:29:50.0Z","end":"2017-02-27T04:06:50.0Z"},{"start":"1971-10-25T16:21:06.0Z","end":"1949-01-11T17:05:29.0Z"}]')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
-            resp = await client.schedule(url=full_url, body=request, **parameters)
+            resp = await client.get_schedule(url=full_url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
+                resp = await client.get_schedule(body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
+                resp = await client.get_schedule(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
+                resp = await client.get_schedule(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
+                resp = await client.get_schedule(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
+                resp = await client.get_schedule(body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
+                resp = await client.get_schedule(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
+                resp = await client.get_schedule(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
+                resp = await client.get_schedule(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
+                resp = await client.get_schedule(body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
+                resp = await client.get_schedule(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
+                resp = await client.get_schedule(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_404_dict = json.loads(r'"commodo in"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404, payload=response_404_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_404_dict = json.loads(r'"commodo in"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404, payload=response_404_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_404_dict = json.loads(r'"commodo in"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404, payload=response_404_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_404_dict = json.loads(r'"commodo in"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404, payload=response_404_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_422_dict = json.loads(r'"mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=422, payload=response_422_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_422_dict = json.loads(r'"mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=422, payload=response_422_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_422_dict = json.loads(r'"mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=422, payload=response_422_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_422_dict = json.loads(r'"mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=422, payload=response_422_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.schedule(url=full_url, body=request, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_newBooking(aioresponses: aioresponses):
-    url = r'/booking'
-    url_variant = r'booking'
-    full_url = BASE_URL+r'/booking'
-
-    request = json.loads(r'{"Devices":[{"ID":"https://oCCTTNStvcBbcmLKslaSMmqVGx.auzBY3BJWu8x-QporrHYcC9bqsef8NDutN5ohOWawZbhZ8r"},{"ID":"http://fxAFgbruxuEEUzmlpkQyPQjTvbNrEUlw.dbgFCsvm,LZ+kIzgghTNqyNTtrGAlQq2MjmMn1grGk2ZkZRGoZxQ+A0N"}],"Time":{"Start":"1957-06-19T20:42:50.0Z","End":"2017-12-16T17:13:02.0Z"},"Type":"normal"}')
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"https://zurWHxnuNekdQetiawWc.uncovYoMyvENFntDMplEsNtcFgBUP17FfZ2Wkcx1SeQnu+iggAOfJGk"}')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.newBooking(body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"https://zurWHxnuNekdQetiawWc.uncovYoMyvENFntDMplEsNtcFgBUP17FfZ2Wkcx1SeQnu+iggAOfJGk"}')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.newBooking(url=url, body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"https://zurWHxnuNekdQetiawWc.uncovYoMyvENFntDMplEsNtcFgBUP17FfZ2Wkcx1SeQnu+iggAOfJGk"}')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.newBooking(url=url_variant, body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"https://zurWHxnuNekdQetiawWc.uncovYoMyvENFntDMplEsNtcFgBUP17FfZ2Wkcx1SeQnu+iggAOfJGk"}')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.newBooking(url=full_url, body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ea mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ea mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ea mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ea mollit"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.newBooking(url=full_url, body=request, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_updateBooking(aioresponses: aioresponses):
-    url = r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    url_variant = r'booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    full_url = BASE_URL+r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-
-    request = json.loads(r'{"Locked":true,"Devices":[{"ID":"http://k.wgaOIBHxZfiNzV7AkaVuQ1UvsgVbtXmOHr3UacIqwT3BazSLm68y1Js"},{"ID":"https://ohlnuiclAHELGBqVjSlJNnwurIJTY.dfpkNwARhVGSLnPEP8jC7LYUNTZu-+lz9F5bZHXYqjq"}]}')
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"http://akJjTPgNsQCcPFMaZe.zlmvloXia0bqBjdT1Rfy3PSFGpCVkgqoAa9GgiZHg4r"}')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.updateBooking(url=url, body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"http://akJjTPgNsQCcPFMaZe.zlmvloXia0bqBjdT1Rfy3PSFGpCVkgqoAa9GgiZHg4r"}')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"BookingID":"http://akJjTPgNsQCcPFMaZe.zlmvloXia0bqBjdT1Rfy3PSFGpCVkgqoAa9GgiZHg4r"}')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.updateBooking(url=full_url, body=request, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_400_dict = json.loads(r'"ad fugiat"')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400, payload=response_400_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_400_dict = json.loads(r'"ad fugiat"')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400, payload=response_400_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_400_dict = json.loads(r'"ad fugiat"')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=400, payload=response_400_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=url_variant, body=request, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.updateBooking(url=full_url, body=request, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_deleteBooking(aioresponses: aioresponses):
-    url = r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    url_variant = r'booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    full_url = BASE_URL+r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.deleteBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.deleteBooking(url=full_url, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_getBooking(aioresponses: aioresponses):
-    url = r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    url_variant = r'booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    full_url = BASE_URL+r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"Booking":{"ID":"https://qhQkiiruUxtUtbGmjaXwNC.neZld0VWn5OHMWi2rZ8oi-sv2W7RJlGiu6E4TtMQzwHyNISGmkg+CY2OCvHTxFBaYGO0u","Time":{"Start":"1964-12-11T17:12:39.0Z","End":"1983-03-23T22:36:39.0Z"},"Devices":["https://MSoPGR.qbojgUH2Y+tqKvMJEQorqAvvxtqCXZthUzmwJuZ-2MkJyv5WEWtPYwH9n,F","http://dvGWLhbJbQJ.ejdS","https://gVgJcnupaGdLWloiORp.eroxDq3cPowUmAwFkPcgEW,oivqBNl1+MGJFwwoJyw,Hn","http://ySSHqBm.dwyCPbuiqQ0Xmz-.4"],"Status":"rejected","You":false,"External":false,"Message":"adipisicing ad id pariatur nulla","Type":"normal"},"Locked":false}')
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.getBooking(url=url, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"Booking":{"ID":"https://qhQkiiruUxtUtbGmjaXwNC.neZld0VWn5OHMWi2rZ8oi-sv2W7RJlGiu6E4TtMQzwHyNISGmkg+CY2OCvHTxFBaYGO0u","Time":{"Start":"1964-12-11T17:12:39.0Z","End":"1983-03-23T22:36:39.0Z"},"Devices":["https://MSoPGR.qbojgUH2Y+tqKvMJEQorqAvvxtqCXZthUzmwJuZ-2MkJyv5WEWtPYwH9n,F","http://dvGWLhbJbQJ.ejdS","https://gVgJcnupaGdLWloiORp.eroxDq3cPowUmAwFkPcgEW,oivqBNl1+MGJFwwoJyw,Hn","http://ySSHqBm.dwyCPbuiqQ0Xmz-.4"],"Status":"rejected","You":false,"External":false,"Message":"adipisicing ad id pariatur nulla","Type":"normal"},"Locked":false}')
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.getBooking(url=url_variant, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"Booking":{"ID":"https://qhQkiiruUxtUtbGmjaXwNC.neZld0VWn5OHMWi2rZ8oi-sv2W7RJlGiu6E4TtMQzwHyNISGmkg+CY2OCvHTxFBaYGO0u","Time":{"Start":"1964-12-11T17:12:39.0Z","End":"1983-03-23T22:36:39.0Z"},"Devices":["https://MSoPGR.qbojgUH2Y+tqKvMJEQorqAvvxtqCXZthUzmwJuZ-2MkJyv5WEWtPYwH9n,F","http://dvGWLhbJbQJ.ejdS","https://gVgJcnupaGdLWloiORp.eroxDq3cPowUmAwFkPcgEW,oivqBNl1+MGJFwwoJyw,Hn","http://ySSHqBm.dwyCPbuiqQ0Xmz-.4"],"Status":"rejected","You":false,"External":false,"Message":"adipisicing ad id pariatur nulla","Type":"normal"},"Locked":false}')
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.getBooking(url=full_url, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"elit commodo minim eu"')
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"elit commodo minim eu"')
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"elit commodo minim eu"')
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.getBooking(url=full_url, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_destroyBooking(aioresponses: aioresponses):
-    url = r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/destroy'
-    url_variant = r'booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/destroy'
-    full_url = BASE_URL+r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/destroy'
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.destroyBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=423)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"ad fugiat"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.destroyBooking(url=full_url, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_lockBooking(aioresponses: aioresponses):
-    url = r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
-    url_variant = r'booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
-    full_url = BASE_URL+r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Requested":"http://yiRyQY.upcxSE+-Dt+yeL","Selected":"https://aEfpYLsPzTiKHUjDdaZqyoDJwdYyi.rfmpCGiIatB7d6ON,0Wr2XkcBvhL3t6nyVirx8SDzb"},{"Requested":"https://toVVoQmUnSXuahwfeTRxpNnDE.yug7Zz9nBIdQhW2GZYygo31sewyh.G","Selected":"https://XQIUSphplmT.pubUJoCRaU9etAf0uivpRC0jsje"},{"Requested":"http://Kvsu.pyqaRVJ1uwJ8xaFz1uG4rpgnZCX9zyfTcIwWdiBhXpoISjdduhUDF7E.vDe","Selected":"https://zNdrBJZQW.dqqlUM1nRzvtbRxn7+Fb6zHE3eCJCd,5rMpCPM3tut64+SnKGZIOayPKVhIItvniaBYx5zat7b"},{"Requested":"https://fdZmspjHNxJbzMQYgWwCJpuojNSkAVlOa.ngfhBC3TgaCQn-pN,xiJngw3PjoMMmYluRriS33e","Selected":"https://VhHcokmycuzIDimdpNZcNDEwblRDme.fdciB9nT,qyP8szCg9nMT2EnE-lfj7LQEbLZ0owZ7Q,WJbT"},{"Requested":"https://JzNxIalMPxPXEijJi.uumgKo-dgJE","Selected":"https://tuN.faDII-kaqNvW"}]')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.lockBooking(url=url, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Requested":"http://yiRyQY.upcxSE+-Dt+yeL","Selected":"https://aEfpYLsPzTiKHUjDdaZqyoDJwdYyi.rfmpCGiIatB7d6ON,0Wr2XkcBvhL3t6nyVirx8SDzb"},{"Requested":"https://toVVoQmUnSXuahwfeTRxpNnDE.yug7Zz9nBIdQhW2GZYygo31sewyh.G","Selected":"https://XQIUSphplmT.pubUJoCRaU9etAf0uivpRC0jsje"},{"Requested":"http://Kvsu.pyqaRVJ1uwJ8xaFz1uG4rpgnZCX9zyfTcIwWdiBhXpoISjdduhUDF7E.vDe","Selected":"https://zNdrBJZQW.dqqlUM1nRzvtbRxn7+Fb6zHE3eCJCd,5rMpCPM3tut64+SnKGZIOayPKVhIItvniaBYx5zat7b"},{"Requested":"https://fdZmspjHNxJbzMQYgWwCJpuojNSkAVlOa.ngfhBC3TgaCQn-pN,xiJngw3PjoMMmYluRriS33e","Selected":"https://VhHcokmycuzIDimdpNZcNDEwblRDme.fdciB9nT,qyP8szCg9nMT2EnE-lfj7LQEbLZ0owZ7Q,WJbT"},{"Requested":"https://JzNxIalMPxPXEijJi.uumgKo-dgJE","Selected":"https://tuN.faDII-kaqNvW"}]')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.lockBooking(url=url_variant, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"Requested":"http://yiRyQY.upcxSE+-Dt+yeL","Selected":"https://aEfpYLsPzTiKHUjDdaZqyoDJwdYyi.rfmpCGiIatB7d6ON,0Wr2XkcBvhL3t6nyVirx8SDzb"},{"Requested":"https://toVVoQmUnSXuahwfeTRxpNnDE.yug7Zz9nBIdQhW2GZYygo31sewyh.G","Selected":"https://XQIUSphplmT.pubUJoCRaU9etAf0uivpRC0jsje"},{"Requested":"http://Kvsu.pyqaRVJ1uwJ8xaFz1uG4rpgnZCX9zyfTcIwWdiBhXpoISjdduhUDF7E.vDe","Selected":"https://zNdrBJZQW.dqqlUM1nRzvtbRxn7+Fb6zHE3eCJCd,5rMpCPM3tut64+SnKGZIOayPKVhIItvniaBYx5zat7b"},{"Requested":"https://fdZmspjHNxJbzMQYgWwCJpuojNSkAVlOa.ngfhBC3TgaCQn-pN,xiJngw3PjoMMmYluRriS33e","Selected":"https://VhHcokmycuzIDimdpNZcNDEwblRDme.fdciB9nT,qyP8szCg9nMT2EnE-lfj7LQEbLZ0owZ7Q,WJbT"},{"Requested":"https://JzNxIalMPxPXEijJi.uumgKo-dgJE","Selected":"https://tuN.faDII-kaqNvW"}]')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.lockBooking(url=full_url, **parameters)
-            assert normalize_result(resp) == normalize_result(response_200_dict)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=412)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=412)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=412)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"enim culpa"')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"enim culpa"')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"enim culpa"')
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.put(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.lockBooking(url=full_url, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_unlockBooking(aioresponses: aioresponses):
-    url = r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
-    url_variant = r'booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
-    full_url = BASE_URL+r'/booking/c799cc2e-cdc5-4143-973a-6f56a5afa82c/lock'
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.unlockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=401)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=403)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=412)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=412)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=412)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=full_url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.delete(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.unlockBooking(url=full_url, **parameters)
-
-
-@pytest.mark.asyncio
-async def test_bookingCallback(aioresponses: aioresponses):
-    url = r'/booking_callback/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    url_variant = r'booking_callback/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-    full_url = BASE_URL+r'/booking_callback/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
-
-    parameter_list = [{}, ]
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.bookingCallback(url=url, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.bookingCallback(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200)
-        async with APIClient(BASE_URL) as client:
-            resp = await client.bookingCallback(url=full_url, **parameters)
+                resp = await client.get_schedule(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=url, **parameters)
+                resp = await client.get_schedule(body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=url_variant, **parameters)
+                resp = await client.get_schedule(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=full_url, **parameters)
+                resp = await client.get_schedule(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=404)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=url, **parameters)
+                resp = await client.get_schedule(url=full_url, body=request, **parameters)
 
     for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=url_variant, **parameters)
+                resp = await client.get_schedule(body=request, **parameters)
 
     for parameters in parameter_list:
-        response_500_dict = json.loads(r'"veniam ex eu"')
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500, payload=response_500_dict)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=full_url, **parameters)
+                resp = await client.get_schedule(url=url, body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=url, **parameters)
+                resp = await client.get_schedule(url=url_variant, body=request, **parameters)
 
     for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=500)
         async with APIClient(BASE_URL) as client:
             with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=url_variant, **parameters)
-
-    for parameters in parameter_list:
-        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=503)
-        async with APIClient(BASE_URL) as client:
-            with pytest.raises(Exception):
-                resp = await client.bookingCallback(url=full_url, **parameters)
+                resp = await client.get_schedule(url=full_url, body=request, **parameters)
 
 
 @pytest.mark.asyncio
@@ -7657,3 +7450,29 @@ async def test_update_lti_experiment(aioresponses: aioresponses):
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_lti_experiment(url=full_url, body=request, **parameters)
+
+
+@pytest.mark.asyncio
+async def test_update_lti_experiment_callback(aioresponses: aioresponses):
+    url = r'/lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment_callback'
+    url_variant = r'lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment_callback'
+    full_url = BASE_URL+r'/lti/session/c799cc2e-cdc5-4143-973a-6f56a5afa82c/experiment_callback'
+
+    request = json.loads(r'{"callbackType":"event","eventType":"experiment-changed"}')
+
+    parameter_list = [{}, ]
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment_callback(url=url, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment_callback(url=url_variant, body=request, **parameters)
+
+    for parameters in parameter_list:
+        aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201)
+        async with APIClient(BASE_URL) as client:
+            resp = await client.update_lti_experiment_callback(url=full_url, body=request, **parameters)

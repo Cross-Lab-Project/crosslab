@@ -3,12 +3,13 @@ import { deleteBookingsByBookingIdLockSignature } from '../../../../generated/si
 import { sendChangedCallbacks } from '../../../../methods/callbacks.js';
 import { mutexManager } from '../../../../methods/mutexManager.js';
 import { reattemptBooking } from '../../../../methods/reattemptBooking.js';
+import { bookingUrlFromId } from '../../../../methods/urlFromId.js';
 
 export const deleteBookingsByBookingIdLock: deleteBookingsByBookingIdLockSignature =
   async (req, parameters) => {
     await req.authorization.check_authorization_or_fail(
       'edit',
-      `booking:${parameters.bookingId}`,
+      `booking:${bookingUrlFromId(parameters.bookingId)}`,
     );
 
     const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);

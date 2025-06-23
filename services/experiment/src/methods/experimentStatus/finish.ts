@@ -124,7 +124,7 @@ async function deletePeerconnections(experiment: ExperimentModel, clients: Clien
 async function unlockBooking(experiment: ExperimentModel, clients: Clients) {
   if (experiment.bookingID) {
     try {
-      await clients.booking.backend.unlockBooking(experiment.bookingID);
+      await clients.booking.unlockBooking(experiment.bookingID);
     } catch (error) {
       if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
         return;
@@ -136,7 +136,7 @@ async function unlockBooking(experiment: ExperimentModel, clients: Clients) {
 async function deleteBooking(experiment: ExperimentModel, clients: Clients) {
   if (experiment.bookingID) {
     try {
-      await clients.booking.frontend.deleteBooking(experiment.bookingID);
+      await clients.booking.deleteBooking(experiment.bookingID);
     } catch (error) {
       if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
         return;

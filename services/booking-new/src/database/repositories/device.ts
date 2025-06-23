@@ -51,7 +51,7 @@ export class DeviceRepository extends AbstractRepository<
     model.essential = data.essential;
 
     await clients.device.updateDevice(
-      data.device.type,
+      data.device.url,
       { type: data.device.type },
       {
         changedUrl: `${config.BASE_URL}/callbacks/booking`,

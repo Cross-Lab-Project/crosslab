@@ -111,13 +111,17 @@ async function reserveConcreteDevice(
 ) {
   const availableTimeslots = await clients.device.getDeviceAvailability(
     concreteDevice.url,
+    {
+      startTime: new Date(bookingModel.start).toISOString(),
+      endTime: new Date(bookingModel.end).toISOString(),
+    },
   );
 
   let isAvailable = false;
   for (const timeslot of availableTimeslots) {
     if (
-      Date.parse(timeslot.start) <= bookingModel.start &&
-      Date.parse(timeslot.end) >= bookingModel.end
+      Date.parse(timeslot.start) <= Date.parse(bookingModel.start) &&
+      Date.parse(timeslot.end) >= Date.parse(bookingModel.end)
     ) {
       isAvailable = true;
       break;

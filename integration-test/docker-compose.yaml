@@ -18,18 +18,14 @@ x-config: &common-config
   DEVICE_SERVICE_URL: 'http://localhost:3001'
   EXPERIMENT_SERVICE_URL: 'http://localhost:3002'
   FEDERATION_SERVICE_URL: 'http://localhost:3003'
-  BOOKING_FRONTEND_URL: 'http://localhost:3004'
-  BOOKING_BACKEND_URL: 'http://localhost:3005'
-  SCHEDULE_SERVICE_URL: 'http://localhost:3006'
+  BOOKING_SERVICE_URL: 'http://localhost:3004'
   AUTH_SERVICE_DOMAIN: 'localhost:3000'
   DEVICE_SERVICE_DOMAIN: 'localhost:3001'
   EXPERIMENT_SERVICE_DOMAIN: 'localhost:3002'
   FEDERATION_SERVICE_DOMAIN: 'localhost:3003'
-  BOOKING_FRONTEND_DOMAIN: 'localhost:3004'
-  BOOKING_BACKEND_DOMAIN: 'localhost:3005'
-  SCHEDULE_SERVICE_DOMAIN: 'localhost:3006'
+  BOOKING_SERVICE_DOMAIN: 'localhost:3004'
   AUTHORIZATION_SERVICE_DOMAIN: 'localhost:3010'
-  LTI_SERVICE_DOMAIN: '127.0.0.2:3004'
+  LTI_SERVICE_DOMAIN: '127.0.0.2:3005'
 
 services:
   # Database
@@ -42,16 +38,8 @@ services:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--su=mysql', '--connect', '--innodb_initialized']
+      interval: 3s
     restart: on-failure
-  rabbitmq:
-    image: rabbitmq:3.13.4
-    volumes:
-      - ./config/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
-      - ./config/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./config/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
-    healthcheck:
-      test: ['CMD', 'rabbitmqctl', 'status']
-    network_mode: 'host'
   gateway:
     image: ${GATEWAY_IMAGE:?}
     ports:
@@ -90,53 +78,15 @@ services:
       db:
         condition: service_healthy
     restart: on-failure
-  booking-frontend:
-    image: ${BOOKING_FRONTEND_IMAGE:?}
+  booking:
+    image: ${BOOKING_IMAGE:?}
     environment:
       <<: *common-config
-      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@localhost:5672
+      DB_USERNAME: booking
+      DB_DATABASE: booking
     network_mode: 'host'
     depends_on:
       db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    restart: on-failure
-  booking-backend:
-    image: ${BOOKING_BACKEND_IMAGE:?}
-    environment:
-      <<: *common-config
-      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@localhost:5672
-    network_mode: 'host'
-    depends_on:
-      db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    restart: on-failure
-  schedule-service:
-    image: ${SCHEDULE_SERVICE_IMAGE:?}
-    environment:
-      <<: *common-config
-      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-    network_mode: 'host'
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: on-failure
-  device-reservation:
-    image: ${DEVICE_RESERVATION_IMAGE:?}
-    environment:
-      <<: *common-config
-      BOOKING_DSN: mysql://booking@localhost:3306/booking?supportBigNumbers=true&bigNumberStrings=true
-      AMQP_URL: amqp://rabbitmq:${RABBITMQ_PASSWORD:?}@localhost:5672
-    network_mode: 'host'
-    depends_on:
-      db:
-        condition: service_healthy
-      rabbitmq:
         condition: service_healthy
     restart: on-failure
   device:

@@ -3,7 +3,7 @@
   "dockerName": "booking-service",
   "description": "An implementation of a CrossLab-compatible booking service.",
   "bin": {
-    "crosslab-device-service": "./app/index.js"
+    "crosslab-booking-service": "./app/index.js"
   },
   "files": [
     "app"
@@ -17,7 +17,7 @@
     "build:generate": "npm-run-all build:generate:*",
     "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:generate:device": "npx openapi-codegen -i ../device/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/device && prettier ./src/clients/device --write",
-    "build:compile": "tsc --project tsconfig.json && cp src/generated/*.cjs app/generated && cp src/clients/authentication/basicValidation.cjs app/clients/authentication/ && cp src/clients/device/basicValidation.cjs app/clients/device/ && cp src/clients/federation/basicValidation.cjs app/clients/federation/",
+    "build:compile": "tsc --project tsconfig.json && cp src/generated/*.cjs app/generated && cp src/clients/device/basicValidation.cjs app/clients/device/",
     "build:add-shebang": "bash scripts/add-shebang.sh",
     "build": "npm-run-all build:*",
     "start": "node app/index.js",

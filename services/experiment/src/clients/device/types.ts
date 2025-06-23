@@ -146,7 +146,6 @@ export type AuthenticationMessage<T extends 'request' | 'response' | 'all' = 'al
         messageType: 'authenticate';
         token?: string;
         authenticated?: boolean;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -156,7 +155,6 @@ export type AuthenticationMessage<T extends 'request' | 'response' | 'all' = 'al
           messageType: 'authenticate';
           token?: string;
           authenticated?: boolean;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -166,7 +164,6 @@ export type AuthenticationMessage<T extends 'request' | 'response' | 'all' = 'al
             messageType: 'authenticate';
             token?: string;
             authenticated?: boolean;
-            [k: string]: unknown;
           }
         : never;
 
@@ -183,7 +180,6 @@ export type ConnectionStateChangedMessage<
        * The status of the peerconnection.
        */
       status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
@@ -196,7 +192,6 @@ export type ConnectionStateChangedMessage<
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -215,7 +210,6 @@ export type ConnectionStateChangedMessage<
             | 'disconnected'
             | 'failed'
             | 'closed';
-          [k: string]: unknown;
         }
       : never;
 
@@ -226,7 +220,6 @@ export type UserReference<T extends 'request' | 'response' | 'all' = 'all'> =
          * URL of the user
          */
         url: string;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -234,7 +227,6 @@ export type UserReference<T extends 'request' | 'response' | 'all' = 'all'> =
            * URL of the user
            */
           url: string;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -242,7 +234,6 @@ export type UserReference<T extends 'request' | 'response' | 'all' = 'all'> =
              * URL of the user
              */
             url: string;
-            [k: string]: unknown;
           }
         : never;
 
@@ -277,7 +268,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -305,7 +295,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -337,7 +326,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -396,12 +384,10 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       } & {
         type?: 'cloud instantiable';
         instantiateUrl?: string;
         services?: ServiceDescription[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -429,12 +415,10 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         } & {
           type?: 'cloud instantiable';
           instantiateUrl?: string;
           services?: ServiceDescription<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -466,12 +450,10 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           } & {
             type?: 'cloud instantiable';
             instantiateUrl?: string;
             services?: ServiceDescription<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -479,19 +461,16 @@ export type TimeSlot<T extends 'request' | 'response' | 'all' = 'all'> = T exten
   ? {
       start?: string;
       end?: string;
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         start?: string;
         end?: string;
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
           start?: string;
           end?: string;
-          [k: string]: unknown;
         }
       : never;
 
@@ -501,11 +480,11 @@ export type TimeSlot<T extends 'request' | 'response' | 'all' = 'all'> = T exten
  */
 export type Availability<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
-    ? TimeSlot[]
+    ? Require<TimeSlot, 'start' | 'end'>[]
     : T extends 'request'
-      ? TimeSlot<'request'>[]
+      ? Require<TimeSlot<'request'>, 'start' | 'end'>[]
       : T extends 'response'
-        ? TimeSlot<'response'>[]
+        ? Require<TimeSlot<'response'>, 'start' | 'end'>[]
         : never;
 
 export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
@@ -539,7 +518,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       } & {
         type?: 'device';
         /**
@@ -551,10 +529,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          * A list of time slots that the maintainer of the device announced it is available
          *
          */
-        announcedAvailability?: TimeSlot[];
+        announcedAvailability?: Require<TimeSlot, 'start' | 'end'>[];
         experiment?: string;
         services?: ServiceDescription[];
-        [k: string]: unknown;
+        instanceOf?: string;
       }
     : T extends 'request'
       ? {
@@ -582,12 +560,11 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         } & {
           type?: 'device';
           experiment?: string;
           services?: ServiceDescription<'request'>[];
-          [k: string]: unknown;
+          instanceOf?: string;
         }
       : T extends 'response'
         ? {
@@ -619,7 +596,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           } & {
             type?: 'device';
             /**
@@ -631,10 +607,10 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
              * A list of time slots that the maintainer of the device announced it is available
              *
              */
-            announcedAvailability?: TimeSlot<'response'>[];
+            announcedAvailability?: Require<TimeSlot<'response'>, 'start' | 'end'>[];
             experiment?: string;
             services?: ServiceDescription<'response'>[];
-            [k: string]: unknown;
+            instanceOf?: string;
           }
         : never;
 
@@ -669,12 +645,10 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       } & {
         type?: 'edge instantiable';
         codeUrl?: string;
         services?: ServiceDescription[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -702,12 +676,10 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         } & {
           type?: 'edge instantiable';
           codeUrl?: string;
           services?: ServiceDescription<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -739,12 +711,10 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           } & {
             type?: 'edge instantiable';
             codeUrl?: string;
             services?: ServiceDescription<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -755,7 +725,6 @@ export type DeviceReference<T extends 'request' | 'response' | 'all' = 'all'> =
          * URL of the device
          */
         url: string;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -763,7 +732,6 @@ export type DeviceReference<T extends 'request' | 'response' | 'all' = 'all'> =
            * URL of the device
            */
           url: string;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -771,7 +739,6 @@ export type DeviceReference<T extends 'request' | 'response' | 'all' = 'all'> =
              * URL of the device
              */
             url: string;
-            [k: string]: unknown;
           }
         : never;
 
@@ -806,11 +773,9 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       } & {
         type?: 'group';
         devices: DeviceReference[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -838,11 +803,9 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         } & {
           type?: 'group';
           devices: DeviceReference<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -874,11 +837,9 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           } & {
             type?: 'group';
             devices: DeviceReference<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -913,12 +874,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
-          [k: string]: unknown;
         } & {
           type?: 'cloud instantiable';
           instantiateUrl?: string;
           services?: ServiceDescription[];
-          [k: string]: unknown;
         })
       | ({
           /**
@@ -949,7 +908,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
-          [k: string]: unknown;
         } & {
           type?: 'device';
           /**
@@ -961,10 +919,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * A list of time slots that the maintainer of the device announced it is available
            *
            */
-          announcedAvailability?: TimeSlot[];
+          announcedAvailability?: Require<TimeSlot, 'start' | 'end'>[];
           experiment?: string;
           services?: ServiceDescription[];
-          [k: string]: unknown;
+          instanceOf?: string;
         })
       | ({
           /**
@@ -995,12 +953,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
-          [k: string]: unknown;
         } & {
           type?: 'edge instantiable';
           codeUrl?: string;
           services?: ServiceDescription[];
-          [k: string]: unknown;
         })
       | ({
           /**
@@ -1031,11 +987,9 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            * List of users who own the device
            */
           owner?: UserReference[];
-          [k: string]: unknown;
         } & {
           type?: 'group';
           devices: DeviceReference[];
-          [k: string]: unknown;
         })
   : T extends 'request'
     ?
@@ -1064,12 +1018,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              * List of users who own the device
              */
             owner?: UserReference<'request'>[];
-            [k: string]: unknown;
           } & {
             type?: 'cloud instantiable';
             instantiateUrl?: string;
             services?: ServiceDescription<'request'>[];
-            [k: string]: unknown;
           })
         | ({
             /**
@@ -1096,12 +1048,11 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              * List of users who own the device
              */
             owner?: UserReference<'request'>[];
-            [k: string]: unknown;
           } & {
             type?: 'device';
             experiment?: string;
             services?: ServiceDescription<'request'>[];
-            [k: string]: unknown;
+            instanceOf?: string;
           })
         | ({
             /**
@@ -1128,12 +1079,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              * List of users who own the device
              */
             owner?: UserReference<'request'>[];
-            [k: string]: unknown;
           } & {
             type?: 'edge instantiable';
             codeUrl?: string;
             services?: ServiceDescription<'request'>[];
-            [k: string]: unknown;
           })
         | ({
             /**
@@ -1160,11 +1109,9 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              * List of users who own the device
              */
             owner?: UserReference<'request'>[];
-            [k: string]: unknown;
           } & {
             type?: 'group';
             devices: DeviceReference<'request'>[];
-            [k: string]: unknown;
           })
     : T extends 'response'
       ?
@@ -1197,12 +1144,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
-              [k: string]: unknown;
             } & {
               type?: 'cloud instantiable';
               instantiateUrl?: string;
               services?: ServiceDescription<'response'>[];
-              [k: string]: unknown;
             })
           | ({
               /**
@@ -1233,7 +1178,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
-              [k: string]: unknown;
             } & {
               type?: 'device';
               /**
@@ -1245,10 +1189,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                * A list of time slots that the maintainer of the device announced it is available
                *
                */
-              announcedAvailability?: TimeSlot<'response'>[];
+              announcedAvailability?: Require<TimeSlot<'response'>, 'start' | 'end'>[];
               experiment?: string;
               services?: ServiceDescription<'response'>[];
-              [k: string]: unknown;
+              instanceOf?: string;
             })
           | ({
               /**
@@ -1279,12 +1223,10 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
-              [k: string]: unknown;
             } & {
               type?: 'edge instantiable';
               codeUrl?: string;
               services?: ServiceDescription<'response'>[];
-              [k: string]: unknown;
             })
           | ({
               /**
@@ -1315,28 +1257,23 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                * List of users who own the device
                */
               owner?: UserReference<'response'>[];
-              [k: string]: unknown;
             } & {
               type?: 'group';
               devices: DeviceReference<'response'>[];
-              [k: string]: unknown;
             })
       : never;
 
 export type Callback<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'
   ? {
       callbackType: string;
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         callbackType: string;
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
           callbackType: string;
-          [k: string]: unknown;
         }
       : never;
 
@@ -1344,29 +1281,23 @@ export type EventCallback<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
     ? {
         callbackType: string;
-        [k: string]: unknown;
       } & {
         callbackType: 'event';
         eventType: string;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
           callbackType: string;
-          [k: string]: unknown;
         } & {
           callbackType: 'event';
           eventType: string;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
             callbackType: string;
-            [k: string]: unknown;
           } & {
             callbackType: 'event';
             eventType: string;
-            [k: string]: unknown;
           }
         : never;
 
@@ -1374,11 +1305,9 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
   T extends 'all'
     ? {
         callbackType: string;
-        [k: string]: unknown;
       } & {
         callbackType: 'event';
         eventType: string;
-        [k: string]: unknown;
       } & {
         eventType: 'device-changed';
         device:
@@ -1411,12 +1340,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
-              [k: string]: unknown;
             } & {
               type?: 'cloud instantiable';
               instantiateUrl?: string;
               services?: ServiceDescription[];
-              [k: string]: unknown;
             })
           | ({
               /**
@@ -1447,7 +1374,40 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
-              [k: string]: unknown;
+            } & {
+              type?: 'edge instantiable';
+              codeUrl?: string;
+              services?: ServiceDescription[];
+            })
+          | ({
+              /**
+               * URL of the device
+               */
+              url: string;
+              /**
+               * Name of the device
+               */
+              name: string;
+              /**
+               * Extended description of the device, features, etc.
+               */
+              description?: string;
+              /**
+               * Type of the device
+               */
+              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+              /**
+               * If true, the device may be seen and used by every user.
+               */
+              isPublic: boolean;
+              /**
+               * List of users who can view the device
+               */
+              viewer?: UserReference[];
+              /**
+               * List of users who own the device
+               */
+              owner?: UserReference[];
             } & {
               type?: 'device';
               /**
@@ -1459,10 +1419,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * A list of time slots that the maintainer of the device announced it is available
                *
                */
-              announcedAvailability?: TimeSlot[];
+              announcedAvailability?: Require<TimeSlot, 'start' | 'end'>[];
               experiment?: string;
               services?: ServiceDescription[];
-              [k: string]: unknown;
+              instanceOf?: string;
             })
           | ({
               /**
@@ -1493,58 +1453,21 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                * List of users who own the device
                */
               owner?: UserReference[];
-              [k: string]: unknown;
-            } & {
-              type?: 'edge instantiable';
-              codeUrl?: string;
-              services?: ServiceDescription[];
-              [k: string]: unknown;
-            })
-          | ({
-              /**
-               * URL of the device
-               */
-              url: string;
-              /**
-               * Name of the device
-               */
-              name: string;
-              /**
-               * Extended description of the device, features, etc.
-               */
-              description?: string;
-              /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
-               * If true, the device may be seen and used by every user.
-               */
-              isPublic: boolean;
-              /**
-               * List of users who can view the device
-               */
-              viewer?: UserReference[];
-              /**
-               * List of users who own the device
-               */
-              owner?: UserReference[];
-              [k: string]: unknown;
             } & {
               type?: 'group';
               devices: DeviceReference[];
-              [k: string]: unknown;
+            } & {
+              added: string[];
+              changed: string[];
+              removed: string[];
             });
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
           callbackType: string;
-          [k: string]: unknown;
         } & {
           callbackType: 'event';
           eventType: string;
-          [k: string]: unknown;
         } & {
           eventType: 'device-changed';
           device:
@@ -1573,12 +1496,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  * List of users who own the device
                  */
                 owner?: UserReference<'request'>[];
-                [k: string]: unknown;
               } & {
                 type?: 'cloud instantiable';
                 instantiateUrl?: string;
                 services?: ServiceDescription<'request'>[];
-                [k: string]: unknown;
               })
             | ({
                 /**
@@ -1605,44 +1526,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  * List of users who own the device
                  */
                 owner?: UserReference<'request'>[];
-                [k: string]: unknown;
-              } & {
-                type?: 'device';
-                experiment?: string;
-                services?: ServiceDescription<'request'>[];
-                [k: string]: unknown;
-              })
-            | ({
-                /**
-                 * Name of the device
-                 */
-                name: string;
-                /**
-                 * Extended description of the device, features, etc.
-                 */
-                description?: string;
-                /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
-                 * If true, the device may be seen and used by every user.
-                 */
-                isPublic: boolean;
-                /**
-                 * List of users who can view the device
-                 */
-                viewer?: UserReference<'request'>[];
-                /**
-                 * List of users who own the device
-                 */
-                owner?: UserReference<'request'>[];
-                [k: string]: unknown;
               } & {
                 type?: 'edge instantiable';
                 codeUrl?: string;
                 services?: ServiceDescription<'request'>[];
-                [k: string]: unknown;
               })
             | ({
                 /**
@@ -1669,22 +1556,52 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  * List of users who own the device
                  */
                 owner?: UserReference<'request'>[];
-                [k: string]: unknown;
+              } & {
+                type?: 'device';
+                experiment?: string;
+                services?: ServiceDescription<'request'>[];
+                instanceOf?: string;
+              })
+            | ({
+                /**
+                 * Name of the device
+                 */
+                name: string;
+                /**
+                 * Extended description of the device, features, etc.
+                 */
+                description?: string;
+                /**
+                 * Type of the device
+                 */
+                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+                /**
+                 * If true, the device may be seen and used by every user.
+                 */
+                isPublic: boolean;
+                /**
+                 * List of users who can view the device
+                 */
+                viewer?: UserReference<'request'>[];
+                /**
+                 * List of users who own the device
+                 */
+                owner?: UserReference<'request'>[];
               } & {
                 type?: 'group';
                 devices: DeviceReference<'request'>[];
-                [k: string]: unknown;
+              } & {
+                added: string[];
+                changed: string[];
+                removed: string[];
               });
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
             callbackType: string;
-            [k: string]: unknown;
           } & {
             callbackType: 'event';
             eventType: string;
-            [k: string]: unknown;
           } & {
             eventType: 'device-changed';
             device:
@@ -1717,12 +1634,10 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    * List of users who own the device
                    */
                   owner?: UserReference<'response'>[];
-                  [k: string]: unknown;
                 } & {
                   type?: 'cloud instantiable';
                   instantiateUrl?: string;
                   services?: ServiceDescription<'response'>[];
-                  [k: string]: unknown;
                 })
               | ({
                   /**
@@ -1753,7 +1668,40 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    * List of users who own the device
                    */
                   owner?: UserReference<'response'>[];
-                  [k: string]: unknown;
+                } & {
+                  type?: 'edge instantiable';
+                  codeUrl?: string;
+                  services?: ServiceDescription<'response'>[];
+                })
+              | ({
+                  /**
+                   * URL of the device
+                   */
+                  url: string;
+                  /**
+                   * Name of the device
+                   */
+                  name: string;
+                  /**
+                   * Extended description of the device, features, etc.
+                   */
+                  description?: string;
+                  /**
+                   * Type of the device
+                   */
+                  type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+                  /**
+                   * If true, the device may be seen and used by every user.
+                   */
+                  isPublic: boolean;
+                  /**
+                   * List of users who can view the device
+                   */
+                  viewer?: UserReference<'response'>[];
+                  /**
+                   * List of users who own the device
+                   */
+                  owner?: UserReference<'response'>[];
                 } & {
                   type?: 'device';
                   /**
@@ -1765,10 +1713,13 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    * A list of time slots that the maintainer of the device announced it is available
                    *
                    */
-                  announcedAvailability?: TimeSlot<'response'>[];
+                  announcedAvailability?: Require<
+                    TimeSlot<'response'>,
+                    'start' | 'end'
+                  >[];
                   experiment?: string;
                   services?: ServiceDescription<'response'>[];
-                  [k: string]: unknown;
+                  instanceOf?: string;
                 })
               | ({
                   /**
@@ -1799,49 +1750,14 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    * List of users who own the device
                    */
                   owner?: UserReference<'response'>[];
-                  [k: string]: unknown;
-                } & {
-                  type?: 'edge instantiable';
-                  codeUrl?: string;
-                  services?: ServiceDescription<'response'>[];
-                  [k: string]: unknown;
-                })
-              | ({
-                  /**
-                   * URL of the device
-                   */
-                  url: string;
-                  /**
-                   * Name of the device
-                   */
-                  name: string;
-                  /**
-                   * Extended description of the device, features, etc.
-                   */
-                  description?: string;
-                  /**
-                   * Type of the device
-                   */
-                  type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                  /**
-                   * If true, the device may be seen and used by every user.
-                   */
-                  isPublic: boolean;
-                  /**
-                   * List of users who can view the device
-                   */
-                  viewer?: UserReference<'response'>[];
-                  /**
-                   * List of users who own the device
-                   */
-                  owner?: UserReference<'response'>[];
-                  [k: string]: unknown;
                 } & {
                   type?: 'group';
                   devices: DeviceReference<'response'>[];
-                  [k: string]: unknown;
+                } & {
+                  added: string[];
+                  changed: string[];
+                  removed: string[];
                 });
-            [k: string]: unknown;
           }
         : never;
 
@@ -1872,7 +1788,6 @@ export type DeviceOverviewUpdate<T extends 'request' | 'response' | 'all' = 'all
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -1900,7 +1815,6 @@ export type DeviceOverviewUpdate<T extends 'request' | 'response' | 'all' = 'all
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -1928,7 +1842,6 @@ export type DeviceOverviewUpdate<T extends 'request' | 'response' | 'all' = 'all
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -1960,12 +1873,10 @@ export type InstantiableCloudDeviceUpdate<
        * List of users who own the device
        */
       owner?: UserReference[];
-      [k: string]: unknown;
     } & {
       type?: 'cloud instantiable';
       instantiateUrl?: string;
       services?: ServiceDescription[];
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
@@ -1993,12 +1904,10 @@ export type InstantiableCloudDeviceUpdate<
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
-        [k: string]: unknown;
       } & {
         type?: 'cloud instantiable';
         instantiateUrl?: string;
         services?: ServiceDescription<'request'>[];
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -2026,12 +1935,10 @@ export type InstantiableCloudDeviceUpdate<
            * List of users who own the device
            */
           owner?: UserReference<'response'>[];
-          [k: string]: unknown;
         } & {
           type?: 'cloud instantiable';
           instantiateUrl?: string;
           services?: ServiceDescription<'response'>[];
-          [k: string]: unknown;
         }
       : never;
 
@@ -2062,12 +1969,10 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       } & {
         type?: 'device';
         experiment?: string;
         services?: ServiceDescription[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -2095,12 +2000,10 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         } & {
           type?: 'device';
           experiment?: string;
           services?: ServiceDescription<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -2128,12 +2031,10 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           } & {
             type?: 'device';
             experiment?: string;
             services?: ServiceDescription<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -2165,12 +2066,10 @@ export type InstantiableBrowserDeviceUpdate<
        * List of users who own the device
        */
       owner?: UserReference[];
-      [k: string]: unknown;
     } & {
       type?: 'edge instantiable';
       codeUrl?: string;
       services?: ServiceDescription[];
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
@@ -2198,12 +2097,10 @@ export type InstantiableBrowserDeviceUpdate<
          * List of users who own the device
          */
         owner?: UserReference<'request'>[];
-        [k: string]: unknown;
       } & {
         type?: 'edge instantiable';
         codeUrl?: string;
         services?: ServiceDescription<'request'>[];
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -2231,12 +2128,10 @@ export type InstantiableBrowserDeviceUpdate<
            * List of users who own the device
            */
           owner?: UserReference<'response'>[];
-          [k: string]: unknown;
         } & {
           type?: 'edge instantiable';
           codeUrl?: string;
           services?: ServiceDescription<'response'>[];
-          [k: string]: unknown;
         }
       : never;
 
@@ -2267,11 +2162,9 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
          * List of users who own the device
          */
         owner?: UserReference[];
-        [k: string]: unknown;
       } & {
         type?: 'group';
         devices?: DeviceReference[];
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -2299,11 +2192,9 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
            * List of users who own the device
            */
           owner?: UserReference<'request'>[];
-          [k: string]: unknown;
         } & {
           type?: 'group';
           devices?: DeviceReference<'request'>[];
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -2331,11 +2222,9 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
              * List of users who own the device
              */
             owner?: UserReference<'response'>[];
-            [k: string]: unknown;
           } & {
             type?: 'group';
             devices?: DeviceReference<'response'>[];
-            [k: string]: unknown;
           }
         : never;
 
@@ -2367,12 +2256,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference[];
-            [k: string]: unknown;
           } & {
             type?: 'cloud instantiable';
             instantiateUrl?: string;
             services?: ServiceDescription[];
-            [k: string]: unknown;
           })
         | ({
             /**
@@ -2399,12 +2286,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference[];
-            [k: string]: unknown;
           } & {
             type?: 'device';
             experiment?: string;
             services?: ServiceDescription[];
-            [k: string]: unknown;
           })
         | ({
             /**
@@ -2431,12 +2316,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference[];
-            [k: string]: unknown;
           } & {
             type?: 'edge instantiable';
             codeUrl?: string;
             services?: ServiceDescription[];
-            [k: string]: unknown;
           })
         | ({
             /**
@@ -2463,11 +2346,9 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              * List of users who own the device
              */
             owner?: UserReference[];
-            [k: string]: unknown;
           } & {
             type?: 'group';
             devices?: DeviceReference[];
-            [k: string]: unknown;
           })
     : T extends 'request'
       ?
@@ -2496,12 +2377,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
-              [k: string]: unknown;
             } & {
               type?: 'cloud instantiable';
               instantiateUrl?: string;
               services?: ServiceDescription<'request'>[];
-              [k: string]: unknown;
             })
           | ({
               /**
@@ -2528,12 +2407,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
-              [k: string]: unknown;
             } & {
               type?: 'device';
               experiment?: string;
               services?: ServiceDescription<'request'>[];
-              [k: string]: unknown;
             })
           | ({
               /**
@@ -2560,12 +2437,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
-              [k: string]: unknown;
             } & {
               type?: 'edge instantiable';
               codeUrl?: string;
               services?: ServiceDescription<'request'>[];
-              [k: string]: unknown;
             })
           | ({
               /**
@@ -2592,11 +2467,9 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                * List of users who own the device
                */
               owner?: UserReference<'request'>[];
-              [k: string]: unknown;
             } & {
               type?: 'group';
               devices?: DeviceReference<'request'>[];
-              [k: string]: unknown;
             })
       : T extends 'response'
         ?
@@ -2625,12 +2498,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  * List of users who own the device
                  */
                 owner?: UserReference<'response'>[];
-                [k: string]: unknown;
               } & {
                 type?: 'cloud instantiable';
                 instantiateUrl?: string;
                 services?: ServiceDescription<'response'>[];
-                [k: string]: unknown;
               })
             | ({
                 /**
@@ -2657,12 +2528,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  * List of users who own the device
                  */
                 owner?: UserReference<'response'>[];
-                [k: string]: unknown;
               } & {
                 type?: 'device';
                 experiment?: string;
                 services?: ServiceDescription<'response'>[];
-                [k: string]: unknown;
               })
             | ({
                 /**
@@ -2689,12 +2558,10 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  * List of users who own the device
                  */
                 owner?: UserReference<'response'>[];
-                [k: string]: unknown;
               } & {
                 type?: 'edge instantiable';
                 codeUrl?: string;
                 services?: ServiceDescription<'response'>[];
-                [k: string]: unknown;
               })
             | ({
                 /**
@@ -2721,12 +2588,52 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  * List of users who own the device
                  */
                 owner?: UserReference<'response'>[];
-                [k: string]: unknown;
               } & {
                 type?: 'group';
                 devices?: DeviceReference<'response'>[];
-                [k: string]: unknown;
               })
+        : never;
+
+export type DeviceDeletedEventCallback<T extends 'request' | 'response' | 'all' = 'all'> =
+  T extends 'all'
+    ? {
+        callbackType: string;
+      } & {
+        callbackType: 'event';
+        eventType: string;
+      } & {
+        eventType: 'device-deleted';
+        device: {
+          url: string;
+          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+        };
+      }
+    : T extends 'request'
+      ? {
+          callbackType: string;
+        } & {
+          callbackType: 'event';
+          eventType: string;
+        } & {
+          eventType: 'device-deleted';
+          device: {
+            url: string;
+            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+          };
+        }
+      : T extends 'response'
+        ? {
+            callbackType: string;
+          } & {
+            callbackType: 'event';
+            eventType: string;
+          } & {
+            eventType: 'device-deleted';
+            device: {
+              url: string;
+              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+            };
+          }
         : never;
 
 export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
@@ -2734,7 +2641,6 @@ export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
     ? {
         start?: string;
         end?: string;
-        [k: string]: unknown;
       } & {
         available?: boolean;
         /**
@@ -2750,15 +2656,12 @@ export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
            * How often the time slot will be repeated
            */
           count?: number;
-          [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
           start?: string;
           end?: string;
-          [k: string]: unknown;
         } & {
           available?: boolean;
           /**
@@ -2774,15 +2677,12 @@ export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
              * How often the time slot will be repeated
              */
             count?: number;
-            [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
             start?: string;
             end?: string;
-            [k: string]: unknown;
           } & {
             available?: boolean;
             /**
@@ -2798,9 +2698,7 @@ export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
                * How often the time slot will be repeated
                */
               count?: number;
-              [k: string]: unknown;
             };
-            [k: string]: unknown;
           }
         : never;
 
@@ -2829,7 +2727,6 @@ export type CommandMessage<T extends 'request' | 'response' | 'all' = 'all'> =
       } & {
         messageType: 'command';
         command: string;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -2838,7 +2735,6 @@ export type CommandMessage<T extends 'request' | 'response' | 'all' = 'all'> =
         } & {
           messageType: 'command';
           command: string;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -2847,7 +2743,6 @@ export type CommandMessage<T extends 'request' | 'response' | 'all' = 'all'> =
           } & {
             messageType: 'command';
             command: string;
-            [k: string]: unknown;
           }
         : never;
 
@@ -2884,7 +2779,6 @@ export type CreatePeerconnectionMessage<
     } & {
       messageType: 'command';
       command: string;
-      [k: string]: unknown;
     } & {
       command: 'createPeerconnection';
       connectionType: 'webrtc' | 'websocket' | 'local';
@@ -2894,7 +2788,6 @@ export type CreatePeerconnectionMessage<
       config?: {
         [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
@@ -2903,7 +2796,6 @@ export type CreatePeerconnectionMessage<
       } & {
         messageType: 'command';
         command: string;
-        [k: string]: unknown;
       } & {
         command: 'createPeerconnection';
         connectionType: 'webrtc' | 'websocket' | 'local';
@@ -2913,7 +2805,6 @@ export type CreatePeerconnectionMessage<
         config?: {
           [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -2922,7 +2813,6 @@ export type CreatePeerconnectionMessage<
         } & {
           messageType: 'command';
           command: string;
-          [k: string]: unknown;
         } & {
           command: 'createPeerconnection';
           connectionType: 'webrtc' | 'websocket' | 'local';
@@ -2932,7 +2822,6 @@ export type CreatePeerconnectionMessage<
           config?: {
             [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : never;
 
@@ -2944,11 +2833,9 @@ export type ClosePeerconnectionMessage<T extends 'request' | 'response' | 'all' 
       } & {
         messageType: 'command';
         command: string;
-        [k: string]: unknown;
       } & {
         command: 'closePeerconnection';
         connectionUrl: string;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -2957,11 +2844,9 @@ export type ClosePeerconnectionMessage<T extends 'request' | 'response' | 'all' 
         } & {
           messageType: 'command';
           command: string;
-          [k: string]: unknown;
         } & {
           command: 'closePeerconnection';
           connectionUrl: string;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -2970,11 +2855,9 @@ export type ClosePeerconnectionMessage<T extends 'request' | 'response' | 'all' 
           } & {
             messageType: 'command';
             command: string;
-            [k: string]: unknown;
           } & {
             command: 'closePeerconnection';
             connectionUrl: string;
-            [k: string]: unknown;
           }
         : never;
 
@@ -2990,7 +2873,6 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
         content: {
           [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3003,7 +2885,6 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
           content: {
             [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3016,7 +2897,6 @@ export type SignalingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
             content: {
               [k: string]: unknown;
             };
-            [k: string]: unknown;
           }
         : never;
 
@@ -3030,7 +2910,6 @@ export type ConfigurationMessage<T extends 'request' | 'response' | 'all' = 'all
         configuration: {
           [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3041,7 +2920,6 @@ export type ConfigurationMessage<T extends 'request' | 'response' | 'all' = 'all
           configuration: {
             [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3052,7 +2930,6 @@ export type ConfigurationMessage<T extends 'request' | 'response' | 'all' = 'all
             configuration: {
               [k: string]: unknown;
             };
-            [k: string]: unknown;
           }
         : never;
 
@@ -3066,7 +2943,6 @@ export type ExperimentStatusChangedMessage<
       messageType: 'experiment-status-changed';
       status: string;
       message?: string;
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
@@ -3076,7 +2952,6 @@ export type ExperimentStatusChangedMessage<
         messageType: 'experiment-status-changed';
         status: string;
         message?: string;
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -3086,7 +2961,6 @@ export type ExperimentStatusChangedMessage<
           messageType: 'experiment-status-changed';
           status: string;
           message?: string;
-          [k: string]: unknown;
         }
       : never;
 
@@ -3100,7 +2974,6 @@ export type LoggingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
         content: {
           [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3111,7 +2984,6 @@ export type LoggingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
           content: {
             [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3122,7 +2994,6 @@ export type LoggingMessage<T extends 'request' | 'response' | 'all' = 'all'> =
             content: {
               [k: string]: unknown;
             };
-            [k: string]: unknown;
           }
         : never;
 
@@ -3153,7 +3024,6 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3161,7 +3031,6 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
            * Type of the peerconnection
            */
           type: 'local' | 'webrtc';
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3183,7 +3052,6 @@ export type PeerconnectionCommon<T extends 'request' | 'response' | 'all' = 'all
               | 'disconnected'
               | 'failed'
               | 'closed';
-            [k: string]: unknown;
           }
         : never;
 
@@ -3202,10 +3070,8 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
       } & {
         devices: SizedTuple<DeviceReference, 2, 2>;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3213,10 +3079,8 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
            * Type of the peerconnection
            */
           type: 'local' | 'webrtc';
-          [k: string]: unknown;
         } & {
           devices: SizedTuple<DeviceReference<'request'>, 2, 2>;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3238,10 +3102,8 @@ export type PeerconnectionOverview<T extends 'request' | 'response' | 'all' = 'a
               | 'disconnected'
               | 'failed'
               | 'closed';
-            [k: string]: unknown;
           } & {
             devices: SizedTuple<DeviceReference<'response'>, 2, 2>;
-            [k: string]: unknown;
           }
         : never;
 
@@ -3254,9 +3116,7 @@ export type ConfiguredDeviceReference<T extends 'request' | 'response' | 'all' =
         url: string;
         config?: {
           services?: ServiceConfig[];
-          [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3266,9 +3126,7 @@ export type ConfiguredDeviceReference<T extends 'request' | 'response' | 'all' =
           url: string;
           config?: {
             services?: ServiceConfig<'request'>[];
-            [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3278,9 +3136,7 @@ export type ConfiguredDeviceReference<T extends 'request' | 'response' | 'all' =
             url: string;
             config?: {
               services?: ServiceConfig<'response'>[];
-              [k: string]: unknown;
             };
-            [k: string]: unknown;
           }
         : never;
 
@@ -3299,10 +3155,8 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference, 2, 2>;
-        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -3310,10 +3164,8 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
            * Type of the peerconnection
            */
           type: 'local' | 'webrtc';
-          [k: string]: unknown;
         } & {
           devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
-          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -3335,10 +3187,8 @@ export type Peerconnection<T extends 'request' | 'response' | 'all' = 'all'> =
               | 'disconnected'
               | 'failed'
               | 'closed';
-            [k: string]: unknown;
           } & {
             devices: SizedTuple<ConfiguredDeviceReference<'response'>, 2, 2>;
-            [k: string]: unknown;
           }
         : never;
 
@@ -3347,11 +3197,9 @@ export type PeerconnectionClosedEventCallback<
 > = T extends 'all'
   ? {
       callbackType: string;
-      [k: string]: unknown;
     } & {
       callbackType: 'event';
       eventType: string;
-      [k: string]: unknown;
     } & {
       eventType: 'peerconnection-closed';
       peerconnection: {
@@ -3367,21 +3215,16 @@ export type PeerconnectionClosedEventCallback<
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference, 2, 2>;
-        [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         callbackType: string;
-        [k: string]: unknown;
       } & {
         callbackType: 'event';
         eventType: string;
-        [k: string]: unknown;
       } & {
         eventType: 'peerconnection-closed';
         peerconnection: {
@@ -3389,21 +3232,16 @@ export type PeerconnectionClosedEventCallback<
            * Type of the peerconnection
            */
           type: 'local' | 'webrtc';
-          [k: string]: unknown;
         } & {
           devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
-          [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
           callbackType: string;
-          [k: string]: unknown;
         } & {
           callbackType: 'event';
           eventType: string;
-          [k: string]: unknown;
         } & {
           eventType: 'peerconnection-closed';
           peerconnection: {
@@ -3425,12 +3263,9 @@ export type PeerconnectionClosedEventCallback<
               | 'disconnected'
               | 'failed'
               | 'closed';
-            [k: string]: unknown;
           } & {
             devices: SizedTuple<ConfiguredDeviceReference<'response'>, 2, 2>;
-            [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : never;
 
@@ -3439,11 +3274,9 @@ export type PeerconnectionStatusChangedEventCallback<
 > = T extends 'all'
   ? {
       callbackType: string;
-      [k: string]: unknown;
     } & {
       callbackType: 'event';
       eventType: string;
-      [k: string]: unknown;
     } & {
       eventType: 'peerconnection-status-changed';
       peerconnection: {
@@ -3459,21 +3292,16 @@ export type PeerconnectionStatusChangedEventCallback<
          * The status of the peerconnection.
          */
         status: 'new' | 'connecting' | 'connected' | 'disconnected' | 'failed' | 'closed';
-        [k: string]: unknown;
       } & {
         devices: SizedTuple<ConfiguredDeviceReference, 2, 2>;
-        [k: string]: unknown;
       };
-      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         callbackType: string;
-        [k: string]: unknown;
       } & {
         callbackType: 'event';
         eventType: string;
-        [k: string]: unknown;
       } & {
         eventType: 'peerconnection-status-changed';
         peerconnection: {
@@ -3481,21 +3309,16 @@ export type PeerconnectionStatusChangedEventCallback<
            * Type of the peerconnection
            */
           type: 'local' | 'webrtc';
-          [k: string]: unknown;
         } & {
           devices: SizedTuple<ConfiguredDeviceReference<'request'>, 2, 2>;
-          [k: string]: unknown;
         };
-        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
           callbackType: string;
-          [k: string]: unknown;
         } & {
           callbackType: 'event';
           eventType: string;
-          [k: string]: unknown;
         } & {
           eventType: 'peerconnection-status-changed';
           peerconnection: {
@@ -3517,12 +3340,9 @@ export type PeerconnectionStatusChangedEventCallback<
               | 'disconnected'
               | 'failed'
               | 'closed';
-            [k: string]: unknown;
           } & {
             devices: SizedTuple<ConfiguredDeviceReference<'response'>, 2, 2>;
-            [k: string]: unknown;
           };
-          [k: string]: unknown;
         }
       : never;
 
@@ -3685,6 +3505,22 @@ export function isDeviceChangedEventCallback<
       return BasicValidation.validateDeviceChangedEventCallbackResponse(obj);
     default:
       return BasicValidation.validateDeviceChangedEventCallback(obj);
+  }
+}
+
+export function isDeviceDeletedEventCallback<
+  T extends 'request' | 'response' | 'all' = 'all',
+>(
+  obj: unknown,
+  type: 'request' | 'response' | 'all' | T = 'all',
+): obj is DeviceDeletedEventCallback<T> {
+  switch (type) {
+    case 'request':
+      return BasicValidation.validateDeviceDeletedEventCallbackRequest(obj);
+    case 'response':
+      return BasicValidation.validateDeviceDeletedEventCallbackResponse(obj);
+    default:
+      return BasicValidation.validateDeviceDeletedEventCallback(obj);
   }
 }
 

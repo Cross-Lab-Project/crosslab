@@ -3,10 +3,15 @@ import { EntityManager } from 'typeorm';
 
 import { CallbackUrlModel } from '../model.js';
 
+type CallbackUrl = {
+  type: 'changed' | 'deleted';
+  url: string;
+};
+
 export class CallbackUrlRepository extends AbstractRepository<
   CallbackUrlModel,
-  string,
-  string
+  CallbackUrl,
+  CallbackUrl
 > {
   protected dependencies: Partial<Record<string, never>> = {};
 
@@ -22,11 +27,21 @@ export class CallbackUrlRepository extends AbstractRepository<
     this.repository = entityManager.getRepository(CallbackUrlModel);
   }
 
-  async write(model: CallbackUrlModel, data: string): Promise<void> {
-    model.url = data;
+  async create(data: CallbackUrl): Promise<CallbackUrlModel> {
+    const model = await super.create();
+
+    model.type = data.type;
+    model.url = data.url;
+
+    return model;
   }
 
-  async format(model: CallbackUrlModel): Promise<string> {
-    return model.url;
+  async write(model: CallbackUrlModel, data: Partial<CallbackUrl>): Promise<void> {
+    if (data.type !== undefined) model.type = data.type;
+    if (data.url !== undefined) model.url = data.url;
+  }
+
+  async format(model: CallbackUrlModel): Promise<CallbackUrl> {
+    return { type: model.type, url: model.url };
   }
 }

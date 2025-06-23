@@ -43,8 +43,8 @@ class CallbackHandler {
       callback.eventType === 'device-changed'
         ? await this.mutexes.device.acquire()
         : callback.eventType === 'booking-changed'
-        ? await this.mutexes.booking.acquire()
-        : await this.mutexes.peerconnection.acquire();
+          ? await this.mutexes.booking.acquire()
+          : await this.mutexes.peerconnection.acquire();
 
     try {
       switch (callback.eventType) {
@@ -290,9 +290,9 @@ class CallbackHandler {
           continue;
         }
 
-        const booking = await clients.booking.frontend.getBooking(callback.url);
+        const booking = await clients.booking.getBooking(callback.url);
 
-        if (booking.Booking.Status === 'cancelled')
+        if (booking.status === 'impossible' || booking.status === 'rejected')
           await finishExperiment(experimentModel, clients);
       } finally {
         release();

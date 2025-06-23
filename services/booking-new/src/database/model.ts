@@ -20,10 +20,10 @@ export class BookingModel {
   status!: 'accepted' | 'accepted-essential' | 'rejected' | 'impossible';
 
   @Column()
-  start!: number;
+  start!: string;
 
   @Column()
-  end!: number;
+  end!: string;
 
   @OneToMany(() => DeviceModel, deviceModel => deviceModel.booking)
   devices!: DeviceModel[];
@@ -45,10 +45,10 @@ export class ReservationModel {
   uuid!: string;
 
   @Column()
-  start!: number;
+  start!: string;
 
   @Column()
-  end!: number;
+  end!: string;
 
   @Column({ type: String, nullable: true })
   remoteBooking!: string | null;

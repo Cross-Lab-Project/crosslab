@@ -1,6 +1,7 @@
 import { repositories } from '../../../database/dataSource.js';
 import { patchBookingsByBookingIdSignature } from '../../../generated/signatures.js';
 import { mutexManager } from '../../../methods/mutexManager.js';
+import { bookingUrlFromId } from '../../../methods/urlFromId.js';
 
 export const patchBookingsByBookingId: patchBookingsByBookingIdSignature = async (
   req,
@@ -9,7 +10,7 @@ export const patchBookingsByBookingId: patchBookingsByBookingIdSignature = async
 ) => {
   await req.authorization.check_authorization_or_fail(
     'edit',
-    `booking:${parameters.bookingId}`,
+    `booking:${bookingUrlFromId(parameters.bookingId)}`,
   );
 
   const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);

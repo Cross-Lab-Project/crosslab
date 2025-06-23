@@ -46,7 +46,7 @@ export const getDevicesByDeviceId: getDevicesByDeviceIdSignature = async (
 
   const body = await repositories.device.format(deviceModel);
 
-  if (deviceModel.type === 'group') {
+  if (deviceModel.type === 'group' && body.type === 'group') {
     const visibility = await Promise.all(
       deviceModel.devices.map(
         async device =>

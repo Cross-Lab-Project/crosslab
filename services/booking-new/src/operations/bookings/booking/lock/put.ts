@@ -3,6 +3,7 @@ import { putBookingsByBookingIdLockSignature } from '../../../../generated/signa
 import { sendChangedCallbacks } from '../../../../methods/callbacks.js';
 import { LockingError } from '../../../../methods/errors.js';
 import { mutexManager } from '../../../../methods/mutexManager.js';
+import { bookingUrlFromId } from '../../../../methods/urlFromId.js';
 
 export const putBookingsByBookingIdLock: putBookingsByBookingIdLockSignature = async (
   req,
@@ -10,7 +11,7 @@ export const putBookingsByBookingIdLock: putBookingsByBookingIdLockSignature = a
 ) => {
   await req.authorization.check_authorization_or_fail(
     'edit',
-    `booking:${parameters.bookingId}`,
+    `booking:${bookingUrlFromId(parameters.bookingId)}`,
   );
 
   const release = await mutexManager.acquire(`booking:${parameters.bookingId}`);

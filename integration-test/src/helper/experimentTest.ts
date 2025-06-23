@@ -116,10 +116,10 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
         );
       this.events.push({ gpio: [], file: [] });
       device.on('gpio', event => {
-        if(this.events[idx].gpio.push(event)) this.emit('eventsChanged');
+        if (this.events[idx].gpio.push(event)) this.emit('eventsChanged');
       });
       device.on('file', event => {
-        if(this.events[idx].file.push(event)) this.emit('eventsChanged');
+        if (this.events[idx].file.push(event)) this.emit('eventsChanged');
       });
       const apiDevice = this.apiDevices[idx];
       if (apiDevice.type === 'device') device.start(client, apiDevice.url);
@@ -128,8 +128,13 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     await Promise.all(promiseList);
 
     for (const device of this.apiDevices) {
-      if (device.type === 'device')
-        assert((await client.getDevice(device.url)).connected, 'Device is not connected');
+      if (device.type === 'device') {
+        const resolvedDevice = await client.getDevice(device.url);
+        assert(
+          resolvedDevice.type === 'device' && resolvedDevice.connected,
+          'Device is not connected',
+        );
+      }
     }
 
     this._state = State.Connected;
@@ -185,7 +190,6 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
 
       const instanceUrl = instanceData.url;
       const deviceToken = instanceData.token;
-      apiDevice.instanceUrl = instanceData.url;
 
       promiseList.push(
         new Promise<void>(resolve =>
@@ -199,7 +203,11 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
     await Promise.all(promiseList);
 
     for (const device of this.devices) {
-      assert((await client.getDevice(device.url)).connected, 'Device is not connected');
+      const resolvedDevice = await client.getDevice(device.url);
+      assert(
+        resolvedDevice.type === 'device' && resolvedDevice.connected,
+        'Device is not connected',
+      );
     }
 
     await Promise.all(promiseListConnections);
@@ -228,7 +236,6 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
       isPublic: true,
       instantiateUrl: 'http://localhost/edge_instantiable_device',
       codeUrl: 'http://localhost/cloud_instantiable_device',
-      announcedAvailability: [{ available: true }],
       devices: [],
     });
   }

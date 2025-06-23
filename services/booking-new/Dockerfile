@@ -13,8 +13,8 @@ USER node
 
 # TODO: change ports
 ENV NODE_ENV production
-ENV PORT 3002 
+ENV PORT 3004 
 ENV DB_TYPE sqlite
 ENV DB_DATABASE db/booking.db
-EXPOSE 3002/tcp
+EXPOSE 3004/tcp
 CMD ["dumb-init", "crosslab-booking-service"]

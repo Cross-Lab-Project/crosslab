@@ -53,10 +53,10 @@ async function handleChangedConcreteDevice(
   }
 
   const startTime = new Date(
-    Math.min(...affectedBookingModels.map(booking => booking.start)),
+    Math.min(...affectedBookingModels.map(booking => Date.parse(booking.start))),
   ).toISOString();
   const endTime = new Date(
-    Math.max(...affectedBookingModels.map(booking => booking.end)),
+    Math.max(...affectedBookingModels.map(booking => Date.parse(booking.end))),
   ).toISOString();
   const availability = await clients.device.getDeviceAvailability(concreteDevice.url, {
     startTime,

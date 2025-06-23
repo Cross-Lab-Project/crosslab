@@ -119,7 +119,7 @@ async function getTimetableForConcreteDevice(
     .map(deviceModel => deviceModel.reservation)
     .filter(reservation => !!reservation);
   const bookedTimeslots: Timeslot[] = reservations.map(reservation => {
-    return { start: reservation.start, end: reservation.end };
+    return { start: Date.parse(reservation.start), end: Date.parse(reservation.end) };
   });
   const availableTimeslots = (
     await clients.device.getDeviceAvailability(concreteDevice.url, {

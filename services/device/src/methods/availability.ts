@@ -33,8 +33,8 @@ export function calculateAvailability(
       availability,
       {
         ...availabilityRule,
-        start: Date.parse(availabilityRule.start ?? ''),
-        end: Date.parse(availabilityRule.end ?? ''),
+        start: availabilityRule.start ? Date.parse(availabilityRule.start) : start,
+        end: availabilityRule.end ? Date.parse(availabilityRule.end) : end,
       },
       start,
       end,

@@ -9,10 +9,7 @@ export AUTHORIZATION_IMAGE=$(docker load -i ../services/authorization/dist/docke
 export DEVICE_IMAGE=$(docker load -i ../services/device/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export EXPERIMENT_IMAGE=$(docker load -i ../services/experiment/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export FEDERATION_IMAGE=$(docker load -i ../services/federation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
-export BOOKING_FRONTEND_IMAGE=$(docker load -i ../services/booking/src/booking-frontend/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
-export BOOKING_BACKEND_IMAGE=$(docker load -i ../services/booking/src/booking-backend/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
-export SCHEDULE_SERVICE_IMAGE=$(docker load -i ../services/booking/src/schedule-service/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
-export DEVICE_RESERVATION_IMAGE=$(docker load -i ../services/booking/src/device-reservation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export BOOKING_IMAGE=$(docker load -i ../services/booking-new/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 
 mkdir -p db
 rm -rf db/*
@@ -33,7 +30,7 @@ ctrl_c () {
 virtualenv venv && venv/bin/pip install -r requirements.txt
 npm ci
 
-for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/authorization/status" "http://localhost/federation/status" "http://localhost/experiment/status"; do
+for url in "http://localhost/auth/status" "http://localhost/device/status" "http://localhost/authorization/status" "http://localhost/federation/status" "http://localhost/experiment/status" "http://localhost/booking/status"; do
     while true; do
         if curl --output /dev/null --silent --head --fail "$url"; then
             break  # Exit the loop if the URL is accessible

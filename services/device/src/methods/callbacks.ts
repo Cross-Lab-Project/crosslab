@@ -35,10 +35,15 @@ export async function sendChangedCallback(device: DeviceModel) {
         )}' to '${url}'`,
       );
 
+      const formattedDevice = await repositories.device.format(device);
+      // TODO: handle device groups correctly
       const callback: DeviceChangedEventCallback = {
         callbackType: 'event',
         eventType: 'device-changed',
-        device: await repositories.device.format(device),
+        device:
+          formattedDevice.type === 'group'
+            ? { ...formattedDevice, added: [], changed: [], removed: [] }
+            : formattedDevice,
       };
       const res = await fetch(url, {
         method: 'POST',

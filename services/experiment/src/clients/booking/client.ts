@@ -206,9 +206,8 @@ export class Client {
   }
 
   /**
-   * Books an experiment.
+   * List bookings
    *
-   * @param body
    * @param options.url
    * Url of the  to be used.
    *
@@ -222,36 +221,19 @@ export class Client {
    * Thrown if response is validated but has status greater than or equal to 400.
    *
    * @returns
-   * The booking was accepted. The booking status will display whether the booking of all devices was successful.
+   * The list of all bookings.
    */
-  public async newBooking(
-    body: {
-      /**
-       * List of devices which should be added.
-       */
-      Devices: Types.Device<'request'>[];
-      /**
-       * A time slot represents a slice of time used for bookings.
-       */
-      Time: Types.Timeslot<'request'>;
-      /**
-       * Type of booking. Currently, only one type is defined, but others might follow (e.g. priority booking). If empty, 'normal' is assumed.
-       */
-      Type?: 'normal';
-      [k: string]: unknown;
-    },
-    options?: {
-      headers?: [string, string][];
-      url?: string;
-    },
-  ): Promise<Signatures.NewBookingSuccessResponse['body']> {
-    const url = appendToUrl(options?.url ?? this.baseUrl, '/booking');
+  public async listBookings(options?: {
+    headers?: [string, string][];
+    url?: string;
+  }): Promise<Signatures.ListBookingsSuccessResponse['body']> {
+    const url = appendToUrl(options?.url ?? this.baseUrl, '/bookings');
     console.log('trying to fetch url:', url);
 
-    if (!RequestValidation.validateNewBookingInput(body))
+    if (!RequestValidation.validateListBookingsInput())
       throw new ValidationError(
         'Request validation failed!',
-        (RequestValidation.validateNewBookingInput as Types.FunctionWithErrors).errors,
+        (RequestValidation.validateListBookingsInput as Types.FunctionWithErrors).errors,
       );
 
     const authorization: string = `Bearer ${this.accessToken}`;
@@ -262,6 +244,101 @@ export class Client {
     );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
+
+    if (!RequestValidation.validateListBookingsOutput(response))
+      throw new ValidationError(
+        'Response validation failed!',
+        (RequestValidation.validateListBookingsOutput as Types.FunctionWithErrors).errors,
+      );
+
+    if (Types.isErrorResponse(response))
+      throw new UnsuccessfulRequestError(
+        `Server returned response with status ${response.status}`,
+        response,
+      );
+
+    return response.body;
+  }
+
+  /**
+   * Create a booking
+   *
+   * @param booking
+   * The booking to be created.
+   * @param options.changedUrl
+   * Url to send "booking-changed" events to for a given booking.
+   * @param options.deletedUrl
+   * Url to send "booking-deleted" events to for a given booking.
+   * @param options.url
+   * Url of the  to be used.
+   *
+   * @throws {@link FetchError | FetchError }
+   * Thrown if fetch fails.
+   * @throws {@link ValidationError | ValidationError }
+   * Thrown if the request/response validation fails.
+   * @throws {@link InvalidUrlError | InvalidUrlError }
+   * Thrown if the provided url is not valid for this request.
+   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
+   * Thrown if response is validated but has status greater than or equal to 400.
+   *
+   * @returns
+   * The booking was created. A JSON representation of the new booking is returned.
+   */
+  public async createBooking(
+    booking: Types.Booking<'request'>,
+    options?: {
+      headers?: [string, string][];
+      changedUrl?: string;
+      deletedUrl?: string;
+      url?: string;
+    },
+  ): Promise<Signatures.CreateBookingSuccessResponse['body']> {
+    const url = appendToUrl(options?.url ?? this.baseUrl, '/bookings');
+    console.log('trying to fetch url:', url);
+
+    const body = booking;
+
+    const parameters = {
+      changedUrl: options?.changedUrl,
+      deletedUrl: options?.deletedUrl,
+    };
+
+    const query: [string, string][] = [];
+
+    if (parameters['changedUrl'])
+      query.push(['changedUrl', parameters['changedUrl'].toString()]);
+
+    if (parameters['deletedUrl'])
+      query.push(['deletedUrl', parameters['deletedUrl'].toString()]);
+
+    if (!RequestValidation.validateCreateBookingInput(parameters, body))
+      throw new ValidationError(
+        'Request validation failed!',
+        (RequestValidation.validateCreateBookingInput as Types.FunctionWithErrors).errors,
+      );
+
+    const authorization: string = `Bearer ${this.accessToken}`;
+
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
       {
         method: 'POST',
         headers: [
@@ -274,106 +351,11 @@ export class Client {
       },
     );
 
-    if (!RequestValidation.validateNewBookingOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (RequestValidation.validateNewBookingOutput as Types.FunctionWithErrors).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-
-    return response.body;
-  }
-
-  /**
-     * Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
- 
-	 * 
-	 * @param url
-	 * Url of the resource to be accessed.
-	 * @param body
-     *
-     * @throws {@link FetchError | FetchError } 
-     * Thrown if fetch fails.
-     * @throws {@link ValidationError | ValidationError } 
-     * Thrown if the request/response validation fails.
-     * @throws {@link InvalidUrlError | InvalidUrlError } 
-     * Thrown if the provided url is not valid for this request.
-     * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError } 
-     * Thrown if response is validated but has status greater than or equal to 400.
-     * 
-     * @returns
-	 * The booking change was accepted. The booking status will display whether the booking of all devices was successful.
-     */
-  public async updateBooking(
-    url: string,
-    body:
-      | {
-          /**
-           * Expresses whether the devices should be locked. Must match current status of booking. Is assumed to be false if not set.
-           */
-          Locked?: boolean;
-          /**
-           * List of devices which should be added.
-           */
-          Devices?: Types.Device<'request'>[];
-          [k: string]: unknown;
-        }
-      | {
-          /**
-           * Callback which should be called at changes.
-           */
-          Callback?: string;
-          [k: string]: unknown;
-        },
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<Signatures.UpdateBookingSuccessResponse['body']> {
-    const urlSuffix = '/booking/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(new URL(url).toString(), '/booking/{}');
-    console.log('trying to fetch url:', url);
-
-    const parameters = {
-      ID: ID,
-    };
-
-    if (!RequestValidation.validateUpdateBookingInput(parameters, body))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateUpdateBookingInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
-    const response = await this.fetch(
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-      {
-        method: 'PATCH',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-        body: JSON.stringify(body),
-      },
-    );
-
-    if (!RequestValidation.validateUpdateBookingOutput(response))
+    if (!RequestValidation.validateCreateBookingOutput(response))
       throw new ValidationError(
         'Response validation failed!',
         (
-          RequestValidation.validateUpdateBookingOutput as Types.FunctionWithErrors
+          RequestValidation.validateCreateBookingOutput as Types.FunctionWithErrors
         ).errors,
       );
 
@@ -387,7 +369,7 @@ export class Client {
   }
 
   /**
-   * Cancels a booking, as long as the booking was originally done by you.
+   * View a booking
    *
    * @param url
    * Url of the resource to be accessed.
@@ -402,80 +384,7 @@ export class Client {
    * Thrown if response is validated but has status greater than or equal to 400.
    *
    * @returns
-   * The booking was cancelled. All associated devices were released.
-   */
-  public async deleteBooking(
-    url: string,
-    options?: {
-      headers?: [string, string][];
-    },
-  ): Promise<void> {
-    const urlSuffix = '/booking/{}'.split('{}').at(-1) ?? '';
-    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(new URL(url).toString(), '/booking/{}');
-    console.log('trying to fetch url:', url);
-
-    const parameters = {
-      ID: ID,
-    };
-
-    if (!RequestValidation.validateDeleteBookingInput(parameters))
-      throw new ValidationError(
-        'Request validation failed!',
-        (RequestValidation.validateDeleteBookingInput as Types.FunctionWithErrors).errors,
-      );
-
-    const authorization: string = `Bearer ${this.accessToken}`;
-
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
-    const response = await this.fetch(
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-      {
-        method: 'DELETE',
-        headers: [
-          ['Content-Type', 'application/json'],
-          ['Authorization', authorization],
-          ...this.fixedHeaders,
-          ...(options?.headers ?? []),
-        ],
-      },
-    );
-
-    if (!RequestValidation.validateDeleteBookingOutput(response))
-      throw new ValidationError(
-        'Response validation failed!',
-        (
-          RequestValidation.validateDeleteBookingOutput as Types.FunctionWithErrors
-        ).errors,
-      );
-
-    if (Types.isErrorResponse(response))
-      throw new UnsuccessfulRequestError(
-        `Server returned response with status ${response.status}`,
-        response,
-      );
-  }
-
-  /**
-   * Returns whether a list of devices is currently booked for a user.
-   *
-   * @param url
-   * Url of the resource to be accessed.
-   *
-   * @throws {@link FetchError | FetchError }
-   * Thrown if fetch fails.
-   * @throws {@link ValidationError | ValidationError }
-   * Thrown if the request/response validation fails.
-   * @throws {@link InvalidUrlError | InvalidUrlError }
-   * Thrown if the provided url is not valid for this request.
-   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
-   * Thrown if response is validated but has status greater than or equal to 400.
-   *
-   * @returns
-   * Returns the current booking.
+   * The JSON Representation of the booking
    */
   public async getBooking(
     url: string,
@@ -483,13 +392,13 @@ export class Client {
       headers?: [string, string][];
     },
   ): Promise<Signatures.GetBookingSuccessResponse['body']> {
-    const urlSuffix = '/booking/{}'.split('{}').at(-1) ?? '';
+    const urlSuffix = '/bookings/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(new URL(url).toString(), '/booking/{}');
+    const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {
-      ID: ID,
+      bookingId: bookingId,
     };
 
     if (!RequestValidation.validateGetBookingInput(parameters))
@@ -533,7 +442,108 @@ export class Client {
   }
 
   /**
-   * Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
+   * Update a booking
+   *
+   * @param url
+   * Url of the resource to be accessed.
+   * @param bookingUpdate
+   * Update the booking
+   * @param options.changedUrl
+   * Url to send "booking-changed" events to for a given booking.
+   * @param options.deletedUrl
+   * Url to send "booking-deleted" events to for a given booking.
+   *
+   * @throws {@link FetchError | FetchError }
+   * Thrown if fetch fails.
+   * @throws {@link ValidationError | ValidationError }
+   * Thrown if the request/response validation fails.
+   * @throws {@link InvalidUrlError | InvalidUrlError }
+   * Thrown if the provided url is not valid for this request.
+   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
+   * Thrown if response is validated but has status greater than or equal to 400.
+   *
+   * @returns
+   * The JSON Representation of the changed booking
+   */
+  public async updateBooking(
+    url: string,
+    bookingUpdate: Types.BookingUpdate<'request'> | undefined,
+    options?: {
+      headers?: [string, string][];
+      changedUrl?: string;
+      deletedUrl?: string;
+    },
+  ): Promise<Signatures.UpdateBookingSuccessResponse['body']> {
+    const urlSuffix = '/bookings/{}'.split('{}').at(-1) ?? '';
+    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
+    const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}');
+    console.log('trying to fetch url:', url);
+
+    const body = bookingUpdate;
+
+    const parameters = {
+      bookingId: bookingId,
+      changedUrl: options?.changedUrl,
+      deletedUrl: options?.deletedUrl,
+    };
+
+    const query: [string, string][] = [];
+
+    if (parameters['changedUrl'])
+      query.push(['changedUrl', parameters['changedUrl'].toString()]);
+
+    if (parameters['deletedUrl'])
+      query.push(['deletedUrl', parameters['deletedUrl'].toString()]);
+
+    if (!RequestValidation.validateUpdateBookingInput(parameters, body))
+      throw new ValidationError(
+        'Request validation failed!',
+        (RequestValidation.validateUpdateBookingInput as Types.FunctionWithErrors).errors,
+      );
+
+    const authorization: string = `Bearer ${this.accessToken}`;
+
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
+        '?' +
+        new URLSearchParams(query),
+      {
+        method: 'PATCH',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
+
+    if (!RequestValidation.validateUpdateBookingOutput(response))
+      throw new ValidationError(
+        'Response validation failed!',
+        (
+          RequestValidation.validateUpdateBookingOutput as Types.FunctionWithErrors
+        ).errors,
+      );
+
+    if (Types.isErrorResponse(response))
+      throw new UnsuccessfulRequestError(
+        `Server returned response with status ${response.status}`,
+        response,
+      );
+
+    return response.body;
+  }
+
+  /**
+   * Delete a booking
    *
    * @param url
    * Url of the resource to be accessed.
@@ -548,29 +558,27 @@ export class Client {
    * Thrown if response is validated but has status greater than or equal to 400.
    *
    * @returns
-   * The booking was cancelled. All associated devices were released.
+   * The booking was delete.
    */
-  public async destroyBooking(
+  public async deleteBooking(
     url: string,
     options?: {
       headers?: [string, string][];
     },
   ): Promise<void> {
-    const urlSuffix = '/booking/{}/destroy'.split('{}').at(-1) ?? '';
+    const urlSuffix = '/bookings/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [ID] = validateUrl(new URL(url).toString(), '/booking/{}/destroy');
+    const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}');
     console.log('trying to fetch url:', url);
 
     const parameters = {
-      ID: ID,
+      bookingId: bookingId,
     };
 
-    if (!RequestValidation.validateDestroyBookingInput(parameters))
+    if (!RequestValidation.validateDeleteBookingInput(parameters))
       throw new ValidationError(
         'Request validation failed!',
-        (
-          RequestValidation.validateDestroyBookingInput as Types.FunctionWithErrors
-        ).errors,
+        (RequestValidation.validateDeleteBookingInput as Types.FunctionWithErrors).errors,
       );
 
     const authorization: string = `Bearer ${this.accessToken}`;
@@ -592,11 +600,11 @@ export class Client {
       },
     );
 
-    if (!RequestValidation.validateDestroyBookingOutput(response))
+    if (!RequestValidation.validateDeleteBookingOutput(response))
       throw new ValidationError(
         'Response validation failed!',
         (
-          RequestValidation.validateDestroyBookingOutput as Types.FunctionWithErrors
+          RequestValidation.validateDeleteBookingOutput as Types.FunctionWithErrors
         ).errors,
       );
 
@@ -605,5 +613,230 @@ export class Client {
         `Server returned response with status ${response.status}`,
         response,
       );
+  }
+
+  /**
+   * Lock a booking
+   *
+   * @param url
+   * Url of the resource to be accessed.
+   *
+   * @throws {@link FetchError | FetchError }
+   * Thrown if fetch fails.
+   * @throws {@link ValidationError | ValidationError }
+   * Thrown if the request/response validation fails.
+   * @throws {@link InvalidUrlError | InvalidUrlError }
+   * Thrown if the provided url is not valid for this request.
+   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
+   * Thrown if response is validated but has status greater than or equal to 400.
+   *
+   * @returns
+   * The booking was locked successfully.
+   */
+  public async lockBooking(
+    url: string,
+    options?: {
+      headers?: [string, string][];
+    },
+  ): Promise<Signatures.LockBookingSuccessResponse['body']> {
+    const urlSuffix = '/bookings/{}/lock'.split('{}').at(-1) ?? '';
+    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
+    const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}/lock');
+    console.log('trying to fetch url:', url);
+
+    const parameters = {
+      bookingId: bookingId,
+    };
+
+    if (!RequestValidation.validateLockBookingInput(parameters))
+      throw new ValidationError(
+        'Request validation failed!',
+        (RequestValidation.validateLockBookingInput as Types.FunctionWithErrors).errors,
+      );
+
+    const authorization: string = `Bearer ${this.accessToken}`;
+
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'PUT',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
+
+    if (!RequestValidation.validateLockBookingOutput(response))
+      throw new ValidationError(
+        'Response validation failed!',
+        (RequestValidation.validateLockBookingOutput as Types.FunctionWithErrors).errors,
+      );
+
+    if (Types.isErrorResponse(response))
+      throw new UnsuccessfulRequestError(
+        `Server returned response with status ${response.status}`,
+        response,
+      );
+
+    return response.body;
+  }
+
+  /**
+   * Unlock a booking
+   *
+   * @param url
+   * Url of the resource to be accessed.
+   *
+   * @throws {@link FetchError | FetchError }
+   * Thrown if fetch fails.
+   * @throws {@link ValidationError | ValidationError }
+   * Thrown if the request/response validation fails.
+   * @throws {@link InvalidUrlError | InvalidUrlError }
+   * Thrown if the provided url is not valid for this request.
+   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
+   * Thrown if response is validated but has status greater than or equal to 400.
+   *
+   * @returns
+   * The booking was unlocked successfully.
+   */
+  public async unlockBooking(
+    url: string,
+    options?: {
+      headers?: [string, string][];
+    },
+  ): Promise<void> {
+    const urlSuffix = '/bookings/{}/lock'.split('{}').at(-1) ?? '';
+    if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
+    const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}/lock');
+    console.log('trying to fetch url:', url);
+
+    const parameters = {
+      bookingId: bookingId,
+    };
+
+    if (!RequestValidation.validateUnlockBookingInput(parameters))
+      throw new ValidationError(
+        'Request validation failed!',
+        (RequestValidation.validateUnlockBookingInput as Types.FunctionWithErrors).errors,
+      );
+
+    const authorization: string = `Bearer ${this.accessToken}`;
+
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
+
+    if (!RequestValidation.validateUnlockBookingOutput(response))
+      throw new ValidationError(
+        'Response validation failed!',
+        (
+          RequestValidation.validateUnlockBookingOutput as Types.FunctionWithErrors
+        ).errors,
+      );
+
+    if (Types.isErrorResponse(response))
+      throw new UnsuccessfulRequestError(
+        `Server returned response with status ${response.status}`,
+        response,
+      );
+  }
+
+  /**
+   * Get a schedule
+   *
+   * @param body
+   * The schedule request.
+   *
+   * @throws {@link FetchError | FetchError }
+   * Thrown if fetch fails.
+   * @throws {@link ValidationError | ValidationError }
+   * Thrown if the request/response validation fails.
+   * @throws {@link InvalidUrlError | InvalidUrlError }
+   * Thrown if the provided url is not valid for this request.
+   * @throws {@link UnsuccessfulRequestError | UnsuccessfulRequestError }
+   * Thrown if response is validated but has status greater than or equal to 400.
+   *
+   * @returns
+   * The JSON Representation of the schedule
+   */
+  public async getSchedule(
+    body: {
+      /**
+       * Urls of the devices to be used for creating the schedule.
+       *
+       */
+      devices: string[];
+      /**
+       * The timeframe to be used for creating the schedule.
+       *
+       */
+      timeframe: Types.Timeslot<'request'>;
+    },
+    options?: {
+      headers?: [string, string][];
+    },
+  ): Promise<Signatures.GetScheduleSuccessResponse['body']> {
+    const url = appendToUrl(this.baseUrl, '/schedule');
+    console.log('trying to fetch url:', url);
+
+    if (!RequestValidation.validateGetScheduleInput(body))
+      throw new ValidationError(
+        'Request validation failed!',
+        (RequestValidation.validateGetScheduleInput as Types.FunctionWithErrors).errors,
+      );
+
+    const authorization: string = `Bearer ${this.accessToken}`;
+
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ['Authorization', authorization],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
+
+    if (!RequestValidation.validateGetScheduleOutput(response))
+      throw new ValidationError(
+        'Response validation failed!',
+        (RequestValidation.validateGetScheduleOutput as Types.FunctionWithErrors).errors,
+      );
+
+    if (Types.isErrorResponse(response))
+      throw new UnsuccessfulRequestError(
+        `Server returned response with status ${response.status}`,
+        response,
+      );
+
+    return response.body;
   }
 }

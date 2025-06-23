@@ -24,16 +24,12 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     experimentModel.bookingStart &&
     experimentModel.bookingEnd
   ) {
-    const booking = await clients.booking.frontend.getBooking(experimentModel.bookingID);
+    const booking = await clients.booking.getBooking(experimentModel.bookingID);
     if (
-      Date.parse(booking.Booking.Time.Start) !==
-        Date.parse(experimentModel.bookingStart) ||
-      Date.parse(booking.Booking.Time.End) !== Date.parse(experimentModel.bookingEnd)
+      Date.parse(booking.timeslot.start) !== Date.parse(experimentModel.bookingStart) ||
+      Date.parse(booking.timeslot.end) !== Date.parse(experimentModel.bookingEnd)
     ) {
-      throw new InvalidChangeError(
-        `The start and end of a booking cannot be changed!`,
-        400,
-      );
+      throw new InvalidChangeError(`The timeslot of a booking cannot be changed!`, 400);
     }
   }
 
@@ -44,43 +40,27 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
   );
 
   // TODO: error handling
-  const booking = await clients.booking.frontend.newBooking({
-    Devices: experimentModel.devices.map(device => {
-      return { ID: device.url };
-    }),
-    Time: {
-      Start: startTime.toISOString(),
-      End: endTime.toISOString(),
+  const booking = await clients.booking.createBooking(
+    {
+      devices: Object.fromEntries(
+        experimentModel.devices.map(deviceModel => {
+          return [deviceModel.uuid, { url: deviceModel.url, essential: true }];
+        }),
+      ),
+      timeslot: {
+        start: startTime.toISOString(),
+        end: endTime.toISOString(),
+      },
     },
-    Type: 'normal',
-  });
-  console.log(
-    'BOOKING DATA:',
-    startTime,
-    endTime,
-    JSON.stringify(await clients.booking.frontend.getBooking(booking.BookingID)),
+    { changedUrl: callbackUrl },
   );
+  console.log('BOOKING DATA:', startTime, endTime, JSON.stringify(booking));
 
-  await clients.booking.frontend.updateBooking(booking.BookingID, {
-    Callback: callbackUrl,
-  });
-
-  // TEMPORARY HOTFIX: wait for booking to have status "booked"
-  for (let i = 0; i < 10; i++) {
-    const updatedBooking = await clients.booking.frontend.getBooking(booking.BookingID);
-
-    if (updatedBooking.Booking.Status === 'booked') {
-      break;
-    }
-
-    await new Promise<void>(resolve => setTimeout(resolve, 1000));
-  }
-
-  callbackHandler.addListener('booking', booking.BookingID, experimentModel.uuid);
+  callbackHandler.addListener('booking', booking.url, experimentModel.uuid);
 
   experimentModel.bookingStart = startTime.toISOString();
   experimentModel.bookingEnd = endTime.toISOString();
-  experimentModel.bookingID = booking.BookingID;
+  experimentModel.bookingID = booking.url;
 
   experimentModel.status = 'booked';
   await repositories.experiment.save(experimentModel);

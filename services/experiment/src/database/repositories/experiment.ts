@@ -89,7 +89,7 @@ export class ExperimentRepository extends AbstractRepository<
         }
       }
       for (const device of devices) {
-        if (newDevices.find(d => d.url === device.url)) continue;
+        if (newDevices.find(d => d.url === device.device)) continue;
         const deviceModel = await this.dependencies.device.create(device);
         newDevices.push(deviceModel);
         callbackHandler.addListener('device', device.device, model.uuid);
@@ -204,12 +204,12 @@ export class ExperimentRepository extends AbstractRepository<
         model.status === 'booking-locked'
           ? 'setup'
           : model.status === 'devices-instantiated'
-          ? 'setup'
-          : model.status === 'booking-updated'
-          ? 'setup'
-          : model.status === 'peerconnections-created'
-          ? 'setup'
-          : model.status,
+            ? 'setup'
+            : model.status === 'booking-updated'
+              ? 'setup'
+              : model.status === 'peerconnections-created'
+                ? 'setup'
+                : model.status,
     };
   }
 

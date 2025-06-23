@@ -63,18 +63,17 @@ from crosslab.api_client.schemas import (
     UpdateInstitutionRequest,
     UpdateInstitutionResponse,
     DeleteInstitutionResponse,
-    ScheduleRequest,
-    ScheduleResponse,
-    NewBookingRequest,
-    NewBookingResponse,
+    ListBookingsResponse,
+    CreateBookingRequest,
+    CreateBookingResponse,
+    GetBookingResponse,
     UpdateBookingRequest,
     UpdateBookingResponse,
     DeleteBookingResponse,
-    GetBookingResponse,
-    DestroyBookingResponse,
     LockBookingResponse,
     UnlockBookingResponse,
-    BookingCallbackResponse,
+    GetScheduleRequest,
+    GetScheduleResponse,
     ListPlatformResponse,
     RegisterPlatformResponse,
     GetPlatformResponse,
@@ -97,7 +96,9 @@ from crosslab.api_client.schemas import (
     UpdateResourceStudentRequest,
     UpdateResourceStudentResponse,
     UpdateLtiExperimentRequest,
-    UpdateLtiExperimentResponse
+    UpdateLtiExperimentResponse,
+    UpdateLtiExperimentCallbackRequest,
+    UpdateLtiExperimentCallbackResponse
 )
 
 
@@ -491,7 +492,7 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def update_device(self, url: str, body: Optional[UpdateDeviceRequest] = None, changedUrl: Optional[str] = None) -> UpdateDeviceResponse:  # noqa: E501
+    async def update_device(self, url: str, body: Optional[UpdateDeviceRequest] = None, changedUrl: Optional[str] = None, deletedUrl: Optional[str] = None) -> UpdateDeviceResponse:  # noqa: E501
         """
         Update an existing device
         """  # noqa: E501
@@ -513,6 +514,11 @@ class APIClient:
                 query_params['changedUrl'] = changedUrl
             else:
                 query_params['changedUrl'] = str(changedUrl)
+        if deletedUrl:
+            if isinstance(deletedUrl, list):
+                query_params['deletedUrl'] = deletedUrl
+            else:
+                query_params['deletedUrl'] = str(deletedUrl)
         
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
@@ -1209,104 +1215,73 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def schedule(self, url: str = "/schedule", body: Optional[ScheduleRequest] = None) -> ScheduleResponse:  # noqa: E501
+    async def list_bookings(self, url: str = "/bookings") -> ListBookingsResponse:  # noqa: E501
         """
-        Returns the free / booked times for given experiment.
+        List bookings
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(schedule)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(bookings)?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/schedule'
+        valid_url = '/'+m.group(2)+'/bookings'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body)
+        status, resp = await self._fetch(valid_url, method="get")
            
         # transform response
         if status == 200:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def newBooking(self, body: NewBookingRequest, url: str = "/booking") -> NewBookingResponse:  # noqa: E501
+    async def create_booking(self, body: CreateBookingRequest, url: str = "/bookings", changedUrl: Optional[str] = None, deletedUrl: Optional[str] = None) -> CreateBookingResponse:  # noqa: E501
         """
-        Books an experiment.
+        Create a booking
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(booking)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(bookings)?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/booking'
+        valid_url = '/'+m.group(2)+'/bookings'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if changedUrl:
+            if isinstance(changedUrl, list):
+                query_params['changedUrl'] = changedUrl
+            else:
+                query_params['changedUrl'] = str(changedUrl)
+        if deletedUrl:
+            if isinstance(deletedUrl, list):
+                query_params['deletedUrl'] = deletedUrl
+            else:
+                query_params['deletedUrl'] = str(deletedUrl)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="post", body=body)
+        status, resp = await self._fetch(valid_url, method="post", body=body, params=query_params)
            
         # transform response
-        if status == 200:
+        if status == 201:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def updateBooking(self, url: str, body: UpdateBookingRequest) -> UpdateBookingResponse:  # noqa: E501
+    async def get_booking(self, url: str) -> GetBookingResponse:  # noqa: E501
         """
-        Allows the addition of devices to a booking (removing of devices is not supportet) or the registration of callbacks. For adding devices, the scope 'booking:use' is required.
-
+        View a booking
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)()?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="patch", body=body)
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def deleteBooking(self, url: str) -> DeleteBookingResponse:  # noqa: E501
-        """
-        Cancels a booking, as long as the booking was originally done by you.
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)()?$', url)
-        if m is None:
-            raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
-        if valid_url.startswith('//'):
-            valid_url = valid_url[1:]
-        # make http call
-        status, resp = await self._fetch(valid_url, method="delete")
-           
-        # transform response
-        if status == 200:
-            return resp
-        raise Exception(f"Unexpected status code: {status}")
-
-    async def getBooking(self, url: str) -> GetBookingResponse:  # noqa: E501
-        """
-        Returns whether a list of devices is currently booked for a user.
-        """  # noqa: E501
-        if not self.BASE_URL:
-            raise Exception("No base url set")
-
-        # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(bookings\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+''
@@ -1320,37 +1295,73 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def destroyBooking(self, url: str) -> DestroyBookingResponse:  # noqa: E501
+    async def update_booking(self, url: str, body: Optional[UpdateBookingRequest] = None, changedUrl: Optional[str] = None, deletedUrl: Optional[str] = None) -> UpdateBookingResponse:  # noqa: E501
         """
-        Allows selected persons (like lab manager) to remove a user booking. To avoid mistakes, this is a different path than normal delete.
+        Update a booking
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)(\/destroy)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(bookings\/[^?]*?)()?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+'/destroy'
+        valid_url = '/'+m.group(2)+''
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
+
+        # build query params
+        query_params: Dict[str, Union[List[str], str]] = {}
+        if changedUrl:
+            if isinstance(changedUrl, list):
+                query_params['changedUrl'] = changedUrl
+            else:
+                query_params['changedUrl'] = str(changedUrl)
+        if deletedUrl:
+            if isinstance(deletedUrl, list):
+                query_params['deletedUrl'] = deletedUrl
+            else:
+                query_params['deletedUrl'] = str(deletedUrl)
+        
         # make http call
-        status, resp = await self._fetch(valid_url, method="delete")
+        status, resp = await self._fetch(valid_url, method="patch", body=body, params=query_params)
            
         # transform response
         if status == 200:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def lockBooking(self, url: str) -> LockBookingResponse:  # noqa: E501
+    async def delete_booking(self, url: str) -> DeleteBookingResponse:  # noqa: E501
         """
-        Locks the current booking so the devices can be used.  This sets the status to "active" This means that the booking can not be cancelled or (currently not implemented) the end time can not be set to a prior time. If called multiple times, the booking will be locked only once.
+        Delete a booking
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)(\/lock)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(bookings\/[^?]*?)()?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+''
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="delete")
+           
+        # transform response
+        if status == 204:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def lock_booking(self, url: str) -> LockBookingResponse:  # noqa: E501
+        """
+        Lock a booking
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(bookings\/[^?]*?)(\/lock)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/lock'
@@ -1364,15 +1375,15 @@ class APIClient:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def unlockBooking(self, url: str) -> UnlockBookingResponse:  # noqa: E501
+    async def unlock_booking(self, url: str) -> UnlockBookingResponse:  # noqa: E501
         """
-        Unlocks all devices belonging to a booking, status will be set to 'booked'.
+        Unlock a booking
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking\/[^?]*?)(\/lock)?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(bookings\/[^?]*?)(\/lock)?$', url)
         if m is None:
             raise Exception("Invalid url")
         valid_url = '/'+m.group(2)+'/lock'
@@ -1382,26 +1393,29 @@ class APIClient:
         status, resp = await self._fetch(valid_url, method="delete")
            
         # transform response
-        if status == 200:
+        if status == 204:
             return resp
         raise Exception(f"Unexpected status code: {status}")
 
-    async def bookingCallback(self, url: str) -> BookingCallbackResponse:  # noqa: E501
+    async def get_schedule(self, body: GetScheduleRequest, url: str = "/schedule") -> GetScheduleResponse:  # noqa: E501
         """
-        Callback used for updating device info / booking info.
+        Get a schedule
+        
+        This endpoint can be used to retrieve a schedule that contains all time slots in the
+        requested time frame in which all requested devices are available.
         """  # noqa: E501
         if not self.BASE_URL:
             raise Exception("No base url set")
 
         # match path to url schema
-        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(booking_callback\/[^?]*?)()?$', url)
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?()(schedule)?$', url)
         if m is None:
             raise Exception("Invalid url")
-        valid_url = '/'+m.group(2)+''
+        valid_url = '/'+m.group(2)+'/schedule'
         if valid_url.startswith('//'):
             valid_url = valid_url[1:]
         # make http call
-        status, resp = await self._fetch(valid_url, method="post")
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 200:
@@ -1777,6 +1791,28 @@ class APIClient:
             valid_url = valid_url[1:]
         # make http call
         status, resp = await self._fetch(valid_url, method="patch", body=body)
+           
+        # transform response
+        if status == 201:
+            return resp
+        raise Exception(f"Unexpected status code: {status}")
+
+    async def update_lti_experiment_callback(self, url: str, body: UpdateLtiExperimentCallbackRequest) -> UpdateLtiExperimentCallbackResponse:  # noqa: E501
+        """
+        Experiment Changed Callback
+        """  # noqa: E501
+        if not self.BASE_URL:
+            raise Exception("No base url set")
+
+        # match path to url schema
+        m = re.search(r'^('+re.escape(self.BASE_URL)+r')?\/?(lti\/session\/[^?]*?)(\/experiment_callback)?$', url)
+        if m is None:
+            raise Exception("Invalid url")
+        valid_url = '/'+m.group(2)+'/experiment_callback'
+        if valid_url.startswith('//'):
+            valid_url = valid_url[1:]
+        # make http call
+        status, resp = await self._fetch(valid_url, method="post", body=body)
            
         # transform response
         if status == 201:

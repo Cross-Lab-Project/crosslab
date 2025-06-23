@@ -19,6 +19,10 @@ async function checkDevices(
       const deviceUrl = device.instance?.url ?? device.resolvedDevice ?? device.url;
       try {
         const resolvedDevice = await clients.device.getDevice(deviceUrl);
+        if (resolvedDevice.type !== 'device') {
+          // TODO: better error with status code
+          throw new Error('Expected all devices to be of type "device"!');
+        }
         connectedMap.set(deviceUrl, !!resolvedDevice.connected); // TODO: better solution
       } catch {
         connectedMap.set(deviceUrl, false);
