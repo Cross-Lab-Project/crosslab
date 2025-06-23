@@ -1,5 +1,6 @@
 import { repositories } from '../../../database/dataSource.js';
 import { deleteBookingsByBookingIdSignature } from '../../../generated/signatures.js';
+import { sendDeletedCallbacks } from '../../../methods/callbacks.js';
 import { mutexManager } from '../../../methods/mutexManager.js';
 
 export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = async (
@@ -19,6 +20,8 @@ export const deleteBookingsByBookingId: deleteBookingsByBookingIdSignature = asy
     });
 
     await repositories.booking.remove(bookingModel);
+
+    sendDeletedCallbacks(bookingModel);
 
     return {
       status: 204,

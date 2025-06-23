@@ -8,7 +8,6 @@ import {
   ManyToOne,
   OneToMany,
   OneToOne,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -21,10 +20,10 @@ export class BookingModel {
   status!: 'accepted' | 'accepted-essential' | 'rejected' | 'impossible';
 
   @Column()
-  start!: string;
+  start!: number;
 
   @Column()
-  end!: string;
+  end!: number;
 
   @OneToMany(() => DeviceModel, deviceModel => deviceModel.booking)
   devices!: DeviceModel[];
@@ -46,10 +45,10 @@ export class ReservationModel {
   uuid!: string;
 
   @Column()
-  start!: string;
+  start!: number;
 
   @Column()
-  end!: string;
+  end!: number;
 
   @Column({ type: String, nullable: true })
   remoteBooking!: string | null;
@@ -85,8 +84,14 @@ export class DeviceModel {
 
 @Entity({ name: 'CallbackUrl' })
 export class CallbackUrlModel {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
+  uuid!: string;
+
+  @Column()
   url!: string;
+
+  @Column()
+  type!: 'changed' | 'deleted';
 }
 
 export const Entities = [BookingModel, DeviceModel, ReservationModel, CallbackUrlModel];

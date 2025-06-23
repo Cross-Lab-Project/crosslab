@@ -53,10 +53,10 @@ async function handleChangedConcreteDevice(
   }
 
   const startTime = new Date(
-    Math.min(...affectedBookingModels.map(booking => Date.parse(booking.start))),
+    Math.min(...affectedBookingModels.map(booking => booking.start)),
   ).toISOString();
   const endTime = new Date(
-    Math.max(...affectedBookingModels.map(booking => Date.parse(booking.end))),
+    Math.max(...affectedBookingModels.map(booking => booking.end)),
   ).toISOString();
   const availability = await clients.device.getDeviceAvailability(concreteDevice.url, {
     startTime,
@@ -153,13 +153,6 @@ async function handleChangedDeviceGroup(
   }
 
   for (const bookingModel of affectedBookingModels) {
-    // TODO: this does not seem right
-    if (bookingModel.isLocked && bookingModel.status !== 'rejected') {
-      await repositories.booking.save(bookingModel);
-      sendChangedCallbacks(bookingModel);
-      continue;
-    }
-
     const affectedDeviceGroupModels = bookingModel.devices.filter(
       deviceModel => deviceModel.url === deviceGroup.url,
     );
@@ -171,20 +164,23 @@ async function handleChangedDeviceGroup(
         deviceGroup.removed.includes(deviceGroupModel.selectedDevice);
 
       if (chosenDeviceRemoved) {
-        deviceGroupModel.selectedDevice = null;
         if (deviceGroupModel.reservation) {
           const reservation = deviceGroupModel.reservation;
           deviceGroupModel.reservation = null;
           await repositories.device.save(deviceGroupModel);
           await repositories.reservation.remove(reservation);
         }
-        const deviceGroup = await clients.device.getDevice(deviceGroupModel.url, {
-          flat_group: true,
-        });
-        try {
-          await reserveDevice(bookingModel, deviceGroupModel, deviceGroup);
-        } catch {
-          // empty
+
+        if (!bookingModel.isLocked) {
+          deviceGroupModel.selectedDevice = null;
+          const deviceGroup = await clients.device.getDevice(deviceGroupModel.url, {
+            flat_group: true,
+          });
+          try {
+            await reserveDevice(bookingModel, deviceGroupModel, deviceGroup);
+          } catch {
+            // empty
+          }
         }
         await repositories.booking.save(bookingModel);
         sendChangedCallbacks(bookingModel);
@@ -198,10 +194,12 @@ async function handleChangedDeviceGroup(
 
       // check if one of the added or changed devices can be reserved
       for (const deviceUrl of [...deviceGroup.added, ...deviceGroup.changed]) {
+        if (bookingModel.isLocked && deviceGroupModel.selectedDevice !== deviceUrl) {
+          continue;
+        }
         const device = await clients.device.getDevice(deviceUrl);
         try {
           await reserveDevice(bookingModel, deviceGroupModel, device);
-          deviceGroupModel.selectedDevice = deviceUrl;
           await repositories.booking.save(bookingModel);
           sendChangedCallbacks(bookingModel);
           break;

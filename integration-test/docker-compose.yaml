@@ -9,6 +9,7 @@ x-config: &common-config
   EXPERIMENT_SERVICE_URL: 'http://127.0.0.1:3002'
   FEDERATION_SERVICE_URL: 'http://127.0.0.1:3003'
   LTI_SERVICE_URL: 'http://127.0.0.1:3004'
+  BOOKING_SERVICE_URL: 'http://127.0.0.1:3005'
   BASE_URL: 'http://localhost'
 
 services:
@@ -24,6 +25,7 @@ services:
       FEDERATION_SERVICE_DOMAIN: '127.0.0.1:3003'
       AUTHORIZATION_SERVICE_DOMAIN: '127.0.0.1:3010'
       LTI_SERVICE_DOMAIN: '127.0.0.2:3004'
+      BOOKING_SERVICE_DOMAIN: '127.0.0.1:3003'
     network_mode: 'host'
   authentication:
     image: '${AUTHENTICATION_IMAGE}'
@@ -38,6 +40,10 @@ services:
     environment:
       <<: *common-config
       JWT_SECRET: 'secret'
+    network_mode: 'host'
+  booking:
+    image: '${BOOKING_IMAGE}'
+    environment: *common-config
     network_mode: 'host'
   device:
     image: '${DEVICE_IMAGE}'

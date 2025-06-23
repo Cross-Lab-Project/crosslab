@@ -1,7 +1,7 @@
 import { AbstractRepository } from '@crosslab/service-common';
 import { EntityManager } from 'typeorm';
 
-import { Timeslot } from '../../generated/types.js';
+import { Timeslot } from '../../methods/timetable.js';
 import { ReservationModel } from '../model.js';
 
 export class ReservationRepository extends AbstractRepository<

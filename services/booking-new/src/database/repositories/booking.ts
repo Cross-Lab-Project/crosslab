@@ -1,5 +1,13 @@
 import { AbstractRepository } from '@crosslab/service-common';
-import { EntityManager, FindOptionsRelations } from 'typeorm';
+import {
+  And,
+  EntityManager,
+  FindOptionsRelations,
+  In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Not,
+} from 'typeorm';
 
 import * as clients from '../../clients/index.js';
 import { Booking } from '../../generated/types.js';
@@ -58,8 +66,8 @@ export class BookingRepository extends AbstractRepository<
       if (data.timeslot.start >= data.timeslot.end) {
         throw new BookingError('start must be before end', 400);
       }
-      model.start = data.timeslot.start;
-      model.end = data.timeslot.end;
+      model.start = Date.parse(data.timeslot.start);
+      model.end = Date.parse(data.timeslot.end);
 
       for (const deviceModel of model.devices) {
         const reservation = deviceModel.reservation;
@@ -104,14 +112,14 @@ export class BookingRepository extends AbstractRepository<
         return 0;
       });
 
-      const newDevices: DeviceModel[] = [];
+      const updatedDevices: DeviceModel[] = [];
       for (const { id, device, essential } of deviceArray) {
         // check if device is already part of the booking
         const index = model.devices.findIndex(
           deviceModel => deviceModel.id === id && deviceModel.url === device.url,
         );
         if (index !== -1) {
-          newDevices.push(...model.devices.splice(index, 1));
+          updatedDevices.push(...model.devices.splice(index, 1));
           continue;
         }
 
@@ -123,7 +131,7 @@ export class BookingRepository extends AbstractRepository<
         });
         await reserveDevice(model, deviceModel, device);
 
-        newDevices.push(deviceModel);
+        updatedDevices.push(deviceModel);
       }
 
       // delete devices no longer in booking
@@ -131,15 +139,19 @@ export class BookingRepository extends AbstractRepository<
         await repositories.device.remove(removedDevice);
       }
 
-      model.devices = newDevices;
+      model.devices = updatedDevices;
     }
   }
 
   async remove(model: BookingModel): Promise<void> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
-    for (const device of model.devices) {
-      await this.dependencies.device.remove(device);
+    for (const deviceModel of model.devices) {
+      await this.dependencies.device.remove(deviceModel);
+    }
+
+    for (const callbackUrlModel of model.callbackUrls) {
+      await this.dependencies.callbackUrl.remove(callbackUrlModel);
     }
 
     await this.repository.remove(model);
@@ -150,7 +162,14 @@ export class BookingRepository extends AbstractRepository<
 
     const newDevices = [];
     for (const device of model.devices) {
-      newDevices.push(await this.dependencies.device.save(device));
+      await this.dependencies.device.save(device);
+      newDevices.push(
+        await this.dependencies.device.findOneOrFail({
+          where: {
+            uuid: device.uuid,
+          },
+        }),
+      );
     }
     model.devices = newDevices;
 
@@ -158,15 +177,76 @@ export class BookingRepository extends AbstractRepository<
       await this.dependencies.callbackUrl.save(callbackUrl);
     }
 
-    const oldStatus = model.status;
     if (model.status !== 'impossible') {
-      model.status = model.devices.find(device => device.reservation === null)
-        ? 'rejected'
-        : 'accepted';
+      const unreservedDevices = model.devices.filter(
+        device => device.reservation === null,
+      );
+
+      if (unreservedDevices.length === 0) {
+        model.status = 'accepted';
+      } else if (unreservedDevices.find(device => device.essential)) {
+        model.status = 'rejected';
+      } else {
+        model.status = 'accepted-essential';
+      }
     }
 
-    if (oldStatus !== 'accepted' && model.status === 'accepted') {
+    if (model.status === 'accepted' || model.status === 'accepted-essential') {
       // TODO: delete all reservations that overlap with the ones of this booking
+      const deviceUrls = model.devices
+        .flatMap(device => {
+          if (!device.reservation) {
+            return null;
+          }
+          return device.selectedDevice ?? device.url;
+        })
+        .filter(url => url !== null);
+
+      const overlappingDevices = await repositories.device.find({
+        where: [
+          {
+            booking: {
+              uuid: Not(model.uuid),
+              start: And(MoreThanOrEqual(model.start), LessThanOrEqual(model.end)),
+            },
+            url: In(deviceUrls),
+            selectedDevice: In(deviceUrls),
+            reservation: Not(null),
+          },
+          {
+            booking: {
+              uuid: Not(model.uuid),
+              end: And(MoreThanOrEqual(model.start), LessThanOrEqual(model.end)),
+            },
+            url: In(deviceUrls),
+            selectedDevice: In(deviceUrls),
+            reservation: Not(null),
+          },
+          {
+            booking: {
+              uuid: Not(model.uuid),
+              start: LessThanOrEqual(model.start),
+              end: MoreThanOrEqual(model.end),
+            },
+            url: In(deviceUrls),
+            selectedDevice: In(deviceUrls),
+            reservation: Not(null),
+          },
+        ],
+        relations: {
+          booking: true,
+          reservation: true,
+        },
+      });
+
+      for (const device of overlappingDevices) {
+        if (device.reservation) {
+          const reservation = device.reservation;
+          device.reservation = null;
+          await repositories.device.save(device);
+          await repositories.reservation.remove(reservation);
+        }
+      }
     }
 
     return await this.repository.save(model);
@@ -175,33 +255,35 @@ export class BookingRepository extends AbstractRepository<
   async format(model: BookingModel): Promise<Booking<'response'>> {
     if (!this.isInitialized()) this.throwUninitializedRepositoryError();
 
+    const devices = Object.fromEntries(
+      model.devices.map(device => [
+        device.id,
+        {
+          url: device.url,
+          essential: device.essential,
+          isReserved: !!device.reservation,
+        },
+      ]),
+    );
+
+    const selectedDevices = Object.fromEntries(
+      model.devices
+        .filter(device => device.type === 'group')
+        .map(device => {
+          return [device.id, device.selectedDevice];
+        }),
+    );
+
     return {
       url: bookingUrlFromId(model.uuid),
       status: model.status,
       isLocked: model.isLocked,
-      devices: Object.fromEntries(
-        model.devices.map(device => {
-          return [
-            device.id,
-            {
-              url: device.url,
-              essential: device.essential,
-              isReserved: !!device.reservation,
-            },
-          ];
-        }),
-      ),
+      devices,
       timeslot: {
-        start: model.start,
-        end: model.end,
+        start: new Date(model.start).toISOString(),
+        end: new Date(model.end).toISOString(),
       },
-      selectedDevices: Object.fromEntries(
-        model.devices
-          .filter(device => device.type === 'group')
-          .map(device => {
-            return [device.id, device.selectedDevice];
-          }),
-      ),
+      selectedDevices,
     };
   }
 

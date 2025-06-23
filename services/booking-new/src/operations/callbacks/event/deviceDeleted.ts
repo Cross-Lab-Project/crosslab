@@ -24,10 +24,9 @@ async function handleDeletedDevice(deviceUrl: string) {
   const affectedBookingModels = await getAffectedBookings(deviceUrl);
 
   for (const bookingModel of affectedBookingModels) {
-    const affectedDeviceModels = bookingModel.devices.filter(
-      deviceModel =>
-        deviceModel.url === deviceUrl || deviceModel.selectedDevice === deviceUrl,
-    );
+    const affectedDeviceModels = bookingModel.devices.filter(deviceModel => {
+      return deviceModel.url === deviceUrl || deviceModel.selectedDevice === deviceUrl;
+    });
 
     for (const deviceModel of affectedDeviceModels) {
       const reservation = deviceModel.reservation;

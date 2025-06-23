@@ -110,6 +110,23 @@ components:
         - callbackType
         - eventType
         - booking
+    bookingDeletedEventCallback:
+      title: BookingDeletedEventCallback
+      type: object
+      properties:
+        callbackType:
+          type: string
+          const: event
+        eventType:
+          type: string
+          const: booking-deleted
+        bookingUrl:
+          type: string
+          format: uri
+      required:
+        - callbackType
+        - eventType
+        - bookingUrl
   parameters:
     bookingId:
       in: path
@@ -122,6 +139,14 @@ components:
       in: query
       name: changedUrl
       description: Url to send "booking-changed" events to for a given booking.
+      required: false
+      schema:
+        type: string
+        format: uri
+    deletedUrl:
+      in: query
+      name: deletedUrl
+      description: Url to send "booking-deleted" events to for a given booking.
       required: false
       schema:
         type: string
@@ -186,6 +211,7 @@ paths:
             - booking:create
       parameters:
         - $ref: "#/components/parameters/changedUrl"
+        - $ref: "#/components/parameters/deletedUrl"
       requestBody:
         description: The booking to be created.
         required: true
@@ -216,9 +242,9 @@ paths:
             post:
               security:
                 - JWT:
-                    - booking
-                    - booking:write
-                    - booking:create
+                  - booking
+                  - booking:write
+                  - booking:create
               summary: Callback for the "booking-changed" event
               requestBody:
                 required: true
@@ -226,6 +252,26 @@ paths:
                   application/json:
                     schema:
                       $ref: "#/components/schemas/bookingChangedEventCallback"
+              responses:
+                2XX:
+                  description: The event was successfully processed.
+                410:
+                  description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+        deleted:
+          '{$request.query.deletedUrl}':
+            post:
+              security:
+                - JWT:
+                  - booking
+                  - booking:write
+                  - booking:create
+              summary: Callback for the "booking-deleted" event
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/bookingDeletedEventCallback"
               responses:
                 2XX:
                   description: The event was successfully processed.
@@ -273,6 +319,7 @@ paths:
       parameters:
         - $ref: '#/components/parameters/bookingId'
         - $ref: "#/components/parameters/changedUrl"
+        - $ref: "#/components/parameters/deletedUrl"
       requestBody:
         description: Update the booking
         content:
@@ -312,6 +359,26 @@ paths:
                   application/json:
                     schema:
                       $ref: "#/components/schemas/bookingChangedEventCallback"
+              responses:
+                2XX:
+                  description: The event was successfully processed.
+                410:
+                  description: The callback is no longer required for the transmitted device. The Service is free to remove the callback reference.
+        deleted:
+          '{$request.query.deletedUrl}':
+            post:
+              security:
+                - JWT:
+                  - booking
+                  - booking:write
+                  - booking:create
+              summary: Callback for the "booking-deleted" event
+              requestBody:
+                required: true
+                content:
+                  application/json:
+                    schema:
+                      $ref: "#/components/schemas/bookingDeletedEventCallback"
               responses:
                 2XX:
                   description: The event was successfully processed.

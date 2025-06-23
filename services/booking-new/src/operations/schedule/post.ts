@@ -9,8 +9,8 @@ import {
 import * as clients from '../../clients/index.js';
 import { repositories } from '../../database/dataSource.js';
 import { postScheduleSignature } from '../../generated/signatures.js';
-import { Timeslot } from '../../generated/types.js';
 import {
+  Timeslot,
   Timetable,
   removeFromTimetable,
   sortTimeslots,
@@ -19,7 +19,11 @@ import {
 export const postSchedule: postScheduleSignature = async (req, body) => {
   await req.authorization.check_authorization_or_fail('create', 'schedule');
 
-  const { devices, timeframe } = body;
+  const devices = body.devices;
+  const timeframe = {
+    start: Date.parse(body.timeframe.start),
+    end: Date.parse(body.timeframe.end),
+  };
 
   if (timeframe.end <= timeframe.start) {
     throw new InvalidValueError('End of timeframe is before its start!', 400);
@@ -30,7 +34,12 @@ export const postSchedule: postScheduleSignature = async (req, body) => {
 
   return {
     status: 200,
-    body: schedule,
+    body: schedule.map(timeslot => {
+      return {
+        start: new Date(timeslot.start).toISOString(),
+        end: new Date(timeslot.end).toISOString(),
+      };
+    }),
   };
 };
 
@@ -112,13 +121,17 @@ async function getTimetableForConcreteDevice(
   const bookedTimeslots: Timeslot[] = reservations.map(reservation => {
     return { start: reservation.start, end: reservation.end };
   });
-  const availableTimeslots = await clients.device.getDeviceAvailability(
-    concreteDevice.url,
-    {
-      startTime: timeframe.start,
-      endTime: timeframe.end,
-    },
-  );
+  const availableTimeslots = (
+    await clients.device.getDeviceAvailability(concreteDevice.url, {
+      startTime: new Date(timeframe.start).toISOString(),
+      endTime: new Date(timeframe.end).toISOString(),
+    })
+  ).map(timeslot => {
+    return {
+      start: Date.parse(timeslot.start),
+      end: Date.parse(timeslot.end),
+    };
+  });
   return removeFromTimetable(availableTimeslots, bookedTimeslots, timeframe);
 }
 
