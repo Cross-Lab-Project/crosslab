@@ -27,23 +27,23 @@ export async function finishExperiment(
     case 'booked': {
       assert(validateExperimentStatus(experimentModel, 'booked'));
 
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await deleteBooking(experimentModel, clients);
 
       break;
     }
     case 'booking-locked': {
       assert(validateExperimentStatus(experimentModel, 'booking-locked'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
 
       break;
     }
     case 'devices-instantiated': {
       assert(validateExperimentStatus(experimentModel, 'devices-instantiated'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
       break;
@@ -51,8 +51,8 @@ export async function finishExperiment(
     case 'booking-updated': {
       assert(validateExperimentStatus(experimentModel, 'booking-updated'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
       break;
@@ -60,8 +60,8 @@ export async function finishExperiment(
     case 'peerconnections-created': {
       assert(validateExperimentStatus(experimentModel, 'peerconnections-created'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deletePeerconnections(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
@@ -70,8 +70,8 @@ export async function finishExperiment(
     case 'running': {
       assert(validateExperimentStatus(experimentModel, 'running'));
 
-      // await apiClient.unlockBooking(experimentModel.bookingID)
-      // await apiClient.deleteBooking(experimentModel.bookingID)
+      await unlockBooking(experimentModel, clients);
+      await deleteBooking(experimentModel, clients);
       await deletePeerconnections(experimentModel, clients);
       await deleteInstances(experimentModel, clients);
 
@@ -99,7 +99,7 @@ async function deleteInstances(experiment: ExperimentModel, clients: Clients) {
           await clients.device.deleteDevice(device.instance.url);
         } catch (error) {
           if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
-            break;
+            continue;
           throw error;
         }
       }
@@ -114,9 +114,33 @@ async function deletePeerconnections(experiment: ExperimentModel, clients: Clien
         await clients.device.deletePeerconnection(peerconnection.url);
       } catch (error) {
         if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
-          break;
+          continue;
         throw error;
       }
+    }
+  }
+}
+
+async function unlockBooking(experiment: ExperimentModel, clients: Clients) {
+  if (experiment.bookingID) {
+    try {
+      await clients.booking.backend.unlockBooking(experiment.bookingID);
+    } catch (error) {
+      if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
+        return;
+      throw error;
+    }
+  }
+}
+
+async function deleteBooking(experiment: ExperimentModel, clients: Clients) {
+  if (experiment.bookingID) {
+    try {
+      await clients.booking.frontend.deleteBooking(experiment.bookingID);
+    } catch (error) {
+      if (error instanceof UnsuccessfulRequestError && error.response.status === 404)
+        return;
+      throw error;
     }
   }
 }

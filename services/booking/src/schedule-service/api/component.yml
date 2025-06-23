@@ -1,85 +1,90 @@
-/schedule:
-  post:
-    operationId: 'schedule'
-    security:
-      - JWT: []
-    tags:
-      - schedule-service
-    summary: Returns the free / booked times for given experiment.
-    x-optional-url: true
-    requestBody:
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - Experiment
-              - Time
-            properties:
-              Experiment:
-                $ref: '#/components/schemas/Experiment'
-              Time:
-                $ref: '#/components/schemas/Timeslot'
-              Combined:
-                type: boolean
-                description: If true, show only one timetable per device instead of one for all available physical devices.
-              onlyOwn:
-                type: boolean
-                description: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
-    responses:
-      '200':
-        description: Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable.
+  /schedule:
+    post:
+      operationId: 'schedule'
+      security:
+        - JWT:
+          - booking
+          - booking:use
+      tags:
+        - schedule-service
+      summary: Returns the free / booked times for given experiment.
+      x-optional-url: true
+      requestBody:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                type: object
-                required:
-                  - Device
-                  - Booked
-                  - Free
-                properties:
-                  Device:
-                    type: string
-                    description: ID of the device (or * if combined).
-                  Booked:
-                    type: array
-                    description: Array of booked times.
-                    items:
-                      $ref: '#/components/schemas/Timeslot'
-                  Free:
-                    type: array
-                    description: Array of free times.
-                    items:
-                      $ref: '#/components/schemas/Timeslot'
-      '400':
-        description: onlyOwn was set, but devices not belonging to that institution were requested.
-      '401':
-        description: No authorisation header found.
-      '404':
-        description: Request contains unknown type IDs. The first unknown ID will be returned.
-        content:
-          application/json:
-            schema:
-              type: string
-              description: First unknown device ID.
-      '422':
-        description: Request contains virtual devices and can thus not be processed.
-        content:
-          application/json:
-            schema:
-              type: string
-              description: First virtual device ID.
-      '500':
-        description: >-
-          Request could not be answered. An error string containing the reason
-          will be returned.
-        content:
-          application/json:
-            schema:
-              type: string
-              description: Error description.
-      '503':
-        description: >-
-          Service is unable to respond in time, possibly overloaded. Try again in a few minutes.
+              type: object
+              required:
+               - Experiment
+               - Time
+              properties:
+                Experiment:
+                  $ref: '#/components/schemas/Experiment'
+                Time:
+                  $ref: '#/components/schemas/Timeslot'
+                Combined:
+                  type: boolean
+                  description: If true, show only one timetable per device instead of one for all available physical devices.
+                onlyOwn:
+                  type: boolean
+                  description: (private) Show only devices of this institution. Give an error if a device of an other institution is requested.
+      responses:
+        '200':
+          description: Timetable of free/booked time. If 'Combined' is set to true, an array with only one entry is returned containing the combined timetable.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                   - Device
+                   - Booked
+                   - Free
+                  properties:
+                    Device:
+                      type: string
+                      description: ID of the device (or * if combined).
+                    Booked:
+                      type: array
+                      description: Array of booked times.
+                      items:
+                        $ref: '#/components/schemas/Timeslot'
+                    Free:
+                      type: array
+                      description: Array of free times.
+                      items:
+                        $ref: '#/components/schemas/Timeslot'
+        '400':
+          description: onlyOwn was set, but devices not belonging to that institution were requested.
+        '401':
+          description: No authorisation header found.
+        '403':
+          description: >-
+            Caller is not allowed to call this method. Usually, caller is missing required scopes.
+        '404':
+          description: Request contains unknown type IDs. The first unknown ID will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: First unknown device ID.
+        '422':
+          description: Request contains virtual devices and can thus not be processed.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: First virtual device ID.
+        '500':
+          description: >-
+            Request could not be answered. An error string containing the reason
+            will be returned.
+          content:
+            application/json:
+              schema:
+                type: string
+                description: Error description.
+        '503':
+          description: >-
+            Service is unable to respond in time, possibly overloaded. Try again in a few minutes.

@@ -1,1 +1,1 @@
-CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`));
+CREATE TABLE reservation (`id` BIGINT UNSIGNED AUTO_INCREMENT, `device` TEXT NOT NULL, `start` DATETIME(3) NOT NULL, `end` DATETIME(3) NOT NULL, `bookingreference` TEXT NOT NULL, PRIMARY KEY (`id`));

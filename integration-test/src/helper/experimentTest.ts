@@ -86,11 +86,16 @@ export class ExperimentTest extends TypedEmitter<MessageEvents> {
           name: 'Internal Test Device',
           isPublic: true,
         });
+        await client.addDeviceAvailabilityRules(device.url, [{ available: true }]);
         deviceMeta.devices.push(device);
       }
       const apiDevice = await client.createDevice({
         ...deviceMeta,
       });
+
+      if (apiDevice.type === 'device') {
+        await client.addDeviceAvailabilityRules(apiDevice.url, [{ available: true }]);
+      }
 
       assert(apiDevice.url, 'Device URL is not defined');
 

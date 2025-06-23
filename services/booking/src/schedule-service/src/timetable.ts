@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js';
 
-import { Timeslot } from './generated/types';
+import { Timeslot } from './generated/types.js';
 
 dayjs.extend(isSameOrBefore);
 

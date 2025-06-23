@@ -56,3 +56,10 @@ export type ExperimentModelStatusMapping<T extends ExperimentModel['status']> =
     : T extends 'finished'
     ? ExperimentModel
     : never;
+
+export type BookingChangedCallback = {
+  callbackType: 'event';
+  eventType: 'booking-changed';
+  url: string;
+  status: string;
+};

@@ -1,5 +1,5 @@
-import { APIClient, BookingServiceSignatures } from '@cross-lab-project/api-client';
-import { BelongsToUs, sleep } from '@crosslab/booking-service-common';
+import { BookingServiceSignatures } from '@cross-lab-project/api-client';
+import { BelongsToUs, clients, sleep } from '@crosslab/booking-service-common';
 import {
   ReservationAnswer,
   ReservationMessage,
@@ -8,16 +8,20 @@ import {
 import * as amqplib from 'amqplib';
 import * as crypto from 'crypto';
 import dayjs from 'dayjs';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter.js';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore.js';
 import lodash from 'lodash';
 import * as mysql from 'mysql2/promise';
 
-import { config } from './config';
-import { DeviceBookingRequest } from './messageDefinition';
+import { config } from './config.js';
+import { DeviceBookingRequest } from './messageDefinition.js';
 
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
+
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 export enum callbackType {
   DeviceUpdate,
@@ -30,8 +34,6 @@ export async function handleCallback(
   targetBooking: bigint,
   parameters: any,
 ) {
-  let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
-
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
 
@@ -44,7 +46,7 @@ export async function handleCallback(
           await db.beginTransaction();
           // Lock booking
           let [bookingRow, bookingFields]: [any, any] = await db.execute(
-            'SELECT `start`,`end`,`type`,`status` FROM booking WHERE `id`=? FOR UPDATE',
+            'SELECT `start`,`end`,`type`,`status`,`user` FROM booking WHERE `id`=? FOR UPDATE',
             [targetBooking],
           );
           if (bookingRow.length == 0) {
@@ -64,12 +66,18 @@ export async function handleCallback(
           if (rows.length == 0) {
             throw Error(
               'Booking, Position (' +
-                targetBooking +
-                ',' +
-                parameters.Position +
-                ') not known',
+              targetBooking +
+              ',' +
+              parameters.Position +
+              ') not known',
             );
           }
+
+          // Check if device is actually booked -- if not, just jump out
+          if (rows[0].bookeddevice == null && rows[0].remotereference == null) {
+            return;
+          }
+
           let bookedDeviceId: bigint = BigInt(rows[0].id);
           let originalDevice: string = rows[0].originaldevice;
 
@@ -84,24 +92,23 @@ export async function handleCallback(
                 throw Error('Booking must be local for device update');
               }
 
-              let device = await api.getDevice(rows[0].bookeddevice);
+              let device = await clients.device.getDevice(rows[0].bookeddevice);
               if (device.type == 'group') {
                 throw Error('Booked device ' + rows[0].bookeddevice + ' is group');
               }
               // If not available: request new device
               if (device.type == 'device') {
                 // Other devices are always available
-                available = device.connected;
+                available = !!device.connected;
 
                 // Check availability if needed
                 if (available) {
                   available = false;
-                  for (let i = 0; i < device.announcedAvailability.length; i++) {
+                  const announcedAvailability = device.announcedAvailability!;
+                  for (let i = 0; i < announcedAvailability.length; i++) {
                     if (
-                      dayjs(device.announcedAvailability[i].start).isSameOrBefore(
-                        start,
-                      ) &&
-                      dayjs(device.announcedAvailability[i].end).isSameOrAfter(end)
+                      dayjs(announcedAvailability[i].start).isSameOrBefore(start) &&
+                      dayjs(announcedAvailability[i].end).isSameOrAfter(end)
                     ) {
                       available = true;
                       break;
@@ -116,7 +123,9 @@ export async function handleCallback(
                 throw Error('Booking must be remote for device update');
               }
 
-              let getReturn = await api.getBooking(rows[0].remotereference);
+              let getReturn = await clients.booking.frontend.getBooking(
+                rows[0].remotereference,
+              );
               if (
                 getReturn.Booking.Status == 'cancelled' ||
                 getReturn.Booking.Status == 'rejected'
@@ -134,8 +143,8 @@ export async function handleCallback(
             await freeDevice(bookedDeviceId);
 
             // Now ask for new device
-            let connection: amqplib.Connection;
-            let channel: amqplib.Channel;
+            let connection: amqplib.Connection | undefined;
+            let channel: amqplib.Channel | undefined;
             try {
               connection = await amqplib.connect(config.AmqpUrl);
               channel = await connection.createChannel();
@@ -161,15 +170,16 @@ export async function handleCallback(
                 throw new Error('amqp queue full');
               }
             } finally {
-              channel.close();
-              connection.close();
+              if (channel) await channel.close();
+              await sleep(250);
+              if (connection) await connection.close();
             }
           }
 
           // In the end - commit
-          db.commit();
+          await db.commit();
         } catch (err) {
-          db.rollback();
+          await db.rollback();
           throw err;
         }
 
@@ -200,8 +210,10 @@ async function addDeviceCallback(
       [id, callbackType.DeviceUpdate, targetbooking, data],
     );
 
-    let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
-    await api.updateDevice(device.toString(), undefined, {
+    // TODO: For now get the type first since it is required. Remove this once the type is no longer needed
+    let deviceData = await clients.device.getDevice(device.toString());
+
+    await clients.device.updateDevice(device.toString(), { type: deviceData.type }, {
       changedUrl: config.OwnURL + '/booking_callback/' + id,
     });
   } catch (e) {
@@ -230,8 +242,7 @@ async function addBookingCallback(
       [id, callbackType.BookingUpdate, targetbooking, data],
     );
 
-    let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
-    await api.updateBooking(booking.toString(), {
+    await clients.booking.frontend.updateBooking(booking.toString(), {
       Callback: config.OwnURL + '/booking_callback/' + id,
     });
   } catch (e) {
@@ -252,15 +263,31 @@ export async function dispatchCallback(bookingID: bigint) {
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
+  let [rows, _]: [any, any] = await db.execute(
+    'SELECT `status` FROM booking WHERE `id`=?',
+    [bookingID],
+  );
+  if (rows.length == 0) {
+    throw new Error('booking' + bookingID + ' does not exist');
+  }
+  let status: string = rows[0].status;
 
   try {
-    let [rows, fields]: [any, any] = await db.execute(
+    [rows, _] = await db.execute(
       'SELECT `id`, `url` FROM bookingcallbacks WHERE booking=? FOR UPDATE',
       [bookingID],
     );
     for (let i = 0; i < rows.length; i++) {
       try {
-        let response = await fetch(rows[i].url, { method: 'GET' });
+        let response = await fetch(rows[i].url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            status: status,
+            url: config.OwnURL + '/booking/' + bookingID.toString(),
+            id: bookingID.toString(),
+          }),
+        });
         if (response.status == 404 || response.status == 410) {
           // Code depends on service
           // Callback no longer needed
@@ -268,6 +295,10 @@ export async function dispatchCallback(bookingID: bigint) {
         }
       } catch (err) {
         // Something went wrong here - just continue for now
+        console.error(
+          'error',
+          'Unknown error in dispatchCallback:', err,
+        );
         continue;
       }
     }
@@ -300,7 +331,7 @@ async function reservationCheckStatus(bookingID: bigint) {
     }
 
     [rows, fields] = await db.execute(
-      'SELECT count(*) AS n FROM bookeddevices WHERE booking=? AND bookeddevice=NULL',
+      'SELECT count(*) AS n FROM bookeddevices WHERE booking=? AND bookeddevice IS NULL',
       [bookingID],
     );
 
@@ -338,231 +369,251 @@ export async function reservateDevice(r: DeviceBookingRequest) {
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
-  let [rows, fields]: [any, any] = await db.execute(
-    'SELECT `status` FROM booking WHERE id=?',
-    [r.BookingID],
-  );
-  if (rows.length == 0) {
-    throw new Error('Booking ' + r.BookingID + ' does not exist');
-  }
-
-  if (
-    rows[0].status === 'rejected' ||
-    rows[0].status === 'cancelled' ||
-    rows[0].status === 'active-rejected'
-  ) {
-    // Get early out - this booking will not success anyway
-    return;
-  }
-  await db.end();
-
-  let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
-
-  let deviceListResponse = await api.getDevice(r.Device.toString(), {
-    flat_group: true,
-  });
-  let possibleDevices: string[] = [];
-
-  if (
-    deviceListResponse.type === 'device' ||
-    deviceListResponse.type === 'cloud instantiable' ||
-    deviceListResponse.type === 'edge instantiable'
-  ) {
-    possibleDevices.push(deviceListResponse.url);
-  } else if (deviceListResponse.type === 'group') {
-    // group
-    for (let i = 0; i < deviceListResponse.devices.length; i++) {
-      possibleDevices.push(deviceListResponse.devices[i].url);
+  try {
+    let [rows, fields]: [any, any] = await db.execute(
+      'SELECT `status` FROM booking WHERE id=?',
+      [r.BookingID],
+    );
+    if (rows.length == 0) {
+      throw new Error('Booking ' + r.BookingID + ' does not exist');
     }
-  } else {
-    throw new Error('BUG: Unknown device type for' + r.Device.toString());
-  }
 
-  {
-    // Sort devices
-    // This has two goals
-    // * Randomise the order of devices, so not everyone wants to book the same device first
-    // * Prefer own devices over remote devices
-    let own: string[] = [];
-    let other: string[] = [];
+    if (
+      rows[0].status === 'rejected' ||
+      rows[0].status === 'cancelled' ||
+      rows[0].status === 'active-rejected'
+    ) {
+      // Get early out - this booking will not success anyway
+      return;
+    }
 
-    for (let i = 0; i < possibleDevices.length; i++) {
-      if (BelongsToUs(new URL(possibleDevices[i]))) {
-        own.push(possibleDevices[i]);
-      } else {
-        other.push(possibleDevices[i]);
+    let deviceListResponse = await clients.device.getDevice(r.Device.toString(), {
+      flat_group: true,
+    });
+    let possibleDevices: string[] = [];
+
+    if (
+      deviceListResponse.type === 'device' ||
+      deviceListResponse.type === 'cloud instantiable' ||
+      deviceListResponse.type === 'edge instantiable'
+    ) {
+      possibleDevices.push(deviceListResponse.url);
+    } else if (deviceListResponse.type === 'group') {
+      // group
+      for (let i = 0; i < deviceListResponse.devices.length; i++) {
+        possibleDevices.push(deviceListResponse.devices[i].url);
       }
+    } else {
+      throw new Error('BUG: Unknown device type for' + r.Device.toString());
     }
 
-    lodash.shuffle(own);
-    lodash.shuffle(other);
-    own.push(...other);
-    possibleDevices = own;
-  }
+    {
+      // Sort devices
+      // This has two goals
+      // * Randomise the order of devices, so not everyone wants to book the same device first
+      // * Prefer own devices over remote devices
+      let own: string[] = [];
+      let other: string[] = [];
 
-  nextDevice: for (let i = 0; i < possibleDevices.length; i++) {
-    let schedule: BookingServiceSignatures.ScheduleSuccessResponse['body'];
-    try {
-      schedule = await api.schedule({
-        Experiment: { Devices: [{ ID: possibleDevices[i] }] },
-        Time: { Start: r.Start.toISOString(), End: r.End.toISOString() },
-        Combined: false,
-        onlyOwn: true,
-      });
-    } catch (e) {
-      continue;
-    }
-    if (schedule.length !== 1) {
-      // Should only be one device
-      continue;
-    }
-    if (schedule[0].Booked.length !== 0) {
-      // Device is booked
-      continue;
-    }
-
-    // Book device
-    if (BelongsToUs(new URL(possibleDevices[i]))) {
-      let connection: amqplib.Connection;
-      let channel: amqplib.Channel;
-      let returnChannel = randomID();
-      let queueCreated = false;
-      try {
-        connection = await amqplib.connect(config.AmqpUrl);
-        channel = await connection.createChannel();
-
-        await channel.assertQueue('device-reservation', {
-          durable: true,
-        });
-
-        await channel.assertQueue(returnChannel, {
-          durable: false,
-        });
-
-        queueCreated = true;
-
-        let m = new ReservationMessage(ReservationRequest.New, returnChannel);
-        let url = config.OwnURL;
-        if (!url.endsWith('/')) {
-          url = url + '/';
+      for (let i = 0; i < possibleDevices.length; i++) {
+        if (BelongsToUs(new URL(possibleDevices[i]))) {
+          own.push(possibleDevices[i]);
+        } else {
+          other.push(possibleDevices[i]);
         }
-        url = url + 'booking/manage/' + r.BookingID;
-        m.BookingReference = new URL(url);
-        m.Start = r.Start;
-        m.End = r.End;
-        m.Device = new URL(possibleDevices[i]);
+      }
 
-        channel.sendToQueue('device-reservation', Buffer.from(JSON.stringify(m)));
+      lodash.shuffle(own);
+      lodash.shuffle(other);
+      own.push(...other);
+      possibleDevices = own;
+    }
 
-        let aUnknown: any;
-        let counter = 0;
-        while (true) {
-          aUnknown = await channel.get(returnChannel, { noAck: true });
-          if (typeof aUnknown !== 'boolean' && aUnknown !== null) {
-            break;
+    nextDevice: for (let i = 0; i < possibleDevices.length; i++) {
+      let schedule: BookingServiceSignatures.ScheduleSuccessResponse['body'];
+      try {
+        schedule = await clients.booking.schedule.schedule({
+          Experiment: { Devices: [{ ID: possibleDevices[i] }] },
+          Time: { Start: r.Start.toISOString(), End: r.End.toISOString() },
+          Combined: false,
+          onlyOwn: true,
+        });
+      } catch (e) {
+        console.error(
+          'Error while getting schedule in reservateDevice (using next device):',
+          e,
+        );
+        continue;
+      }
+      if (schedule.length !== 1) {
+        // Should only be one device
+        continue;
+      }
+      if (schedule[0].Booked.length !== 0) {
+        // Device is booked
+        continue;
+      }
+
+      // Book device
+      if (BelongsToUs(new URL(possibleDevices[i]))) {
+        let connection: amqplib.Connection | undefined;
+        let channel: amqplib.Channel | undefined;
+        let returnChannel = randomID();
+        let queueCreated = false;
+        try {
+          connection = await amqplib.connect(config.AmqpUrl);
+          channel = await connection.createChannel();
+
+          await channel.assertQueue('device-reservation', {
+            durable: true,
+          });
+
+          await channel.assertQueue(returnChannel, {
+            durable: false,
+          });
+
+          queueCreated = true;
+
+          let m = new ReservationMessage(ReservationRequest.New, returnChannel);
+          let url = config.OwnURL;
+          if (!url.endsWith('/')) {
+            url = url + '/';
           }
+          url = url + 'booking/' + r.BookingID;
+          m.BookingReference = new URL(url);
+          m.Start = r.Start;
+          m.End = r.End;
+          m.Device = new URL(possibleDevices[i]);
+
+          channel.sendToQueue('device-reservation', Buffer.from(JSON.stringify(m)));
+
+          let aUnknown: any;
+          let counter = 0;
+          while (true) {
+            aUnknown = await channel.get(returnChannel, { noAck: true });
+            if (typeof aUnknown !== 'boolean' && aUnknown !== null) {
+              break;
+            }
+            counter++;
+            if (counter >= 50) {
+              continue nextDevice;
+            }
+            await sleep(100);
+          }
+
+          let a: amqplib.GetMessage = aUnknown as amqplib.GetMessage;
+          let data = ReservationAnswer.fromString(a.content.toString());
+          if (
+            data.Type === ReservationRequest.New &&
+            data.Successful &&
+            data.Device?.toString() === new URL(possibleDevices[i]).toString() &&
+            data.Start?.isSame(r.Start) &&
+            data.End?.isSame(r.End)
+          ) {
+            await db.execute(
+              'UPDATE bookeddevices SET `bookeddevice`=?, `reservation`=?, `local`=? WHERE `booking`=? AND `originalposition`=?',
+              [
+                data.Device.toString(),
+                data.ReservationID.toString(),
+                true,
+                r.BookingID,
+                r.Position,
+              ],
+            );
+            addDeviceCallback(data.Device, r.BookingID, { Position: r.Position });
+            await reservationCheckStatus(r.BookingID);
+            return;
+          }
+          continue;
+        } catch (err) {
+          console.error('Unknown error while booking device:', err);
+          continue;
+        } finally {
+          if (channel !== undefined) {
+            await channel.close();
+            await sleep(250);
+          }
+          if (connection !== undefined) {
+            await connection.close();
+          }
+        }
+      } else {
+        let institution = new URL(possibleDevices[i]).origin;
+        let putReturn = await clients.booking.frontend.newBooking(
+          {
+            Devices: [{ ID: possibleDevices[i] }],
+            Time: { Start: r.Start.toISOString(), End: r.End.toISOString() },
+            BookingReference: r.BookingID.toString(),
+          },
+          { url: institution + '/booking/manage' },
+        );
+
+        let ID = putReturn.ReservationID;
+
+        let counter = -1;
+        while (true) {
           counter++;
           if (counter >= 50) {
             continue nextDevice;
           }
-          await sleep(100);
-        }
+          await sleep(1000);
 
-        let a: amqplib.GetMessage = aUnknown as amqplib.GetMessage;
-        let data = ReservationAnswer.fromString(a.content.toString());
-        if (
-          data.Type === ReservationRequest.New &&
-          data.Device.toString() === possibleDevices[i] &&
-          data.Start.isSame(r.Start) &&
-          data.End.isSame(r.End) &&
-          data.Successful
-        ) {
-          await db.execute(
-            'UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `booking`=? AND `originalposition`=?',
-            [data.Device, data.ReservationID.toString(), true, r.BookingID, r.Position],
+          let getReturn = await clients.booking.frontend.getBooking(
+            institution + '/booking/' + ID,
           );
-          addDeviceCallback(data.Device, r.BookingID, { Position: r.Position });
-          await reservationCheckStatus(r.BookingID);
-          return;
-        }
-        continue;
-      } catch (err) {
-        continue;
-      } finally {
-        if (channel !== undefined) {
-          await channel.close();
-        }
-        if (connection !== undefined) {
-          await connection.close();
-        }
-      }
-    } else {
-      let institution = new URL(possibleDevices[i]).origin;
-      let putReturn = await api.newBooking(
-        {
-          Devices: [{ ID: possibleDevices[i] }],
-          Time: { Start: r.Start.toISOString(), End: r.End.toISOString() },
-          BookingReference: r.BookingID.toString(),
-        },
-        { url: institution + '/booking/manage' },
-      );
 
-      let ID = putReturn.ReservationID;
-
-      let counter = -1;
-      while (true) {
-        counter++;
-        if (counter >= 50) {
-          continue nextDevice;
-        }
-        await sleep(1000);
-
-        let getReturn = await api.getBooking(institution + '/booking/manage/' + ID);
-
-        switch (getReturn.Booking.Status) {
-          case 'pending':
-          case 'active-pending':
-            // Still waiting
-            continue;
-            break;
-          case 'booked':
-          case 'active':
-            // Success
-            await db.execute(
-              'UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `booking`=? AND `originalposition`=?',
-              [possibleDevices[i], getReturn.Booking.ID, false, r.BookingID, r.Position],
-            );
-            addBookingCallback(new URL(possibleDevices[i]), r.BookingID, {
-              Position: r.Position,
-            });
-            await reservationCheckStatus(r.BookingID);
-            return;
-            break;
-          case 'rejected':
-          case 'cancelled':
-          case 'active-rejected':
-            // Failure
-            continue nextDevice;
-            break;
-          case undefined:
-            counter += 10;
-            continue;
-            break;
-          default:
-            console.log(
-              'Unknown API response for getBookingManageByID:',
-              getReturn.Booking.Status,
-            );
-            counter += 10;
-            continue;
-            break;
+          switch (getReturn.Booking.Status) {
+            case 'pending':
+            case 'active-pending':
+              // Still waiting
+              continue;
+              break;
+            case 'booked':
+            case 'active':
+              // Success
+              await db.execute(
+                'UPDATE bookeddevices SET `bookeddevice`=?, `remotereference`=?, `local`=? WHERE `booking`=? AND `originalposition`=?',
+                [
+                  possibleDevices[i],
+                  getReturn.Booking.ID,
+                  false,
+                  r.BookingID,
+                  r.Position,
+                ],
+              );
+              addBookingCallback(new URL(possibleDevices[i]), r.BookingID, {
+                Position: r.Position,
+              });
+              await reservationCheckStatus(r.BookingID);
+              return;
+              break;
+            case 'rejected':
+            case 'cancelled':
+            case 'active-rejected':
+              // Failure
+              continue nextDevice;
+              break;
+            case undefined:
+              counter += 10;
+              continue;
+              break;
+            default:
+              console.error(
+                'Unknown API response for getBookingManageByID:',
+                getReturn.Booking.Status,
+              );
+              counter += 10;
+              continue;
+              break;
+          }
         }
       }
     }
+    // Ok, we were not able to book a device...
+    DeleteBooking(r.BookingID, 'rejected', 'Can not book ' + r.Device.toString());
+  } finally {
+    await db.end();
   }
-
-  // Ok, we were not able to book a device...
-  DeleteBooking(r.BookingID, 'rejected', 'Can not book ' + r.Device.toString());
 }
 
 export async function freeDevice(internalreference: bigint) {
@@ -587,10 +638,17 @@ export async function freeDevice(internalreference: bigint) {
     }
 
     // Free now
+
+    // no device actually booked
+    if (rows[0].local === null) {
+      return;
+    }
+
+    // device is booked
     if (rows[0].local) {
       // This is a local device
-      let connection: amqplib.Connection;
-      let channel: amqplib.Channel;
+      let connection: amqplib.Connection | undefined;
+      let channel: amqplib.Channel | undefined;
       let returnChannel = randomID();
       let queueCreated = false;
       try {
@@ -637,6 +695,7 @@ export async function freeDevice(internalreference: bigint) {
             await channel.deleteQueue(returnChannel);
           }
           await channel.close();
+          await sleep(250);
         }
         if (connection !== undefined) {
           await connection.close();
@@ -644,8 +703,7 @@ export async function freeDevice(internalreference: bigint) {
       }
     } else {
       // This is a remote devices
-      let api: APIClient = new APIClient(config.OwnURL, config.API_TOKEN);
-      await api.deleteBooking(rows[0].remotereference);
+      await clients.booking.frontend.deleteBooking(rows[0].remotereference);
     }
 
     // Delete form DB
@@ -679,9 +737,9 @@ export async function freeDevice(internalreference: bigint) {
     );
 
     // Commit
-    db.commit();
+    await db.commit();
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();
@@ -737,6 +795,7 @@ export async function DeleteBooking(
         ]);
         [rows, fields] = await db.execute(
           'SELECT `id` FROM bookeddevices WHERE booking=?',
+          [bookingID],
         );
         let connection = await amqplib.connect(config.AmqpUrl);
         let channel = await connection.createChannel();
@@ -756,12 +815,13 @@ export async function DeleteBooking(
         } catch (err) {
           // Don't jump out here, since some devices might already be freed
           console.error(
-            'Got error while cancelling booking, devices might not be freed: ' +
-              err.toString(),
+            'Got error while cancelling booking, devices might not be freed:',
+            err,
           );
         } finally {
-          channel.close();
-          connection.close();
+          await channel.close();
+          await sleep(250);
+          await connection.close();
         }
         break;
       case 'cancelled':
@@ -777,18 +837,25 @@ export async function DeleteBooking(
         bookingID,
       ]);
       let targetMessage: string = '';
-      if (rows[0].message === undefined || rows[0].message === null) {
+      const firstRow = (Array.isArray(rows) ? rows[0] : undefined) as
+        | { message: string | null | undefined }
+        | undefined;
+      if (
+        firstRow?.message === undefined ||
+        firstRow?.message === null ||
+        firstRow?.message == ''
+      ) {
         targetMessage = message;
       } else {
-        targetMessage = rows[0].message + '\n' + message;
+        targetMessage = firstRow?.message + '\n' + message;
       }
       await db.execute('UPDATE booking SET `message`=? WHERE id=?', [
         targetMessage,
         bookingID,
       ]);
     }
-    dispatchCallback(bookingID);
     await db.commit();
+    dispatchCallback(bookingID);
   } catch (err) {
     await db.rollback();
     throw err;

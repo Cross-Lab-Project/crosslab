@@ -15,7 +15,6 @@ import {
   ConnectionStatus,
   DeviceReference,
   ServiceDescription,
-  TimeSlot,
 } from '../generated/types.js';
 
 export type DeviceModel =
@@ -64,9 +63,6 @@ export abstract class InstantiableDeviceOverviewModel extends DeviceOverviewMode
 @ChildEntity('device')
 export class ConcreteDeviceModel extends DeviceOverviewModel {
   declare type: 'device';
-
-  @Column('simple-json')
-  announcedAvailability!: Required<TimeSlot>[];
 
   @Column('simple-json')
   availabilityRules!: AvailabilityRule[];

@@ -9,7 +9,7 @@ export enum callbackType {
 
 export async function setupDummySql() {
   let sqlDNS: string = getSQLDNS();
-  let db: mysql.Connection;
+  let db: mysql.Connection | undefined;
 
   try {
     db = await mysql.createConnection(sqlDNS);
@@ -55,7 +55,7 @@ export async function setupDummySql() {
 
     // Booking
     await db.execute(
-      "CREATE TABLE booking (`id` BIGINT UNSIGNED AUTO_INCREMENT, `start` DATETIME NOT NULL, `end` DATETIME NOT NULL, `type` ENUM('normal'), `status` ENUM('pending', 'booked', 'rejected', 'cancelled', 'active', 'active-pending', 'active-rejected') NOT NULL, `user` TEXT NOT NULL, `message` LONGTEXT, PRIMARY KEY (`id`))",
+      "CREATE TABLE booking (`id` BIGINT UNSIGNED AUTO_INCREMENT, `start` DATETIME(3) NOT NULL, `end` DATETIME(3) NOT NULL, `type` ENUM('normal'), `status` ENUM('pending', 'booked', 'rejected', 'cancelled', 'active', 'active-pending', 'active-rejected') NOT NULL, `user` TEXT NOT NULL, `message` LONGTEXT, PRIMARY KEY (`id`))",
     );
     await db.execute(
       'CREATE TABLE bookeddevices (`id` BIGINT UNSIGNED AUTO_INCREMENT, `booking` BIGINT UNSIGNED NOT NULL, `originaldevice` TEXT NOT NULL, `originalposition` INT NOT NULL, `bookeddevice` TEXT, `remotereference` TEXT, `local` BOOLEAN, PRIMARY KEY (`id`), `reservation` BIGINT UNSIGNED, FOREIGN KEY(`booking`) REFERENCES booking (`id`) ON DELETE CASCADE ON UPDATE RESTRICT)',
@@ -66,6 +66,8 @@ export async function setupDummySql() {
     await db.execute(
       'CREATE TABLE callback (`id` VARCHAR(600), `type` INTEGER, `targetbooking` BIGINT UNSIGNED NOT NULL, `parameters` JSON NOT NULL DEFAULT "{}", PRIMARY KEY(`id`))',
     );
+
+    // Booking already booked
 
     // // Fake booking local single device
     await db.execute(
@@ -276,19 +278,130 @@ export async function setupDummySql() {
       [BigInt(5), callbackType.BookingUpdate, BigInt(4), JSON.stringify({ Position: 0 })],
     );
 
+    // Booking new
+    // // Fake booking local single device (5)
+    await db.execute(
+      'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
+      [
+        BigInt(5),
+        dayjs('1999-01-10T08:00:00Z').toDate(),
+        dayjs('1999-01-10T09:00:00Z').toDate(),
+        'normal',
+        'pending',
+        'test',
+        '',
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(6),
+        BigInt(5),
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+        0,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(6), callbackType.DeviceUpdate, BigInt(5), JSON.stringify({ Position: 0 })],
+    );
+
+    // // Fake booking local two devices (6)
+    await db.execute(
+      'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
+      [
+        BigInt(6),
+        dayjs('1999-02-10T08:00:00Z').toDate(),
+        dayjs('1999-02-10T09:00:00Z').toDate(),
+        'normal',
+        'pending',
+        'test',
+        '',
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(7),
+        BigInt(6),
+        'http://localhost:10801/devices/10000000-0000-0000-0000-000000000000',
+        0,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(8),
+        BigInt(6),
+        'http://localhost:10801/devices/20000000-0000-0000-0000-000000000000',
+        1,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(7), callbackType.DeviceUpdate, BigInt(6), JSON.stringify({ Position: 0 })],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(8), callbackType.DeviceUpdate, BigInt(6), JSON.stringify({ Position: 1 })],
+    );
+
+    // // Fake booking group (7)
+    await db.execute(
+      'INSERT INTO booking (`id`,`start`,`end`,`type`,`status`,`user`,`message`) VALUES (?,?,?,?,?,?,?)',
+      [
+        BigInt(7),
+        dayjs('1999-03-10T08:00:00Z').toDate(),
+        dayjs('1999-03-10T09:00:00Z').toDate(),
+        'normal',
+        'pending',
+        'test',
+        '',
+      ],
+    );
+    await db.execute(
+      'INSERT INTO bookeddevices (`id`,`booking`,`originaldevice`, `originalposition`,`bookeddevice`,`remotereference`,`local`,`reservation`) VALUES (?,?,?,?,?,?,?,?)',
+      [
+        BigInt(9),
+        BigInt(7),
+        'http://localhost:10801/devices/00000000-0000-0000-0000-000000000010',
+        0,
+        null,
+        null,
+        true,
+        null,
+      ],
+    );
+    await db.execute(
+      'INSERT INTO callback(`id`,`type`,`targetbooking`,`parameters`) VALUES (?,?,?,?)',
+      [BigInt(9), callbackType.DeviceUpdate, BigInt(7), JSON.stringify({ Position: 0 })],
+    );
+
     // finish
     await db.commit();
     db.end();
   } catch (err) {
     console.log('error in test setup:', err);
-    await db.rollback();
-    db.end();
+    await db?.rollback();
+    db?.end();
     throw err;
   }
 }
 
 export async function tearDownDummySql() {
-  let db: mysql.Connection;
+  let db: mysql.Connection | undefined;
   try {
     db = await mysql.createConnection(getSQLDNS());
     await db.connect();
@@ -300,7 +413,7 @@ export async function tearDownDummySql() {
     db.end();
   } catch (err) {
     console.log('error in test tear down:', err);
-    db.end();
+    db?.end();
     throw err;
   }
 }

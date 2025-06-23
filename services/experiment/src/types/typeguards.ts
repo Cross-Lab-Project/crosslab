@@ -1,5 +1,5 @@
 import { ExperimentModel } from '../database/model.js';
-import { ExperimentModelStatusMapping } from './types.js';
+import { BookingChangedCallback, ExperimentModelStatusMapping } from './types.js';
 
 export function validateExperimentStatus<T extends ExperimentModel['status']>(
   experimentModel: ExperimentModel,
@@ -111,14 +111,33 @@ function validateExperimentStatusFinished(
   return true;
 }
 
-function hasBooking(_experimentModel: ExperimentModel) {
-  // if (!experimentModel.bookingID) return false
-  // if (!experimentModel.bookingStart) return false
-  // if (!experimentModel.bookingEnd) return false
+function hasBooking(experimentModel: ExperimentModel) {
+  if (!experimentModel.bookingID) return false;
+  if (!experimentModel.bookingStart) return false;
+  if (!experimentModel.bookingEnd) return false;
 
   return true;
 }
 
 function hasDevices(experimentModel: ExperimentModel) {
   return experimentModel.devices && experimentModel.devices.length > 0;
+}
+
+export function isBookingChangedCallback(
+  callback: unknown,
+): callback is BookingChangedCallback {
+  return (
+    typeof callback === 'object' &&
+    callback !== null &&
+    'callbackType' in callback &&
+    typeof callback.callbackType === 'string' &&
+    callback.callbackType === 'event' &&
+    'eventType' in callback &&
+    typeof callback.eventType === 'string' &&
+    callback.eventType === 'booking-changed' &&
+    'url' in callback &&
+    typeof callback.url === 'string' &&
+    'status' in callback &&
+    typeof callback.status === 'string'
+  );
 }

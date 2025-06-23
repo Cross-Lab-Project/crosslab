@@ -1,19 +1,26 @@
 import * as mysql from 'mysql2/promise';
+import { hackURLWithPort } from '@crosslab/booking-service-common';
 
-import { config } from './config';
+import { config } from '../config.js';
 import {
   deleteBookingByIDLockSignature,
   postBookingCallbackByIDSignature,
   putBookingByIDLock200ResponseType,
   putBookingByIDLockSignature,
-} from './generated/signatures';
-import { dispatchCallback, handleCallback } from './internal';
+} from '../generated/signatures.js';
+import { dispatchCallback, handleCallback } from '../internal.js';
+
+(BigInt.prototype as any).toJSON = function () {
+  return this.toString();
+};
 
 export const putBookingByIDLock: putBookingByIDLockSignature = async (
+  request,
   parameters,
-  user,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
+
+  await request.authorization.check_authorization_or_fail('edit', `booking:${bookingID}`);
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
@@ -40,7 +47,7 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
       case 'pending':
       case 'rejected':
       case 'cancelled':
-        db.rollback();
+        await db.rollback();
         return {
           status: 412,
         };
@@ -74,8 +81,8 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
       );
       for (let i = 0; i < deviceRows.length; i++) {
         deviceList.push({
-          Requested: deviceRows[i].originaldevice,
-          Selected: deviceRows[i].bookeddevice,
+          Requested: hackURLWithPort(deviceRows[i].originaldevice),
+          Selected: hackURLWithPort(deviceRows[i].bookeddevice),
         });
       }
 
@@ -83,14 +90,12 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
         status: 200,
         body: deviceList,
       };
-    } catch (err) {
-      throw err;
     } finally {
       dispatchCallback(bookingID);
-      db.commit();
+      await db.commit();
     }
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();
@@ -98,10 +103,12 @@ export const putBookingByIDLock: putBookingByIDLockSignature = async (
 };
 
 export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
+  request,
   parameters,
-  user,
 ) => {
   let bookingID: bigint = BigInt(parameters.ID);
+
+  await request.authorization.check_authorization_or_fail('edit', `booking:${bookingID}`);
 
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
@@ -120,8 +127,14 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
     switch (rows[0].status) {
       case 'active-rejected':
       case 'active':
-      case 'active-pending':
         await db.execute("UPDATE booking SET `status`='booked' WHERE `id`=?", [
+          bookingID,
+        ]);
+        dispatchCallback(bookingID);
+        break;
+
+      case 'active-pending':
+        await db.execute("UPDATE booking SET `status`='pending' WHERE `id`=?", [
           bookingID,
         ]);
         dispatchCallback(bookingID);
@@ -130,7 +143,7 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
       case 'pending':
       case 'rejected':
       case 'cancelled':
-        db.rollback();
+        await db.rollback();
         return {
           status: 412,
         };
@@ -143,12 +156,12 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
         throw Error('BUG: Unknown booking status ' + rows[0].status);
     }
 
-    db.commit();
+    await db.commit();
     return {
       status: 200,
     };
   } catch (err) {
-    db.rollback();
+    await db.rollback();
     throw err;
   } finally {
     db.end();
@@ -156,8 +169,8 @@ export const deleteBookingByIDLock: deleteBookingByIDLockSignature = async (
 };
 
 export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
+  _,
   parameters,
-  user,
 ) => {
   let db = await mysql.createConnection(config.BookingDSN);
   await db.connect();
@@ -172,6 +185,7 @@ export const postBookingCallbackByID: postBookingCallbackByIDSignature = async (
         status: 404,
       };
     }
+
     await handleCallback(
       rows[0].type,
       rows[0].targetbooking,

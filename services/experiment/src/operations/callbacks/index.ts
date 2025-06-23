@@ -21,9 +21,14 @@ export function callbackHandling(app: express.Application) {
       const callback = req.body;
       logger.log('info', 'received a callback', { data: { callback } });
 
+      if (!('callbackType' in callback)) {
+        callback.callbackType = 'event';
+        callback.eventType = 'booking-changed';
+      }
+
       switch (callback.callbackType) {
         case 'event':
-          return res.status(await callbackHandler.handleCallback(callback)).send();
+          return res.status(await callbackHandler.handleEventCallback(callback)).send();
         default:
           throw new InvalidValueError(
             `Callbacks of type "${callback.callbackType}" are not supported`,

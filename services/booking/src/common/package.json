@@ -1,10 +1,22 @@
 {
+  "type": "module",
   "name": "@crosslab/booking-service-common",
   "version": "0.0.1",
   "description": "Common resources for booking-service sub-services.",
   "main": "lib/index.js",
+  "files": [
+    "lib"
+  ],
   "scripts": {
-    "build": "tsc",
+    "copy:clients": "cp src/clients/device/basicValidation.cjs lib/clients/device/ && cp src/clients/booking-backend/basicValidation.cjs lib/clients/booking-backend/ && cp src/clients/booking-frontend/basicValidation.cjs lib/clients/booking-frontend/ && cp src/clients/schedule-service/basicValidation.cjs lib/clients/schedule-service/",
+    "build:generate": "npm-run-all build:generate:*",
+    "build:generate:device": "npx openapi-codegen -i ../../../device/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/device && prettier ./src/clients/device --write",
+    "build:generate:booking-backend": "npx openapi-codegen -i ../booking-backend/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/booking-backend && prettier ./src/clients/booking-backend --write",
+    "build:generate:booking-frontend": "npx openapi-codegen -i ../booking-frontend/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/booking-frontend && prettier ./src/clients/booking-frontend --write",
+    "build:generate:schedule-service": "npx openapi-codegen -i ../schedule-service/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/schedule-service && prettier ./src/clients/schedule-service --write",
+    "build:compile": "tsc",
+    "build:copy": "npm run copy:clients",
+    "build": "npm-run-all build:*",
     "test": "echo \"Error: no test specified\" && exit 1",
     "format": "prettier . --write",
     "lint": "eslint ."
@@ -12,11 +24,20 @@
   "author": "",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "^22.1.0",
-    "prettier": "^3.3.3",
-    "typescript": "^5.5.4"
+    "@types/node": "^20.5.9",
+    "@types/express": "^4.17.13",
+    "@types/node-fetch": "^2.6.4",
+    "prettier": "^3.0.3",
+    "typescript": "^5.2.2",
+    "npm-run-all": "^4.1.5",
+    "@cross-lab-project/codegen-typescript-addon": "file:../../../../helper/crosslab-typescript-addon",
+    "@cross-lab-project/openapi-codegen": "file:../../../../helper/openapi-codegeneration"
   },
   "dependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^4.2.0"
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
+    "@types/express": "^4.17.13",
+    "express": "^4.18.1",
+    "node-fetch": "^3.3.2",
+    "ajv-formats": "^3.0.1"
   }
 }

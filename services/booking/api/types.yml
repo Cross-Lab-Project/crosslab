@@ -37,7 +37,11 @@ components:
           enum:
             - normal
         Status:
-          description: Current status of the booking. While the booking is pending, it can not be used. Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed, 'cancelled' when the booking was deleted / cancelled after it was once active. The 'active-*' will be used when a device was added after the booking was locked.
+          description: >
+            Current status of the booking. While the booking is pending, it can not be used.
+            Will change automatically and can not be set by user. 'rejected' is set when the initial booking failed,
+            'cancelled' when the booking was deleted / cancelled after it was once active.
+            The 'active-*' will be used when a device was added after the booking was locked.
           type: string
           enum:
             - pending
@@ -81,7 +85,9 @@ components:
             $ref: '#/components/schemas/Device'
         Description:
           type: string
-          description: User provided description, for example might be a reason for the booking (e.g. maintenance) or a link to the experiment. Might be empty or missing.
+          description: >
+            User provided description, for example might be a reason for the booking (e.g. maintenance)
+            or a link to the experiment. Might be empty or missing.
     Timeslot:
       title: Timeslot
       description: A time slot represents a slice of time used for bookings.

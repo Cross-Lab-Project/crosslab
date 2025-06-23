@@ -1,13 +1,12 @@
-import { InvalidValueError, logger } from '@crosslab/service-common';
+import { MissingEntityError, logger } from '@crosslab/service-common';
 
+import { clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
 import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { ResolvedDevice } from '../../../types/types.js';
 import { experimentUrlFromId } from '../../url.js';
-
-// import { apiClient } from '../../api.js'
 
 export async function lockBookingExperiment(
   experimentModel: ExperimentModel,
@@ -30,30 +29,26 @@ export async function lockBookingExperiment(
       500,
     );
 
-  // NOTE: temporary solution while booking service is not available
-  for (const resolvedDevice of resolvedDevices) {
-    if (resolvedDevice.type !== 'group') {
-      continue;
-    }
+  // TODO: error handling
+  const lockedDevices = await clients.booking.backend.lockBooking(
+    experimentModel.bookingID,
+  );
 
-    if (resolvedDevice.devices.length === 0)
-      throw new InvalidValueError(`Resolved device group contains no devices`, 400);
+  for (const [index, resolvedDevice] of resolvedDevices.entries()) {
+    if (resolvedDevice.type !== 'group') continue;
 
-    const index = experimentModel.devices.findIndex(
-      device => device.url === resolvedDevice.url,
-    );
+    const lockedDeviceUrl = lockedDevices.find(
+      mapping => mapping.Requested === resolvedDevice.url,
+    )?.Selected;
 
-    if (index === -1)
-      throw new InvalidValueError(
-        `Resolved device group is not contained in the experiment`,
+    if (!lockedDeviceUrl)
+      throw new MissingEntityError(
+        `No device has been booked for device group "${resolvedDevice.url}"!`,
         500,
       );
 
-    experimentModel.devices[index].resolvedDevice = resolvedDevice.devices[0].url;
+    experimentModel.devices[index].resolvedDevice = lockedDeviceUrl;
   }
-
-  // TODO: error handling
-  // await apiClient.lockBooking(experimentModel.bookingID)
 
   experimentModel.status = 'booking-locked';
 
