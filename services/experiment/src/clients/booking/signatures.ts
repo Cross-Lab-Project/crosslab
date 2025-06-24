@@ -581,9 +581,7 @@ export interface LockBookingResponse200 extends Types.SuccessResponse {
   headers?: {
     [k: string]: string | undefined;
   };
-  body: {
-    [k: string]: string;
-  };
+  body: Types.DeviceGroupMapping<'response'>;
 }
 
 /**

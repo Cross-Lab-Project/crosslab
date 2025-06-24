@@ -5583,28 +5583,28 @@ async def test_list_bookings(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        response_200_dict = json.loads(r'[{"url":"do anim non ex","status":"rejected","timeslot":{"start":"2000-07-06T23:16:24.0Z","end":"1947-02-01T22:01:05.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_bookings(**parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        response_200_dict = json.loads(r'[{"url":"do anim non ex","status":"rejected","timeslot":{"start":"2000-07-06T23:16:24.0Z","end":"1947-02-01T22:01:05.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_bookings(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        response_200_dict = json.loads(r'[{"url":"do anim non ex","status":"rejected","timeslot":{"start":"2000-07-06T23:16:24.0Z","end":"1947-02-01T22:01:05.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_bookings(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'[{"selectedDevices":{},"status":"impossible","timeslot":{"start":"1946-07-12T04:11:52.0Z","end":"2006-09-13T19:59:36.0Z"},"devices":{}},{"status":"impossible","timeslot":{"start":"1979-01-06T15:11:57.0Z","end":"2002-07-10T21:55:16.0Z"}},{"isLocked":true,"url":"ut Lorem anim commodo","status":"rejected"},{"timeslot":{"start":"1979-12-02T01:13:20.0Z","end":"1966-04-03T02:42:50.0Z"},"status":"rejected","selectedDevices":{}}]')
+        response_200_dict = json.loads(r'[{"url":"do anim non ex","status":"rejected","timeslot":{"start":"2000-07-06T23:16:24.0Z","end":"1947-02-01T22:01:05.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}]')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.list_bookings(url=full_url, **parameters)
@@ -5737,33 +5737,33 @@ async def test_create_booking(aioresponses: aioresponses):
     url_variant = r'bookings'
     full_url = BASE_URL+r'/bookings'
 
-    request = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+    request = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
 
     parameter_list = [{"changedUrl": "test_string", "deletedUrl": "test_string", }, {"deletedUrl": "test_string", }, {"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_201_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_booking(body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_201_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_booking(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_201_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_booking(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_201_dict)
 
     for parameters in parameter_list:
-        response_201_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_201_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.post(re.compile(re.escape(full_url)+r'(\?.*)?'), status=201, payload=response_201_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.create_booking(url=full_url, body=request, **parameters)
@@ -5899,21 +5899,21 @@ async def test_get_booking(aioresponses: aioresponses):
     parameter_list = [{}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_200_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_booking(url=url, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_200_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_booking(url=url_variant, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_200_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.get(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.get_booking(url=full_url, **parameters)
@@ -6016,26 +6016,26 @@ async def test_update_booking(aioresponses: aioresponses):
     url_variant = r'bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
     full_url = BASE_URL+r'/bookings/c799cc2e-cdc5-4143-973a-6f56a5afa82c'
 
-    request = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+    request = json.loads(r'{"url":"et pariatur ut","status":"accepted","isLocked":true,"selectedDevices":{},"devices":{},"timeslot":{"start":"1949-09-08T18:37:25.0Z","end":"2008-08-28T13:11:38.0Z"}}')
 
     parameter_list = [{"changedUrl": "test_string", "deletedUrl": "test_string", }, {"deletedUrl": "test_string", }, {"changedUrl": "test_string", }, {}, ]
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_200_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_booking(url=url, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_200_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_booking(url=url_variant, body=request, **parameters)
             assert normalize_result(resp) == normalize_result(response_200_dict)
 
     for parameters in parameter_list:
-        response_200_dict = json.loads(r'{"timeslot":{"start":"1981-03-26T20:34:35.0Z","end":"1960-07-10T13:14:01.0Z"},"url":"ad enim elit Ut","status":"rejected","isLocked":false}')
+        response_200_dict = json.loads(r'{"url":"aliqua Excepteur elit","status":"rejected","timeslot":{"start":"2022-01-15T20:42:35.0Z","end":"1994-10-27T07:45:49.0Z"},"devices":{},"isLocked":true,"selectedDevices":{}}')
         aioresponses.patch(re.compile(re.escape(full_url)+r'(\?.*)?'), status=200, payload=response_200_dict)
         async with APIClient(BASE_URL) as client:
             resp = await client.update_booking(url=full_url, body=request, **parameters)

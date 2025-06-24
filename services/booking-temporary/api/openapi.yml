@@ -55,22 +55,27 @@ components:
           readOnly: true
     booking:
       title: Booking
-      $ref: '#/components/schemas/booking_base'
-      required:
-        - url
-        - status
-        - timeslot
-        - devices
-        - isLocked
-        - selectedDevices
+      allOf: 
+        - $ref: '#/components/schemas/booking_base'
+          type: object
+          required:
+            - url
+            - status
+            - timeslot
+            - devices
+            - isLocked
+            - selectedDevices
     booking_update:
       title: Booking Update
-      $ref: '#/components/schemas/booking_base'
-      required:
-        - url
-        - status
-        - isLocked
-        - selectedDevices
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/booking_base'
+          additionalProperties: true
+          required:
+            - url
+            - status
+            - isLocked
+            - selectedDevices
     schedule: 
       title: Schedule
       type: array
@@ -90,6 +95,7 @@ components:
         - start
         - end
     deviceGroupMapping:
+      title: DeviceGroupMapping
       type: object
       additionalProperties:
         type: string

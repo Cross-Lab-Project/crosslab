@@ -3839,12 +3839,12 @@ class ListBookingsResponse200Items(TypedDict):
     - devices
     - selectedDevices
     """
-    url: NotRequired[str]
-    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
-    isLocked: NotRequired[bool]
-    timeslot: NotRequired[ListBookingsResponse200ItemsTimeslot]
-    devices: NotRequired[ListBookingsResponse200ItemsDevices]
-    selectedDevices: NotRequired[ListBookingsResponse200ItemsSelecteddevices]
+    url: str
+    status: Literal["accepted", "accepted-essential", "rejected", "impossible"]
+    isLocked: bool
+    timeslot: ListBookingsResponse200ItemsTimeslot
+    devices: ListBookingsResponse200ItemsDevices
+    selectedDevices: ListBookingsResponse200ItemsSelecteddevices
 
 
 ListBookingsResponse200: TypeAlias = List[ListBookingsResponse200Items]
@@ -3885,12 +3885,12 @@ class CreateBookingRequest(TypedDict):
     - devices
     - selectedDevices
     """
-    url: NotRequired[str]
-    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
-    isLocked: NotRequired[bool]
-    timeslot: NotRequired[CreateBookingRequestTimeslot]
-    devices: NotRequired[CreateBookingRequestDevices]
-    selectedDevices: NotRequired[CreateBookingRequestSelecteddevices]
+    url: str
+    status: Literal["accepted", "accepted-essential", "rejected", "impossible"]
+    isLocked: bool
+    timeslot: CreateBookingRequestTimeslot
+    devices: CreateBookingRequestDevices
+    selectedDevices: CreateBookingRequestSelecteddevices
 
 
 class CreateBookingResponse201Timeslot(TypedDict):
@@ -3925,12 +3925,12 @@ class CreateBookingResponse201(TypedDict):
     - devices
     - selectedDevices
     """
-    url: NotRequired[str]
-    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
-    isLocked: NotRequired[bool]
-    timeslot: NotRequired[CreateBookingResponse201Timeslot]
-    devices: NotRequired[CreateBookingResponse201Devices]
-    selectedDevices: NotRequired[CreateBookingResponse201Selecteddevices]
+    url: str
+    status: Literal["accepted", "accepted-essential", "rejected", "impossible"]
+    isLocked: bool
+    timeslot: CreateBookingResponse201Timeslot
+    devices: CreateBookingResponse201Devices
+    selectedDevices: CreateBookingResponse201Selecteddevices
 
 
 CreateBookingResponse: TypeAlias = CreateBookingResponse201
@@ -3968,55 +3968,21 @@ class GetBookingResponse200(TypedDict):
     - devices
     - selectedDevices
     """
-    url: NotRequired[str]
-    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
-    isLocked: NotRequired[bool]
-    timeslot: NotRequired[GetBookingResponse200Timeslot]
-    devices: NotRequired[GetBookingResponse200Devices]
-    selectedDevices: NotRequired[GetBookingResponse200Selecteddevices]
+    url: str
+    status: Literal["accepted", "accepted-essential", "rejected", "impossible"]
+    isLocked: bool
+    timeslot: GetBookingResponse200Timeslot
+    devices: GetBookingResponse200Devices
+    selectedDevices: GetBookingResponse200Selecteddevices
 
 
 GetBookingResponse: TypeAlias = GetBookingResponse200
 
 
-class UpdateBookingRequestTimeslot(TypedDict):
-    """
-    Properties:
-    - start
-    - end
-    """
-    start: str
-    end: str
-
-
-class UpdateBookingRequestDevices(TypedDict):
-    """
-    Properties:
-    """
-
-
-class UpdateBookingRequestSelecteddevices(TypedDict):
-    """
-    Properties:
-    """
-
-
 class UpdateBookingRequest(TypedDict):
     """
     Properties:
-    - url
-    - status
-    - isLocked
-    - timeslot
-    - devices
-    - selectedDevices
     """
-    url: NotRequired[str]
-    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
-    isLocked: NotRequired[bool]
-    timeslot: NotRequired[UpdateBookingRequestTimeslot]
-    devices: NotRequired[UpdateBookingRequestDevices]
-    selectedDevices: NotRequired[UpdateBookingRequestSelecteddevices]
 
 
 class UpdateBookingResponse200Timeslot(TypedDict):
@@ -4051,12 +4017,12 @@ class UpdateBookingResponse200(TypedDict):
     - devices
     - selectedDevices
     """
-    url: NotRequired[str]
-    status: NotRequired[Literal["accepted", "accepted-essential", "rejected", "impossible"]]
-    isLocked: NotRequired[bool]
-    timeslot: NotRequired[UpdateBookingResponse200Timeslot]
-    devices: NotRequired[UpdateBookingResponse200Devices]
-    selectedDevices: NotRequired[UpdateBookingResponse200Selecteddevices]
+    url: str
+    status: Literal["accepted", "accepted-essential", "rejected", "impossible"]
+    isLocked: bool
+    timeslot: UpdateBookingResponse200Timeslot
+    devices: UpdateBookingResponse200Devices
+    selectedDevices: UpdateBookingResponse200Selecteddevices
 
 
 UpdateBookingResponse: TypeAlias = UpdateBookingResponse200

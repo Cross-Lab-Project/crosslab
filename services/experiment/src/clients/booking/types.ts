@@ -359,7 +359,7 @@ export type Timeslot<T extends 'request' | 'response' | 'all' = 'all'> = T exten
         }
       : never;
 
-export type MISSING_NAME<T extends 'request' | 'response' | 'all' = 'all'> =
+export type DeviceGroupMapping<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
     ? {
         [k: string]: string;

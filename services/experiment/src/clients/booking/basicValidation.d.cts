@@ -18,9 +18,9 @@ export declare function validateTimeslot<T extends 'request' | 'response' | 'all
   object: unknown,
 ): Timeslot<T>;
 
-export declare function validateMISSING<T extends 'request' | 'response' | 'all'>(
-  object: unknown,
-): MISSING<T>;
+export declare function validateDeviceGroupMapping<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeviceGroupMapping<T>;
 
 export declare function validateBookingChangedEventCallback<
   T extends 'request' | 'response' | 'all',
@@ -118,13 +118,13 @@ export declare function validateTimeslotResponse<
   T extends 'request' | 'response' | 'all',
 >(object: unknown): TimeslotResponse<T>;
 
-export declare function validateMISSINGRequest<T extends 'request' | 'response' | 'all'>(
-  object: unknown,
-): MISSINGRequest<T>;
+export declare function validateDeviceGroupMappingRequest<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeviceGroupMappingRequest<T>;
 
-export declare function validateMISSINGResponse<T extends 'request' | 'response' | 'all'>(
-  object: unknown,
-): MISSINGResponse<T>;
+export declare function validateDeviceGroupMappingResponse<
+  T extends 'request' | 'response' | 'all',
+>(object: unknown): DeviceGroupMappingResponse<T>;
 
 export declare function validateBookingChangedEventCallbackRequest<
   T extends 'request' | 'response' | 'all',
