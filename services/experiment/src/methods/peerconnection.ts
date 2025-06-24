@@ -76,12 +76,9 @@ export async function createPeerconnections(
     } catch (error) {
       sendStatusUpdateMessages(
         experimentModel,
-        // prettier-ignore
         `Could not establish a peerconnection between the devices "${
           peerconnectionRequest.devices[0].url
-        }" and "${
-          peerconnectionRequest.devices[1].url
-        }"!`,
+        }" and "${peerconnectionRequest.devices[1].url}"!`,
       );
       await repositories.experiment.save(experimentModel);
       throw error;

@@ -232,7 +232,6 @@ export class Client {
     const urlSuffix = '/booking/{}/lock'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [ID] = validateUrl(new URL(url).toString(), '/booking/{}/lock');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -246,10 +245,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -305,7 +300,6 @@ export class Client {
     const urlSuffix = '/booking/{}/lock'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [ID] = validateUrl(new URL(url).toString(), '/booking/{}/lock');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -319,10 +313,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -378,7 +368,6 @@ export class Client {
     const urlSuffix = '/booking_callback/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [ID] = validateUrl(new URL(url).toString(), '/booking_callback/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       ID: ID,
@@ -394,10 +383,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {

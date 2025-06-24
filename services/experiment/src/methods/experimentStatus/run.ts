@@ -28,6 +28,10 @@ export async function runExperiment(experimentModel: ExperimentModel, clients: C
   if (experimentModel.status === 'finished') {
     throw new InvalidStateError(`Experiment status is already "finished"`, 400);
   }
+  // make sure experiment is not already failed
+  if (experimentModel.status === 'failed') {
+    throw new InvalidStateError(`Experiment status is already "failed"`, 400);
+  }
 
   // make sure the experiment contains devices
   if (!experimentModel.devices || experimentModel.devices.length === 0) {

@@ -142,7 +142,7 @@ type NumericRangeTuple<
 	 * URL of the experiment
 	 */
 	url: string
-	status: "created" | "booked" | "setup" | "running" | "finished" | "created" | "booked" | "running" | "finished"
+	status: "created" | "booked" | "setup" | "running" | "finished" | "failed" | "created" | "booked" | "running" | "finished"
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -156,7 +156,7 @@ type NumericRangeTuple<
 	 * URL of the experiment
 	 */
 	url: string
-	status: "created" | "booked" | "setup" | "running" | "finished"
+	status: "created" | "booked" | "setup" | "running" | "finished" | "failed"
 	[k: string]: unknown
 }
                     : never
@@ -383,7 +383,7 @@ type NumericRangeTuple<
 	 * URL of the experiment
 	 */
 	url: string
-	status: "created" | "booked" | "setup" | "running" | "finished" | "created" | "booked" | "running" | "finished"
+	status: "created" | "booked" | "setup" | "running" | "finished" | "failed" | "created" | "booked" | "running" | "finished"
 	[k: string]: unknown
 } & {
 	bookingTime?: {
@@ -449,7 +449,7 @@ type NumericRangeTuple<
 	 * URL of the experiment
 	 */
 	url: string
-	status: "created" | "booked" | "setup" | "running" | "finished"
+	status: "created" | "booked" | "setup" | "running" | "finished" | "failed"
 	[k: string]: unknown
 } & {
 	bookingTime?: {
@@ -554,7 +554,7 @@ type NumericRangeTuple<
 		 * URL of the experiment
 		 */
 		url: string
-		status: "created" | "booked" | "setup" | "running" | "finished" | "created" | "booked" | "running" | "finished"
+		status: "created" | "booked" | "setup" | "running" | "finished" | "failed" | "created" | "booked" | "running" | "finished"
 		[k: string]: unknown
 	} & {
 		bookingTime?: {
@@ -642,7 +642,7 @@ type NumericRangeTuple<
 		 * URL of the experiment
 		 */
 		url: string
-		status: "created" | "booked" | "setup" | "running" | "finished"
+		status: "created" | "booked" | "setup" | "running" | "finished" | "failed"
 		[k: string]: unknown
 	} & {
 		bookingTime?: {

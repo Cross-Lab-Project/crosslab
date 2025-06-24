@@ -26,7 +26,8 @@ export class ExperimentModel {
     | 'booking-locked'
     | 'devices-instantiated'
     | 'booking-updated'
-    | 'peerconnections-created';
+    | 'peerconnections-created'
+    | 'failed';
 
   @Column({ nullable: true })
   bookingStart?: string;

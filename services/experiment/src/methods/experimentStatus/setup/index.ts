@@ -91,10 +91,15 @@ export async function setupExperiment(
       );
       sendStatusUpdateMessages(
         experimentModel,
-        `Finishing the experiment because peerconnection could not be established successfully!`,
+        `Finishing the experiment because peerconnections could not be established successfully!`,
       );
       try {
-        await finishExperiment(experimentModel, clients);
+        await finishExperiment(
+          experimentModel,
+          clients,
+          'failed',
+          'Peerconnections could not be established successfully!',
+        );
       } catch (finishError) {
         logger.log('error', 'Could not finish the experiment!', {
           data: {

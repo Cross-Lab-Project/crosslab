@@ -140,7 +140,12 @@ class CallbackHandler {
           callback.device.type === 'device' &&
           !callback.device.connected
         ) {
-          await finishExperiment(experimentModel, clients);
+          await finishExperiment(
+            experimentModel,
+            clients,
+            'failed',
+            'Device disconnected!',
+          );
         }
       } finally {
         release();
@@ -179,8 +184,9 @@ class CallbackHandler {
           continue;
         }
 
-        if (experimentModel.status !== 'finished')
-          await finishExperiment(experimentModel, clients);
+        if (experimentModel.status !== 'finished') {
+          await finishExperiment(experimentModel, clients, 'finished');
+        }
       } finally {
         release();
       }
@@ -237,7 +243,21 @@ class CallbackHandler {
               callback.peerconnection.status
             }"!`,
           );
-          await finishExperiment(experimentModel, clients);
+          await finishExperiment(
+            experimentModel,
+            clients,
+            callback.peerconnection.status === 'failed' ? 'failed' : 'finished',
+            // prettier-ignore
+            `Experiment ${callback.peerconnection.status === 'failed' ? 'failed' : 'finished'} because peerconnection "${
+              callback.peerconnection.url
+            }" between the devices "${
+              callback.peerconnection.devices[0].url
+            }" and "${
+              callback.peerconnection.devices[1].url
+            }" has status "${
+              callback.peerconnection.status
+            }"!`,
+          );
         }
 
         if (callback.peerconnection.status === 'connected') {
@@ -293,7 +313,12 @@ class CallbackHandler {
         const booking = await clients.booking.getBooking(callback.url);
 
         if (booking.status === 'impossible' || booking.status === 'rejected')
-          await finishExperiment(experimentModel, clients);
+          await finishExperiment(
+            experimentModel,
+            clients,
+            'failed',
+            `Experiment failed because booking has status "${booking.status}!"`,
+          );
       } finally {
         release();
       }

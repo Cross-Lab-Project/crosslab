@@ -131,6 +131,11 @@ const connectionStateChangedMessageSchema = messageSchema.extend({
 export type ConnectionStateChangedMessage = z.infer<
   typeof connectionStateChangedMessageSchema
 >;
+export function isConnectionStateChangedMessage(
+  input: unknown,
+): input is ConnectionStateChangedMessage {
+  return connectionStateChangedMessageSchema.safeParse(input).success;
+}
 
 // define configuration message schema
 
@@ -153,6 +158,7 @@ const experimentStatusChangedMessageSchema = messageSchema.extend({
     z.literal('setup'),
     z.literal('running'),
     z.literal('finished'),
+    z.literal('failed'),
   ]),
   message: z.optional(z.string()),
 });
@@ -181,6 +187,9 @@ const deviceDescriptionSchema = z.object({
   services: z.array(serviceDescriptionSchema),
 });
 export type DeviceDescription = z.infer<typeof deviceDescriptionSchema>;
+export function isDeviceDescription(input: unknown): input is DeviceDescription {
+  return deviceDescriptionSchema.safeParse(input).success;
+}
 
 // define websocket message type schema
 

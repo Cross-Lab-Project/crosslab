@@ -18,6 +18,7 @@ properties:
           - setup
           - running
           - finished
+          - failed
       - type: string
         description: Status of the experiment
         writeOnly: true

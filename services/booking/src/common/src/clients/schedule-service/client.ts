@@ -199,7 +199,6 @@ export class Client {
     },
   ): Promise<Signatures.ScheduleSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/schedule');
-    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateScheduleInput(body))
       throw new ValidationError(
@@ -209,10 +208,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {

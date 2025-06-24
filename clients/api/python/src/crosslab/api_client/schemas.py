@@ -2017,7 +2017,7 @@ class PatchPeerconnectionDeviceStatusRequest(TypedDict):
 PatchPeerconnectionDeviceStatusResponse: TypeAlias = None
 
 
-ListExperimentsResponse200ItemsStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+ListExperimentsResponse200ItemsStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 ListExperimentsResponse200ItemsStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
@@ -2042,7 +2042,7 @@ ListExperimentsResponse200: TypeAlias = List[ListExperimentsResponse200Items]
 ListExperimentsResponse: TypeAlias = ListExperimentsResponse200
 
 
-CreateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+CreateExperimentRequestStatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 CreateExperimentRequestStatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
@@ -2173,7 +2173,7 @@ class CreateExperimentRequest(TypedDict):
     instantiatedDevices: List[CreateExperimentRequestInstantiateddevicesItems]
 
 
-CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+CreateExperimentResponse201StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 CreateExperimentResponse201StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
@@ -2304,7 +2304,7 @@ class CreateExperimentResponse201(TypedDict):
     instantiatedDevices: List[CreateExperimentResponse201InstantiateddevicesItems]
 
 
-CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+CreateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 CreateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
@@ -2438,7 +2438,7 @@ class CreateExperimentResponse202(TypedDict):
 CreateExperimentResponse: TypeAlias = Union[CreateExperimentResponse201, CreateExperimentResponse202]
 
 
-GetExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+GetExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 GetExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
@@ -2683,7 +2683,7 @@ class UpdateExperimentRequest(TypedDict):
     serviceConfigurations: NotRequired[List[UpdateExperimentRequestServiceconfigurationsItems]]
 
 
-UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+UpdateExperimentResponse200StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 UpdateExperimentResponse200StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]
@@ -2814,7 +2814,7 @@ class UpdateExperimentResponse200(TypedDict):
     instantiatedDevices: List[UpdateExperimentResponse200InstantiateddevicesItems]
 
 
-UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished"]
+UpdateExperimentResponse202StatusAlt1: TypeAlias = Literal["created", "booked", "setup", "running", "finished", "failed"]
 
 
 UpdateExperimentResponse202StatusAlt2: TypeAlias = Literal["created", "booked", "running", "finished"]

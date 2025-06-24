@@ -21,9 +21,13 @@ export async function transitionExperiment(
       experimentModel.status === 'created' ||
       experimentModel.status === 'booked' ||
       experimentModel.status === 'finished'
-    )
+    ) {
       status = experimentModel.status;
-    else status = 'running';
+    } else if (experimentModel.status === 'failed') {
+      status = 'finished';
+    } else {
+      status = 'running';
+    }
   }
 
   switch (status) {
@@ -44,6 +48,10 @@ export async function transitionExperiment(
     case 'running':
       return await runExperiment(experimentModel, clients);
     case 'finished':
-      return await finishExperiment(experimentModel, clients);
+      return await finishExperiment(
+        experimentModel,
+        clients,
+        experimentModel.status === 'failed' ? 'failed' : 'finished',
+      );
   }
 }

@@ -228,7 +228,6 @@ export class Client {
     url?: string;
   }): Promise<Signatures.ListBookingsSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/bookings');
-    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateListBookingsInput())
       throw new ValidationError(
@@ -238,10 +237,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -304,7 +299,6 @@ export class Client {
     },
   ): Promise<Signatures.CreateBookingSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/bookings');
-    console.log('trying to fetch url:', url);
 
     const body = booking;
 
@@ -329,12 +323,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
-        '?' +
-        new URLSearchParams(query),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
         '?' +
@@ -395,7 +383,6 @@ export class Client {
     const urlSuffix = '/bookings/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       bookingId: bookingId,
@@ -409,10 +396,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -477,7 +460,6 @@ export class Client {
     const urlSuffix = '/bookings/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}');
-    console.log('trying to fetch url:', url);
 
     const body = bookingUpdate;
 
@@ -503,12 +485,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
-        '?' +
-        new URLSearchParams(query),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl) +
         '?' +
@@ -569,7 +545,6 @@ export class Client {
     const urlSuffix = '/bookings/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       bookingId: bookingId,
@@ -583,10 +558,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -642,7 +613,6 @@ export class Client {
     const urlSuffix = '/bookings/{}/lock'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}/lock');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       bookingId: bookingId,
@@ -656,10 +626,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -715,7 +681,6 @@ export class Client {
     const urlSuffix = '/bookings/{}/lock'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [bookingId] = validateUrl(new URL(url).toString(), '/bookings/{}/lock');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       bookingId: bookingId,
@@ -729,10 +694,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -798,7 +759,6 @@ export class Client {
     },
   ): Promise<Signatures.GetScheduleSuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/schedule');
-    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateGetScheduleInput(body))
       throw new ValidationError(
@@ -808,10 +768,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {

@@ -63,7 +63,9 @@ class ConfigurationMessage(TypedDict):
 
 class ExperimentStatusChangedMessage(TypedDict):
     messageType: Literal["experiment-status-changed"]
-    status: Literal["created", "booked", "setup", "running", "failed", "closed"]
+    status: Literal[
+        "created", "booked", "setup", "running", "failed", "finished"
+    ]
     message: Optional[str]
 
 

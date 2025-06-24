@@ -16,7 +16,12 @@ import { experimentUrlFromId } from '../url.js';
 export async function finishExperiment(
   experimentModel: ExperimentModel,
   clients: Clients,
+  status: 'finished' | 'failed',
+  message?: string,
 ) {
+  if (experimentModel.status === 'finished' || experimentModel.status === 'failed') {
+    return;
+  }
   const experimentUrl = experimentUrlFromId(experimentModel.uuid);
   logger.log('info', 'Attempting to finish experiment', { data: { experimentUrl } });
 
@@ -77,18 +82,23 @@ export async function finishExperiment(
 
       break;
     }
-    case 'finished': {
-      break;
-    }
   }
 
-  experimentModel.status = 'finished';
+  experimentModel.status = status;
   await repositories.experiment.save(experimentModel);
   sendStatusUpdateMessages(
     experimentModel,
-    'The experiment has been finished successfully.',
+    (message ?? status === 'finished')
+      ? 'The experiment has been finished successfully.'
+      : 'The experiment has failed.',
   );
-  logger.log('info', 'Successfully finished experiment', { data: { experimentUrl } });
+  logger.log(
+    'info',
+    (message ?? status === 'finished')
+      ? 'Successfully finished experiment'
+      : 'Experiment failed',
+    { data: { experimentUrl } },
+  );
 }
 
 async function deleteInstances(experiment: ExperimentModel, clients: Clients) {

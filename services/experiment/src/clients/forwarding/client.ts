@@ -224,7 +224,6 @@ export class Client {
     headers?: [string, string][];
   }): Promise<Signatures.ListRoomsSuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/rooms');
-    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateListRoomsInput())
       throw new ValidationError(
@@ -232,10 +231,6 @@ export class Client {
         (RequestValidation.validateListRoomsInput as Types.FunctionWithErrors).errors,
       );
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -288,7 +283,6 @@ export class Client {
     },
   ): Promise<Signatures.CreateRoomSuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/rooms');
-    console.log('trying to fetch url:', url);
 
     const body = room;
 
@@ -298,10 +292,6 @@ export class Client {
         (RequestValidation.validateCreateRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -357,7 +347,6 @@ export class Client {
     const urlSuffix = '/rooms/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [room_id] = validateUrl(new URL(url).toString(), '/rooms/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       room_id: room_id,
@@ -369,10 +358,6 @@ export class Client {
         (RequestValidation.validateGetRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -430,7 +415,6 @@ export class Client {
     const urlSuffix = '/rooms/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [room_id] = validateUrl(new URL(url).toString(), '/rooms/{}');
-    console.log('trying to fetch url:', url);
 
     const body = room;
 
@@ -444,10 +428,6 @@ export class Client {
         (RequestValidation.validateUpdateRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -503,7 +483,6 @@ export class Client {
     const urlSuffix = '/rooms/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [room_id] = validateUrl(new URL(url).toString(), '/rooms/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       room_id: room_id,
@@ -515,10 +494,6 @@ export class Client {
         (RequestValidation.validateDeleteRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {

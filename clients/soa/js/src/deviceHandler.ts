@@ -26,7 +26,7 @@ export interface DeviceHandlerEvents {
   connectionsChanged(): void;
   configuration(configuration: { [k: string]: unknown }): void;
   experimentStatusChanged(status: {
-    status: 'created' | 'booked' | 'setup' | 'running' | 'finished';
+    status: 'created' | 'booked' | 'setup' | 'running' | 'finished' | 'failed';
     message?: string;
   }): void;
 }

@@ -228,7 +228,6 @@ export class Client {
     url?: string;
   }): Promise<Signatures.ListInstitutionsSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/institutions');
-    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateListInstitutionsInput())
       throw new ValidationError(
@@ -240,10 +239,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -302,7 +297,6 @@ export class Client {
     },
   ): Promise<Signatures.CreateInstitutionSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/institutions');
-    console.log('trying to fetch url:', url);
 
     const body = institution;
 
@@ -316,10 +310,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -378,7 +368,6 @@ export class Client {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [institution_id] = validateUrl(new URL(url).toString(), '/institutions/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       institution_id: institution_id,
@@ -394,10 +383,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -458,7 +443,6 @@ export class Client {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [institution_id] = validateUrl(new URL(url).toString(), '/institutions/{}');
-    console.log('trying to fetch url:', url);
 
     const body = institution;
 
@@ -476,10 +460,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {
@@ -538,7 +518,6 @@ export class Client {
     const urlSuffix = '/institutions/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [institution_id] = validateUrl(new URL(url).toString(), '/institutions/{}');
-    console.log('trying to fetch url:', url);
 
     const parameters = {
       institution_id: institution_id,
@@ -554,10 +533,6 @@ export class Client {
 
     const authorization: string = `Bearer ${this.accessToken}`;
 
-    console.log(
-      'trying to fetch url:',
-      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
-    );
     const response = await this.fetch(
       new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
       {

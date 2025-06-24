@@ -482,7 +482,6 @@ export class Client {
         {%- else %}
             const url = appendToUrl(this.baseUrl, "{{ operation.path }}")
         {%- endif %}
-        console.log("trying to fetch url:", url);
 
         {{ body if operation.requestBody }}
 
@@ -513,7 +512,6 @@ export class Client {
         const authorization: string = `Bearer ${this.accessToken}`
         {%- endif %}
 
-        console.log("trying to fetch url:", new URL(url).toString().replace(this.baseUrl, this.serviceUrl) {{ "+ '?' + new URLSearchParams(query)" if queryParameters | length > 0 }});
         const response = await this.fetch(new URL(url).toString().replace(this.baseUrl, this.serviceUrl) {{ "+ '?' + new URLSearchParams(query)" if queryParameters | length > 0 }}, {
             method: "{{ operation.method | upper }}", 
             headers: [
