@@ -18,7 +18,7 @@
     "build:generate:code": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service -o src/generated",
     "build:generate:test": "npx openapi-codegen -i dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service:test -o test/generated",
     "build:generate:device": "npx openapi-codegen -i ../device/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/device && prettier ./src/clients/device --write",
-    "build:generate:booking": "npx openapi-codegen -i ../booking-new/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/booking && prettier ./src/clients/booking --write",
+    "build:generate:booking": "npx openapi-codegen -i ../booking-temporary/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/booking && prettier ./src/clients/booking --write",
     "build:generate:forwarding": "npx openapi-codegen -i ../forwarding/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client -o ./src/clients/forwarding && prettier ./src/clients/forwarding --write",
     "build:compile": "tsc && cp src/generated/*.cjs app/generated && cp src/clients/device/basicValidation.cjs app/clients/device/ && cp src/clients/booking/basicValidation.cjs app/clients/booking/ && cp src/clients/forwarding/basicValidation.cjs app/clients/forwarding/",
     "build:add-shebang": "bash scripts/add-shebang.sh",

@@ -791,6 +791,7 @@ export class Client {
        *
        */
       timeframe: Types.Timeslot<'request'>;
+      [k: string]: unknown;
     },
     options?: {
       headers?: [string, string][];

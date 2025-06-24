@@ -11,7 +11,21 @@ import * as BasicValidation from "./basicValidation.cjs"
 /**
  * This function validates the inputs to listExperiments()
  */
-export function validateListExperimentsInput() {
+export function validateListExperimentsInput(parameters: Signatures.ListExperimentsParameters) {
+    if (parameters) {
+        if (
+            !BasicValidation.validateExperimentStatusRequest(parameters["experimentStatus"])
+			&& parameters['experimentStatus'] !== undefined
+        ) {
+            (validateListExperimentsInput as FunctionWithErrors).errors = (BasicValidation.validateExperimentStatusRequest as FunctionWithErrors).errors
+            return false
+        }
+    } else {
+        if (parameters !== undefined) {
+            return false
+        }
+    }
+
     return true
 }
 

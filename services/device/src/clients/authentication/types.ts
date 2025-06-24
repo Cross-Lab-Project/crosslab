@@ -148,6 +148,7 @@ export type Credentials<T extends 'request' | 'response' | 'all' = 'all'> =
          * Password of the user.
          */
         password: string;
+        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -159,6 +160,7 @@ export type Credentials<T extends 'request' | 'response' | 'all' = 'all'> =
            * Password of the user.
            */
           password: string;
+          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -170,6 +172,7 @@ export type Credentials<T extends 'request' | 'response' | 'all' = 'all'> =
              * Password of the user.
              */
             password: string;
+            [k: string]: unknown;
           }
         : never;
 
@@ -191,12 +194,14 @@ export type User<T extends 'request' | 'response' | 'all' = 'all'> = T extends '
       username?: string;
       password?: string;
       admin?: boolean;
+      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         username?: string;
         password?: string;
         admin?: boolean;
+        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -204,6 +209,7 @@ export type User<T extends 'request' | 'response' | 'all' = 'all'> = T extends '
           id?: string;
           username?: string;
           admin?: boolean;
+          [k: string]: unknown;
         }
       : never;
 

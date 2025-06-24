@@ -21,8 +21,11 @@ export function handleObject(
       dependencies = dependencies.concat(td.typeDependencies);
     }
   }
-  if (schema.additionalProperties) {
-    if (schema.additionalProperties === true) {
+  if (schema.additionalProperties !== false) {
+    if (
+      schema.additionalProperties === true ||
+      schema.additionalProperties === undefined
+    ) {
       properties.push('[k: string]: unknown');
     } else {
       const td = generateTyping(schema.additionalProperties, options);

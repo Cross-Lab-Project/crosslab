@@ -9,7 +9,7 @@ export AUTHORIZATION_IMAGE=$(docker load -i ../services/authorization/dist/docke
 export DEVICE_IMAGE=$(docker load -i ../services/device/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export EXPERIMENT_IMAGE=$(docker load -i ../services/experiment/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export FEDERATION_IMAGE=$(docker load -i ../services/federation/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
-export BOOKING_IMAGE=$(docker load -i ../services/booking-new/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
+export BOOKING_IMAGE=$(docker load -i ../services/booking-temporary/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 export FORWARDING_IMAGE=$(docker load -i ../services/forwarding/dist/docker-image.tar | tail -1 | grep -Eo "[^ ]+$")
 
 mkdir -p db

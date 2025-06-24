@@ -766,6 +766,7 @@ export type GetScheduleBody = {
    *
    */
   timeframe: Types.Timeslot<'request'>;
+  [k: string]: unknown;
 };
 
 /**

@@ -468,6 +468,12 @@ export class Client {
    * If the callback fails the url MIGHT not be called in the future.
    *
    * There can be multiple callbacks registered with the same device.
+   * @param options.deletedUrl
+   * **An URL that will be called once the device is deleted.**
+   *
+   * Once the device was given a deletedUrl parameter the contained URL will be called once a device is deleted.
+   *
+   * There can be multiple callbacks registered with the same device.
    *
    * @throws {@link FetchError | FetchError }
    * Thrown if fetch fails.
@@ -487,6 +493,7 @@ export class Client {
     options?: {
       headers?: [string, string][];
       changedUrl?: string;
+      deletedUrl?: string;
     },
   ): Promise<Signatures.UpdateDeviceSuccessResponse['body']> {
     const urlSuffix = '/devices/{}'.split('{}').at(-1) ?? '';
@@ -499,12 +506,16 @@ export class Client {
     const parameters = {
       device_id: device_id,
       changedUrl: options?.changedUrl,
+      deletedUrl: options?.deletedUrl,
     };
 
     const query: [string, string][] = [];
 
     if (parameters['changedUrl'])
       query.push(['changedUrl', parameters['changedUrl'].toString()]);
+
+    if (parameters['deletedUrl'])
+      query.push(['deletedUrl', parameters['deletedUrl'].toString()]);
 
     if (!RequestValidation.validateUpdateDeviceInput(parameters, body))
       throw new ValidationError(

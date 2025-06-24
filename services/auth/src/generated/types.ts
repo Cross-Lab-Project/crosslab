@@ -150,18 +150,21 @@ type NumericRangeTuple<
 	url: string
 	username: string
 	scopes: (string)[]
+	[k: string]: unknown
 }
                     : T extends "request" 
                     ? {
 	url: string
 	username: string
 	scopes: (string)[]
+	[k: string]: unknown
 }
                     : T extends "response"
                     ? {
 	url: string
 	username: string
 	scopes: (string)[]
+	[k: string]: unknown
 }
                     : never
                 
@@ -177,6 +180,7 @@ type NumericRangeTuple<
 	 * Password of the user.
 	 */
 	password: string
+	[k: string]: unknown
 }
                     : T extends "request" 
                     ? {
@@ -188,6 +192,7 @@ type NumericRangeTuple<
 	 * Password of the user.
 	 */
 	password: string
+	[k: string]: unknown
 }
                     : T extends "response"
                     ? {
@@ -199,6 +204,7 @@ type NumericRangeTuple<
 	 * Password of the user.
 	 */
 	password: string
+	[k: string]: unknown
 }
                     : never
                 
@@ -224,12 +230,14 @@ export type AuthMethod<T extends "request"|"response"|"all" = "all"> = T extends
 	username?: string
 	password?: string
 	admin?: boolean
+	[k: string]: unknown
 }
                     : T extends "request" 
                     ? {
 	username?: string
 	password?: string
 	admin?: boolean
+	[k: string]: unknown
 }
                     : T extends "response"
                     ? {
@@ -237,6 +245,7 @@ export type AuthMethod<T extends "request"|"response"|"all" = "all"> = T extends
 	id?: string
 	username?: string
 	admin?: boolean
+	[k: string]: unknown
 }
                     : never
                 

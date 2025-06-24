@@ -12,6 +12,6 @@ RUN chown node:node /app/*
 USER node
 
 ENV NODE_ENV production
-ENV PORT 3020
-EXPOSE 3020/tcp
+ENV PORT 3005
+EXPOSE 3005/tcp
 CMD ["dumb-init", "crosslab-forwarding-service"]

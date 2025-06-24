@@ -1506,6 +1506,7 @@ export class Client {
        * The status of the peerconnection.
        */
       status: Types.ConnectionStatus<'request'>;
+      [k: string]: unknown;
     },
     device_url: string,
     options?: {

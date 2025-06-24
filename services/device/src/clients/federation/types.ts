@@ -145,6 +145,7 @@ export type Institution<T extends 'request' | 'response' | 'all' = 'all'> =
         homepage?: string;
         api?: string;
         apiToken?: string;
+        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
@@ -152,6 +153,7 @@ export type Institution<T extends 'request' | 'response' | 'all' = 'all'> =
           homepage?: string;
           api?: string;
           apiToken?: string;
+          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -159,5 +161,6 @@ export type Institution<T extends 'request' | 'response' | 'all' = 'all'> =
             name?: string;
             homepage?: string;
             api?: string;
+            [k: string]: unknown;
           }
         : never;

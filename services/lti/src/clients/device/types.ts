@@ -503,11 +503,11 @@ type NumericRangeTuple<
  * 
  */
 export type Availability<T extends "request"|"response"|"all" = "all"> = T extends "all" 
-                    ? (TimeSlot)[]
+                    ? (Require<TimeSlot, "start" | "end">)[]
                     : T extends "request" 
-                    ? (TimeSlot<"request">)[]
+                    ? (Require<TimeSlot<"request">, "start" | "end">)[]
                     : T extends "response"
-                    ? (TimeSlot<"response">)[]
+                    ? (Require<TimeSlot<"response">, "start" | "end">)[]
                     : never
                 
 
@@ -554,9 +554,10 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 * A list of time slots that the maintainer of the device announced it is available
 	 * 
 	 */
-	announcedAvailability?: (TimeSlot)[]
+	announcedAvailability?: (Require<TimeSlot, "start" | "end">)[]
 	experiment?: string
 	services?: (ServiceDescription)[]
+	instanceOf?: string
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -590,6 +591,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	type?: "device"
 	experiment?: string
 	services?: (ServiceDescription<"request">)[]
+	instanceOf?: string
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -634,9 +636,10 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 * A list of time slots that the maintainer of the device announced it is available
 	 * 
 	 */
-	announcedAvailability?: (TimeSlot<"response">)[]
+	announcedAvailability?: (Require<TimeSlot<"response">, "start" | "end">)[]
 	experiment?: string
 	services?: (ServiceDescription<"response">)[]
+	instanceOf?: string
 	[k: string]: unknown
 }
                     : never
@@ -967,9 +970,10 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 * A list of time slots that the maintainer of the device announced it is available
 	 * 
 	 */
-	announcedAvailability?: (TimeSlot)[]
+	announcedAvailability?: (Require<TimeSlot, "start" | "end">)[]
 	experiment?: string
 	services?: (ServiceDescription)[]
+	instanceOf?: string
 	[k: string]: unknown
 } | {
 	/**
@@ -1103,6 +1107,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	type?: "device"
 	experiment?: string
 	services?: (ServiceDescription<"request">)[]
+	instanceOf?: string
 	[k: string]: unknown
 } | {
 	/**
@@ -1243,9 +1248,10 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 * A list of time slots that the maintainer of the device announced it is available
 	 * 
 	 */
-	announcedAvailability?: (TimeSlot<"response">)[]
+	announcedAvailability?: (Require<TimeSlot<"response">, "start" | "end">)[]
 	experiment?: string
 	services?: (ServiceDescription<"response">)[]
+	instanceOf?: string
 	[k: string]: unknown
 } | {
 	/**
@@ -1447,51 +1453,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference)[]
 		[k: string]: unknown
 	} & {
-		type?: "device"
-		/**
-		 * If true, the device is connected to the service and can be used.
-		 * 
-		 */
-		connected?: boolean
-		/**
-		 * A list of time slots that the maintainer of the device announced it is available
-		 * 
-		 */
-		announcedAvailability?: (TimeSlot)[]
-		experiment?: string
-		services?: (ServiceDescription)[]
-		[k: string]: unknown
-	} | {
-		/**
-		 * URL of the device
-		 */
-		url: string
-		/**
-		 * Name of the device
-		 */
-		name: string
-		/**
-		 * Extended description of the device, features, etc.
-		 */
-		description?: string
-		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
-		 * If true, the device may be seen and used by every user.
-		 */
-		isPublic: boolean
-		/**
-		 * List of users who can view the device
-		 */
-		viewer?: (UserReference)[]
-		/**
-		 * List of users who own the device
-		 */
-		owner?: (UserReference)[]
-		[k: string]: unknown
-	} & {
 		type?: "edge instantiable"
 		codeUrl?: string
 		services?: (ServiceDescription)[]
@@ -1527,8 +1488,59 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference)[]
 		[k: string]: unknown
 	} & {
+		type?: "device"
+		/**
+		 * If true, the device is connected to the service and can be used.
+		 * 
+		 */
+		connected?: boolean
+		/**
+		 * A list of time slots that the maintainer of the device announced it is available
+		 * 
+		 */
+		announcedAvailability?: (Require<TimeSlot, "start" | "end">)[]
+		experiment?: string
+		services?: (ServiceDescription)[]
+		instanceOf?: string
+		[k: string]: unknown
+	} | {
+		/**
+		 * URL of the device
+		 */
+		url: string
+		/**
+		 * Name of the device
+		 */
+		name: string
+		/**
+		 * Extended description of the device, features, etc.
+		 */
+		description?: string
+		/**
+		 * Type of the device
+		 */
+		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+		/**
+		 * If true, the device may be seen and used by every user.
+		 */
+		isPublic: boolean
+		/**
+		 * List of users who can view the device
+		 */
+		viewer?: (UserReference)[]
+		/**
+		 * List of users who own the device
+		 */
+		owner?: (UserReference)[]
+		[k: string]: unknown
+	} & {
 		type?: "group"
 		devices: (DeviceReference)[]
+		[k: string]: unknown
+	} & {
+		added: (string)[]
+		changed: (string)[]
+		removed: (string)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -1601,37 +1613,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"request">)[]
 		[k: string]: unknown
 	} & {
-		type?: "device"
-		experiment?: string
-		services?: (ServiceDescription<"request">)[]
-		[k: string]: unknown
-	} | {
-		/**
-		 * Name of the device
-		 */
-		name: string
-		/**
-		 * Extended description of the device, features, etc.
-		 */
-		description?: string
-		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
-		 * If true, the device may be seen and used by every user.
-		 */
-		isPublic: boolean
-		/**
-		 * List of users who can view the device
-		 */
-		viewer?: (UserReference<"request">)[]
-		/**
-		 * List of users who own the device
-		 */
-		owner?: (UserReference<"request">)[]
-		[k: string]: unknown
-	} & {
 		type?: "edge instantiable"
 		codeUrl?: string
 		services?: (ServiceDescription<"request">)[]
@@ -1663,8 +1644,45 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"request">)[]
 		[k: string]: unknown
 	} & {
+		type?: "device"
+		experiment?: string
+		services?: (ServiceDescription<"request">)[]
+		instanceOf?: string
+		[k: string]: unknown
+	} | {
+		/**
+		 * Name of the device
+		 */
+		name: string
+		/**
+		 * Extended description of the device, features, etc.
+		 */
+		description?: string
+		/**
+		 * Type of the device
+		 */
+		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+		/**
+		 * If true, the device may be seen and used by every user.
+		 */
+		isPublic: boolean
+		/**
+		 * List of users who can view the device
+		 */
+		viewer?: (UserReference<"request">)[]
+		/**
+		 * List of users who own the device
+		 */
+		owner?: (UserReference<"request">)[]
+		[k: string]: unknown
+	} & {
 		type?: "group"
 		devices: (DeviceReference<"request">)[]
+		[k: string]: unknown
+	} & {
+		added: (string)[]
+		changed: (string)[]
+		removed: (string)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -1745,51 +1763,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"response">)[]
 		[k: string]: unknown
 	} & {
-		type?: "device"
-		/**
-		 * If true, the device is connected to the service and can be used.
-		 * 
-		 */
-		connected?: boolean
-		/**
-		 * A list of time slots that the maintainer of the device announced it is available
-		 * 
-		 */
-		announcedAvailability?: (TimeSlot<"response">)[]
-		experiment?: string
-		services?: (ServiceDescription<"response">)[]
-		[k: string]: unknown
-	} | {
-		/**
-		 * URL of the device
-		 */
-		url: string
-		/**
-		 * Name of the device
-		 */
-		name: string
-		/**
-		 * Extended description of the device, features, etc.
-		 */
-		description?: string
-		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
-		 * If true, the device may be seen and used by every user.
-		 */
-		isPublic: boolean
-		/**
-		 * List of users who can view the device
-		 */
-		viewer?: (UserReference<"response">)[]
-		/**
-		 * List of users who own the device
-		 */
-		owner?: (UserReference<"response">)[]
-		[k: string]: unknown
-	} & {
 		type?: "edge instantiable"
 		codeUrl?: string
 		services?: (ServiceDescription<"response">)[]
@@ -1825,8 +1798,59 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"response">)[]
 		[k: string]: unknown
 	} & {
+		type?: "device"
+		/**
+		 * If true, the device is connected to the service and can be used.
+		 * 
+		 */
+		connected?: boolean
+		/**
+		 * A list of time slots that the maintainer of the device announced it is available
+		 * 
+		 */
+		announcedAvailability?: (Require<TimeSlot<"response">, "start" | "end">)[]
+		experiment?: string
+		services?: (ServiceDescription<"response">)[]
+		instanceOf?: string
+		[k: string]: unknown
+	} | {
+		/**
+		 * URL of the device
+		 */
+		url: string
+		/**
+		 * Name of the device
+		 */
+		name: string
+		/**
+		 * Extended description of the device, features, etc.
+		 */
+		description?: string
+		/**
+		 * Type of the device
+		 */
+		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+		/**
+		 * If true, the device may be seen and used by every user.
+		 */
+		isPublic: boolean
+		/**
+		 * List of users who can view the device
+		 */
+		viewer?: (UserReference<"response">)[]
+		/**
+		 * List of users who own the device
+		 */
+		owner?: (UserReference<"response">)[]
+		[k: string]: unknown
+	} & {
 		type?: "group"
 		devices: (DeviceReference<"response">)[]
+		[k: string]: unknown
+	} & {
+		added: (string)[]
+		changed: (string)[]
+		removed: (string)[]
 		[k: string]: unknown
 	}
 	[k: string]: unknown
@@ -2705,6 +2729,61 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 } & {
 	type?: "group"
 	devices?: (DeviceReference<"response">)[]
+	[k: string]: unknown
+}
+                    : never
+                
+
+
+                export type DeviceDeletedEventCallback<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                    ? {
+	callbackType: string
+	[k: string]: unknown
+} & {
+	callbackType: "event"
+	eventType: string
+	[k: string]: unknown
+} & {
+	eventType: "device-deleted"
+	device: {
+		url: string
+		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+		[k: string]: unknown
+	}
+	[k: string]: unknown
+}
+                    : T extends "request" 
+                    ? {
+	callbackType: string
+	[k: string]: unknown
+} & {
+	callbackType: "event"
+	eventType: string
+	[k: string]: unknown
+} & {
+	eventType: "device-deleted"
+	device: {
+		url: string
+		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+		[k: string]: unknown
+	}
+	[k: string]: unknown
+}
+                    : T extends "response"
+                    ? {
+	callbackType: string
+	[k: string]: unknown
+} & {
+	callbackType: "event"
+	eventType: string
+	[k: string]: unknown
+} & {
+	eventType: "device-deleted"
+	device: {
+		url: string
+		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+		[k: string]: unknown
+	}
 	[k: string]: unknown
 }
                     : never
@@ -3682,6 +3761,19 @@ export function isDeviceChangedEventCallback<T extends "request"|"response"|"all
             return BasicValidation.validateDeviceChangedEventCallbackResponse(obj)
         default:
             return BasicValidation.validateDeviceChangedEventCallback(obj)
+    }
+}
+
+export function isDeviceDeletedEventCallback<T extends "request"|"response"|"all" = "all">(
+    obj: unknown, type: "request" | "response" | "all" | T = "all"
+): obj is DeviceDeletedEventCallback<T> {
+    switch (type) {
+        case "request":
+            return BasicValidation.validateDeviceDeletedEventCallbackRequest(obj)
+        case "response":
+            return BasicValidation.validateDeviceDeletedEventCallbackResponse(obj)
+        default:
+            return BasicValidation.validateDeviceDeletedEventCallback(obj)
     }
 }
 

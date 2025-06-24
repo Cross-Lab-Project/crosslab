@@ -105,7 +105,7 @@ type TupleObject<T, N extends number[]> = N extends [
   ...infer TAIL extends number[],
 ]
   ? TAIL extends []
-    ? Record<string, never>
+    ? T[]
     : { [P in HEAD]: T } & TupleObject<T, TAIL>
   : Record<string, never>;
 
@@ -146,30 +146,36 @@ export type BookingBase<T extends 'request' | 'response' | 'all' = 'all'> =
         timeslot?: {
           start: string;
           end: string;
+          [k: string]: unknown;
         };
         devices?: {
           [k: string]: {
             url: string;
             essential: boolean;
             isReserved: boolean;
+            [k: string]: unknown;
           };
         };
         selectedDevices?: {
           [k: string]: string | null;
         };
+        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
           timeslot?: {
             start: string;
             end: string;
+            [k: string]: unknown;
           };
           devices?: {
             [k: string]: {
               url: string;
               essential: boolean;
+              [k: string]: unknown;
             };
           };
+          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -179,17 +185,20 @@ export type BookingBase<T extends 'request' | 'response' | 'all' = 'all'> =
             timeslot?: {
               start: string;
               end: string;
+              [k: string]: unknown;
             };
             devices?: {
               [k: string]: {
                 url: string;
                 essential: boolean;
                 isReserved: boolean;
+                [k: string]: unknown;
               };
             };
             selectedDevices?: {
               [k: string]: string | null;
             };
+            [k: string]: unknown;
           }
         : never;
 
@@ -201,30 +210,36 @@ export type Booking<T extends 'request' | 'response' | 'all' = 'all'> = T extend
       timeslot: {
         start: string;
         end: string;
+        [k: string]: unknown;
       };
       devices: {
         [k: string]: {
           url: string;
           essential: boolean;
           isReserved: boolean;
+          [k: string]: unknown;
         };
       };
       selectedDevices: {
         [k: string]: string | null;
       };
+      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         timeslot: {
           start: string;
           end: string;
+          [k: string]: unknown;
         };
         devices: {
           [k: string]: {
             url: string;
             essential: boolean;
+            [k: string]: unknown;
           };
         };
+        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -234,17 +249,20 @@ export type Booking<T extends 'request' | 'response' | 'all' = 'all'> = T extend
           timeslot: {
             start: string;
             end: string;
+            [k: string]: unknown;
           };
           devices: {
             [k: string]: {
               url: string;
               essential: boolean;
               isReserved: boolean;
+              [k: string]: unknown;
             };
           };
           selectedDevices: {
             [k: string]: string | null;
           };
+          [k: string]: unknown;
         }
       : never;
 
@@ -257,30 +275,36 @@ export type BookingUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
         timeslot?: {
           start: string;
           end: string;
+          [k: string]: unknown;
         };
         devices?: {
           [k: string]: {
             url: string;
             essential: boolean;
             isReserved: boolean;
+            [k: string]: unknown;
           };
         };
         selectedDevices: {
           [k: string]: string | null;
         };
+        [k: string]: unknown;
       }
     : T extends 'request'
       ? {
           timeslot?: {
             start: string;
             end: string;
+            [k: string]: unknown;
           };
           devices?: {
             [k: string]: {
               url: string;
               essential: boolean;
+              [k: string]: unknown;
             };
           };
+          [k: string]: unknown;
         }
       : T extends 'response'
         ? {
@@ -290,17 +314,20 @@ export type BookingUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
             timeslot?: {
               start: string;
               end: string;
+              [k: string]: unknown;
             };
             devices?: {
               [k: string]: {
                 url: string;
                 essential: boolean;
                 isReserved: boolean;
+                [k: string]: unknown;
               };
             };
             selectedDevices: {
               [k: string]: string | null;
             };
+            [k: string]: unknown;
           }
         : never;
 
@@ -316,16 +343,19 @@ export type Timeslot<T extends 'request' | 'response' | 'all' = 'all'> = T exten
   ? {
       start: string;
       end: string;
+      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         start: string;
         end: string;
+        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
           start: string;
           end: string;
+          [k: string]: unknown;
         }
       : never;
 
@@ -357,18 +387,22 @@ export type BookingChangedEventCallback<
         timeslot: {
           start: string;
           end: string;
+          [k: string]: unknown;
         };
         devices: {
           [k: string]: {
             url: string;
             essential: boolean;
             isReserved: boolean;
+            [k: string]: unknown;
           };
         };
         selectedDevices: {
           [k: string]: string | null;
         };
+        [k: string]: unknown;
       };
+      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
@@ -378,14 +412,18 @@ export type BookingChangedEventCallback<
           timeslot: {
             start: string;
             end: string;
+            [k: string]: unknown;
           };
           devices: {
             [k: string]: {
               url: string;
               essential: boolean;
+              [k: string]: unknown;
             };
           };
+          [k: string]: unknown;
         };
+        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
@@ -398,18 +436,22 @@ export type BookingChangedEventCallback<
             timeslot: {
               start: string;
               end: string;
+              [k: string]: unknown;
             };
             devices: {
               [k: string]: {
                 url: string;
                 essential: boolean;
                 isReserved: boolean;
+                [k: string]: unknown;
               };
             };
             selectedDevices: {
               [k: string]: string | null;
             };
+            [k: string]: unknown;
           };
+          [k: string]: unknown;
         }
       : never;
 
@@ -420,17 +462,20 @@ export type BookingDeletedEventCallback<
       callbackType: 'event';
       eventType: 'booking-deleted';
       bookingUrl: string;
+      [k: string]: unknown;
     }
   : T extends 'request'
     ? {
         callbackType: 'event';
         eventType: 'booking-deleted';
         bookingUrl: string;
+        [k: string]: unknown;
       }
     : T extends 'response'
       ? {
           callbackType: 'event';
           eventType: 'booking-deleted';
           bookingUrl: string;
+          [k: string]: unknown;
         }
       : never;

@@ -154,7 +154,7 @@ export const getBookingByID: getBookingByIDSignature = async (request, parameter
     body.Booking.Type = rows[0].type;
     body.Booking.Status = rows[0].status;
     body.Booking.You = rows[0].user == request.authorization.user;
-    body.Message = rows[0].message;
+    body.Booking.Message = rows[0].message;
     body.Locked = false;
     if (
       body.Booking.Status === 'active' ||
@@ -261,18 +261,18 @@ export const patchBookingByID: patchBookingByIDSignature = async (
     }
 
     // if both are set, the request is invalid
-    if (typeof body.Callback === 'string' && typeof body.Devices !== 'undefined' && (body.Devices as Device[]).length !== 0) {
+    if ("Callback" in body && typeof body.Callback === 'string' && "Devices" in body && typeof body.Devices !== 'undefined' && (body.Devices as Device[]).length !== 0) {
       return {
         status: 400,
         body: 'can not add callback and devices in one request',
       };
-    } else if (typeof body.Callback === 'string') {
+    } else if ("Callback" in body && typeof body.Callback === 'string') {
       // this is adding a callback
       await db.execute('INSERT INTO bookingcallbacks (`booking`, `url`) VALUES (?,?)', [
         requestID,
         body.Callback,
       ]);
-    } else if (typeof body.Devices !== 'undefined') {
+    } else if ("Devices" in body && typeof body.Devices !== 'undefined') {
       let Devices: Device[] = body.Devices as Device[];
 
       if (Devices.length !== 0) {

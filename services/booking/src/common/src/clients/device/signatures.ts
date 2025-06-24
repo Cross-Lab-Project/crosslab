@@ -328,6 +328,7 @@ export interface GetDeviceResponse500 extends Types.ErrorResponse {
 export type UpdateDeviceParameters = {
   device_id: string;
   changedUrl?: string;
+  deletedUrl?: string;
 };
 
 /**

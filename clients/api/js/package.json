@@ -7,7 +7,7 @@
     "generate-bv-auth": "npx openapi-codegen -i ../../../services/auth/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client:basicValidation -o ./src/generated/basicValidation --keep-refs",
     "move-bv-auth": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/authentication.cjs",
     "bv-auth": "npm run generate-bv-auth && npm run move-bv-auth",
-    "generate-bv-booking": "npx openapi-codegen -i ../../../services/booking-new/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client:basicValidation -o ./src/generated/basicValidation --keep-refs",
+    "generate-bv-booking": "npx openapi-codegen -i ../../../services/booking-temporary/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client:basicValidation -o ./src/generated/basicValidation --keep-refs",
     "move-bv-booking": "mv ./src/generated/basicValidation/basicValidation.cjs ./src/generated/basicValidation/booking.cjs",
     "bv-booking": "npm run generate-bv-booking && npm run move-bv-booking",
     "generate-bv-device": "npx openapi-codegen -i ../../../services/device/dist/openapi.json -p @cross-lab-project/codegen-typescript-addon:preset:service-client:basicValidation -o ./src/generated/basicValidation --keep-refs",

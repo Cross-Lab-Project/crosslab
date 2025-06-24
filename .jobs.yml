@@ -177,109 +177,109 @@ services/authorization:
     tags:
       - test
 
-# services/booking/src/common:
-#   - script: build
-#     dependencies:
-#       - helper/crosslab-typescript-addon:build
-#       - helper/openapi-codegeneration:build
-#       - services/booking:build-spec
-#       - services/booking/src/booking-backend:build-spec
-#       - services/booking/src/booking-frontend:build-spec
-#       - services/booking/src/schedule-service:build-spec
-#       - services/device:build-spec
-#       - clients/api/js:build
+services/booking/src/common:
+  - script: build
+    dependencies:
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+      - services/booking:build-spec
+      - services/booking/src/booking-backend:build-spec
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/schedule-service:build-spec
+      - services/device:build-spec
+      - clients/api/js:build
 
-# services/booking/src/device-reservation:
-#   - script: build
-#     dependencies:
-#       - services/booking/src/common:build
-#   - script: test
-#     dependencies:
-#       - services/booking/src/device-reservation:build
-#     tags:
-#       - test
-#   - script: build-docker
-#     dependencies:
-#       - services/booking/src/device-reservation:build
+services/booking/src/device-reservation:
+  - script: build
+    dependencies:
+      - services/booking/src/common:build
+  - script: test
+    dependencies:
+      - services/booking/src/device-reservation:build
+    tags:
+      - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/device-reservation:build
 
-# services/booking/src/test_common:
-#   - script: build
-#     dependencies:
-#       - services/booking/src/common:build
-#       - services/booking/src/device-reservation:build
+services/booking/src/test_common:
+  - script: build
+    dependencies:
+      - services/booking/src/common:build
+      - services/booking/src/device-reservation:build
 
-# services/booking/src/booking-backend:
-#   - script: build-spec
-#     paths:
-#       - ./api
-#   - script: build
-#     dependencies:
-#       - services/booking:build-spec
-#       - services/booking/src/test_common:build
-#   - script: test
-#     dependencies:
-#       - services/booking/src/booking-backend:build
-#     tags:
-#       - test
-#   - script: build-docker
-#     dependencies:
-#       - services/booking/src/booking-backend:build
+services/booking/src/booking-backend:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/booking/src/test_common:build
+  - script: test
+    dependencies:
+      - services/booking/src/booking-backend:build
+    tags:
+      - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/booking-backend:build
 
-# services/booking/src/booking-frontend:
-#   - script: build-spec
-#     paths:
-#       - ./api
-#   - script: build
-#     dependencies:
-#       - services/booking:build-spec
-#       - services/booking/src/booking-backend:build
-#   - script: test
-#     dependencies:
-#       - services/booking/src/booking-frontend:build
-#     tags:
-#       - test
-#   - script: build-docker
-#     dependencies:
-#       - services/booking/src/booking-frontend:build
+services/booking/src/booking-frontend:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/booking/src/booking-backend:build
+  - script: test
+    dependencies:
+      - services/booking/src/booking-frontend:build
+    tags:
+      - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/booking-frontend:build
 
-# services/booking/src/schedule-service:
-#   - script: build-spec
-#     paths:
-#       - ./api
-#   - script: build
-#     dependencies:
-#       - services/booking:build-spec
-#       - services/common:build
-#       - services/booking/src/common:build
-#       - services/booking/src/test_common:build
-#       - helper/crosslab-typescript-addon:build
-#       - helper/openapi-codegeneration:build
-#   # - script: test
-#   #   dependencies:
-#   #     - services/booking/src/schedule-service:build
-#   #   tags:
-#   #     - test
-#   - script: build-docker
-#     dependencies:
-#       - services/booking/src/schedule-service:build
+services/booking/src/schedule-service:
+  - script: build-spec
+    paths:
+      - ./api
+  - script: build
+    dependencies:
+      - services/booking:build-spec
+      - services/common:build
+      - services/booking/src/common:build
+      - services/booking/src/test_common:build
+      - helper/crosslab-typescript-addon:build
+      - helper/openapi-codegeneration:build
+  # - script: test
+  #   dependencies:
+  #     - services/booking/src/schedule-service:build
+  #   tags:
+  #     - test
+  - script: build-docker
+    dependencies:
+      - services/booking/src/schedule-service:build
 
-# services/booking:
-#   - script: build-spec
-#     paths:
-#       - ./api
-#     dependencies:
-#       - services/booking/src/booking-frontend:build-spec
-#       - services/booking/src/booking-backend:build-spec      
-#       - services/booking/src/schedule-service:build-spec
-#   - script: lint-spec
-#     paths:
-#       - ./api
-#     dependencies:      
-#       - services/booking:build-spec
-#     tags:
-#       - test
+services/booking:
+  - script: build-spec
+    paths:
+      - ./api
+    dependencies:
+      - services/booking/src/booking-frontend:build-spec
+      - services/booking/src/booking-backend:build-spec      
+      - services/booking/src/schedule-service:build-spec
+  - script: lint-spec
+    paths:
+      - ./api
+    dependencies:      
+      - services/booking:build-spec
+    tags:
+      - test
 
-services/booking-new:
+services/booking-temporary:
   - script: build-spec
     paths:
       - ./api
@@ -287,19 +287,19 @@ services/booking-new:
     paths:
       - ./api
     dependencies:
-      - services/booking-new:build-spec
+      - services/booking-temporary:build-spec
     tags:
       - test
   - script: build
     dependencies:
-      - services/booking-new:build-spec
+      - services/booking-temporary:build-spec
       - services/common:build
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
       - services/device:build-spec
   - script: build-docker
     dependencies:
-      - services/booking-new:build
+      - services/booking-temporary:build
 
 services/device:
   - script: build-spec
@@ -342,7 +342,8 @@ services/experiment:
   - script: build
     dependencies:
       - services/experiment:build-spec
-      - services/booking-new:build-spec
+      - services/booking-temporary:build-spec
+      - services/forwarding:build-spec
       - services/common:build
       - helper/crosslab-typescript-addon:build
       - helper/openapi-codegeneration:build
@@ -409,7 +410,7 @@ services/openapi:
   - script: build
     dependencies:
       - services/auth:build-spec
-      - services/booking-new:build-spec
+      - services/booking-temporary:build-spec
       - services/device:build-spec
       - services/experiment:build-spec
       - services/federation:build-spec
@@ -460,7 +461,7 @@ clients/api/js:
   - script: build
     dependencies:
       - services/auth:build-spec
-      - services/booking-new:build-spec
+      - services/booking-temporary:build-spec
       - services/device:build-spec
       - services/experiment:build-spec
       - services/federation:build-spec
@@ -802,9 +803,10 @@ integration-test:
       - services/auth:build-docker
       - services/authorization:build-docker
       - services/device:build-docker
-      - services/booking-new:build-docker
+      - services/booking-temporary:build-docker
       - services/experiment:build-docker
       - services/federation:build-docker
+      - services/forwarding:build-docker
       - services/gateway:build-docker
       - clients/api/js:build
       - clients/soa/js:build

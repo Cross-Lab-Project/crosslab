@@ -126,6 +126,7 @@ export type postLoginRequestBodyType = Credentials<"request"> & {
 	 * Authentication method.
 	 */
 	method?: AuthMethod<"request">
+	[k: string]: unknown
 }
 
 /**
@@ -223,6 +224,7 @@ export type postLogoutRequestBodyType = {
 	 * The token to be invalidated.
 	 */
 	token?: string
+	[k: string]: unknown
 }
 
 /**
@@ -977,8 +979,9 @@ export type postTokenRequestBodyType = {
 	 * 
 	 */
 	claims?: {
-		
+		[k: string]: unknown
 	}
+	[k: string]: unknown
 } | {
 	/**
 	 * Url or uuid of the user that will be used to create the token.
@@ -989,8 +992,9 @@ export type postTokenRequestBodyType = {
 	 * 
 	 */
 	claims?: {
-		
+		[k: string]: unknown
 	}
+	[k: string]: unknown
 }
 
 /**

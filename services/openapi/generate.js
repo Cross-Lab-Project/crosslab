@@ -5,7 +5,7 @@ const api_documents = [
   '../device/dist/openapi.json',
   '../experiment/dist/openapi.json',
   '../federation/dist/openapi.json',
-  '../booking-new/dist/openapi.json',
+  '../booking-temporary/dist/openapi.json',
   '../lti/dist/openapi.json',
 ];
 

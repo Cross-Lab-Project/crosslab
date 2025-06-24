@@ -127,23 +127,10 @@ function parsePathParameters(url: string, endpoint: string): string[] {
  * // returns ["username", "role_name"]
  * validateUrl("https://api.example.com/users/username/roles/role_name", "/users/{}/roles/{}")
  */
-function validateUrl(url: string, baseUrl: string, endpoint: string): string[] {
+function validateUrl(url: string, endpoint: string): string[] {
   if (!isValidHttpUrl(url))
     throw new InvalidUrlError('Provided url is not a valid http url');
-  if (!url.startsWith(baseUrl))
-    throw new InvalidUrlError('Provided url does not start with the provided base url');
-  const pathParameters = parsePathParameters(url, endpoint);
-
-  let extendedBaseUrl = baseUrl + endpoint;
-
-  pathParameters.forEach(pathParameter => {
-    extendedBaseUrl = extendedBaseUrl.replace('{}', pathParameter);
-  });
-
-  if (url !== extendedBaseUrl)
-    throw new InvalidUrlError('Provided url does not match extended base url');
-
-  return pathParameters;
+  return parsePathParameters(url, endpoint);
 }
 
 /**
@@ -173,10 +160,11 @@ export class Client {
   private fixedHeaders: [string, string][];
   private fetch = async (url: RequestInfo | URL, init: RequestInit) => {
     let raw_response;
+    const parsedUrl = new URL(url.toString());
     try {
       if (
-        url.toString().startsWith(this.baseUrl) ||
-        url.toString().startsWith(this.serviceUrl)
+        parsedUrl.toString().startsWith(this.baseUrl) ||
+        parsedUrl.toString().startsWith(this.serviceUrl)
       ) {
         raw_response = await fetch(url, init);
       } else {
@@ -211,12 +199,8 @@ export class Client {
       fixedHeaders?: [string, string][];
     },
   ) {
-    this.baseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-    this.serviceUrl = options.serviceUrl
-      ? options.serviceUrl.endsWith('/')
-        ? options.serviceUrl.slice(0, -1)
-        : options.serviceUrl
-      : this.baseUrl;
+    this.baseUrl = new URL(baseUrl).toString().slice(0, -1);
+    this.serviceUrl = new URL(options.serviceUrl ?? this.baseUrl).toString().slice(0, -1);
     this.accessToken = options.accessToken ?? '';
     this.fixedHeaders = options.fixedHeaders ?? [];
   }
@@ -240,6 +224,7 @@ export class Client {
     headers?: [string, string][];
   }): Promise<Signatures.ListRoomsSuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/rooms');
+    console.log('trying to fetch url:', url);
 
     if (!RequestValidation.validateListRoomsInput())
       throw new ValidationError(
@@ -247,14 +232,21 @@ export class Client {
         (RequestValidation.validateListRoomsInput as Types.FunctionWithErrors).errors,
       );
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateListRoomsOutput(response))
       throw new ValidationError(
@@ -296,6 +288,7 @@ export class Client {
     },
   ): Promise<Signatures.CreateRoomSuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/rooms');
+    console.log('trying to fetch url:', url);
 
     const body = room;
 
@@ -305,15 +298,22 @@ export class Client {
         (RequestValidation.validateCreateRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'POST',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'POST',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateCreateRoomOutput(response))
       throw new ValidationError(
@@ -356,7 +356,8 @@ export class Client {
   ): Promise<Signatures.GetRoomSuccessResponse['body']> {
     const urlSuffix = '/rooms/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [room_id] = validateUrl(url, this.baseUrl, '/rooms/{}');
+    const [room_id] = validateUrl(new URL(url).toString(), '/rooms/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       room_id: room_id,
@@ -368,14 +369,21 @@ export class Client {
         (RequestValidation.validateGetRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'GET',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'GET',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateGetRoomOutput(response))
       throw new ValidationError(
@@ -421,7 +429,8 @@ export class Client {
   ): Promise<Signatures.UpdateRoomSuccessResponse['body']> {
     const urlSuffix = '/rooms/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [room_id] = validateUrl(url, this.baseUrl, '/rooms/{}');
+    const [room_id] = validateUrl(new URL(url).toString(), '/rooms/{}');
+    console.log('trying to fetch url:', url);
 
     const body = room;
 
@@ -435,15 +444,22 @@ export class Client {
         (RequestValidation.validateUpdateRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'PATCH',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-      body: JSON.stringify(body),
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'PATCH',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+        body: JSON.stringify(body),
+      },
+    );
 
     if (!RequestValidation.validateUpdateRoomOutput(response))
       throw new ValidationError(
@@ -486,7 +502,8 @@ export class Client {
   ): Promise<void> {
     const urlSuffix = '/rooms/{}'.split('{}').at(-1) ?? '';
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
-    const [room_id] = validateUrl(url, this.baseUrl, '/rooms/{}');
+    const [room_id] = validateUrl(new URL(url).toString(), '/rooms/{}');
+    console.log('trying to fetch url:', url);
 
     const parameters = {
       room_id: room_id,
@@ -498,14 +515,21 @@ export class Client {
         (RequestValidation.validateDeleteRoomInput as Types.FunctionWithErrors).errors,
       );
 
-    const response = await this.fetch(url.replace(this.baseUrl, this.serviceUrl), {
-      method: 'DELETE',
-      headers: [
-        ['Content-Type', 'application/json'],
-        ...this.fixedHeaders,
-        ...(options?.headers ?? []),
-      ],
-    });
+    console.log(
+      'trying to fetch url:',
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+    );
+    const response = await this.fetch(
+      new URL(url).toString().replace(this.baseUrl, this.serviceUrl),
+      {
+        method: 'DELETE',
+        headers: [
+          ['Content-Type', 'application/json'],
+          ...this.fixedHeaders,
+          ...(options?.headers ?? []),
+        ],
+      },
+    );
 
     if (!RequestValidation.validateDeleteRoomOutput(response))
       throw new ValidationError(

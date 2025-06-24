@@ -66,10 +66,10 @@ export async function handleCallback(
           if (rows.length == 0) {
             throw Error(
               'Booking, Position (' +
-              targetBooking +
-              ',' +
-              parameters.Position +
-              ') not known',
+                targetBooking +
+                ',' +
+                parameters.Position +
+                ') not known',
             );
           }
 
@@ -213,9 +213,13 @@ async function addDeviceCallback(
     // TODO: For now get the type first since it is required. Remove this once the type is no longer needed
     let deviceData = await clients.device.getDevice(device.toString());
 
-    await clients.device.updateDevice(device.toString(), { type: deviceData.type }, {
-      changedUrl: config.OwnURL + '/booking_callback/' + id,
-    });
+    await clients.device.updateDevice(
+      device.toString(),
+      { type: deviceData.type },
+      {
+        changedUrl: config.OwnURL + '/booking_callback/' + id,
+      },
+    );
   } catch (e) {
     // For now, just throw the error
     throw e;
@@ -295,10 +299,7 @@ export async function dispatchCallback(bookingID: bigint) {
         }
       } catch (err) {
         // Something went wrong here - just continue for now
-        console.error(
-          'error',
-          'Unknown error in dispatchCallback:', err,
-        );
+        console.error('error', 'Unknown error in dispatchCallback:', err);
         continue;
       }
     }
@@ -430,7 +431,7 @@ export async function reservateDevice(r: DeviceBookingRequest) {
     }
 
     nextDevice: for (let i = 0; i < possibleDevices.length; i++) {
-      let schedule: BookingServiceSignatures.ScheduleSuccessResponse['body'];
+      let schedule: Awaited<ReturnType<typeof clients.booking.schedule.schedule>>;
       try {
         schedule = await clients.booking.schedule.schedule({
           Experiment: { Devices: [{ ID: possibleDevices[i] }] },
@@ -543,12 +544,12 @@ export async function reservateDevice(r: DeviceBookingRequest) {
           {
             Devices: [{ ID: possibleDevices[i] }],
             Time: { Start: r.Start.toISOString(), End: r.End.toISOString() },
-            BookingReference: r.BookingID.toString(),
+            // BookingReference: r.BookingID.toString(),
           },
           { url: institution + '/booking/manage' },
         );
 
-        let ID = putReturn.ReservationID;
+        let ID = putReturn.BookingID;
 
         let counter = -1;
         while (true) {

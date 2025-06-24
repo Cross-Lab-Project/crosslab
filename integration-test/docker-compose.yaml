@@ -7,6 +7,9 @@
 version: '3'
 
 x-config: &common-config
+  DB_TYPE: mariadb
+  DB_HOST: localhost
+  DB_PORT: 3306
   AUTHORIZATION_SERVER: 'http://127.0.0.1:3010'
   AUTHORIZATION_PSK: '${AUTHORIZATION_PSK:-TestPSK}'
   LOGGING: '${LOGGING:-info}'
@@ -46,7 +49,6 @@ services:
       BOOKING_SERVICE_DOMAIN: '127.0.0.1:3004'
       FORWARDING_SERVICE_DOMAIN: '127.0.0.1:3005'
       AUTHORIZATION_SERVICE_DOMAIN: '127.0.0.1:3010'
-      FORWARDING_SERVICE_DOMAIN: '127.0.0.1:3020'
       LTI_SERVICE_DOMAIN: '127.0.0.2:3006'
     network_mode: 'host'
     depends_on:
@@ -106,6 +108,8 @@ services:
     image: '${EXPERIMENT_IMAGE:?}'
     environment:
       <<: *common-config
+      DB_USERNAME: experiment
+      DB_DATABASE: experiment
       STUN_SERVER_URL: 'stun:stun.goldi-labs.de:3478'
       TURN_SERVER_URL: 'turn:turn.goldi-labs.de:3478'
       TURN_SERVER_USERNAME: 'goldi'

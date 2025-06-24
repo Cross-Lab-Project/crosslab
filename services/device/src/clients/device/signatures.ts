@@ -585,6 +585,7 @@ export interface InstantiateDeviceResponse201 extends Types.SuccessResponse {
   body: {
     instance: Types.ConcreteDevice<'response'>;
     deviceToken: string;
+    [k: string]: unknown;
   };
 }
 
@@ -1662,6 +1663,7 @@ export type PatchPeerconnectionDeviceStatusBody = {
    * The status of the peerconnection.
    */
   status: Types.ConnectionStatus<'request'>;
+  [k: string]: unknown;
 };
 
 /**
