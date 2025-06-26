@@ -14,8 +14,8 @@ import {
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 
-import { DebugAdapterProtocol } from './dap-types';
-import { DebuggingAdapterProtocol, debuggingAdapterProtocol } from './protocol';
+import { DebugAdapterProtocol } from './dap-types.js';
+import { DebuggingAdapterProtocol, debuggingAdapterProtocol } from './protocol.js';
 
 interface DebuggingAdapterServiceProducerEvents {
   'new-session': (

@@ -16,7 +16,7 @@ import {
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 
-import { FileSystemProtocol, fileSystemProtocol } from './protocol';
+import { FileSystemProtocol, fileSystemProtocol } from './protocol.js';
 
 interface FileSystemWatcherEvents {
   changed: (path: string, entry: Directory['content'] | File['content']) => void;

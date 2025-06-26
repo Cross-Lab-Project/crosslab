@@ -1,3 +1,3 @@
-export * from './consumer';
-export * from './producer';
-export * from './types';
+export * from './consumer.js';
+export * from './producer.js';
+export * from './types.js';

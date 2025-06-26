@@ -16,7 +16,7 @@ import {
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 
-import { DebuggingAdapterProtocol, debuggingAdapterProtocol } from './protocol';
+import { DebuggingAdapterProtocol, debuggingAdapterProtocol } from './protocol.js';
 
 interface DebuggingAdapterServiceConsumerEvents {
   'new-producer': (producerId: string) => void;

@@ -15,8 +15,8 @@ import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 
-import { testingProtocol } from './protocol';
-import { Test, TestWithId, functionDescriptionSchema, testSchema } from './types';
+import { testingProtocol } from './protocol.js';
+import { Test, TestWithId, functionDescriptionSchema, testSchema } from './types.js';
 
 const testingServiceConsumerConfigurationSchema = z.object({
   serviceType: z.string(),

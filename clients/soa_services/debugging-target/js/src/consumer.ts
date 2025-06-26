@@ -11,7 +11,7 @@ import {
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 
-import { DebuggingTargetProtocol, debuggingTargetProtocol } from './protocol';
+import { DebuggingTargetProtocol, debuggingTargetProtocol } from './protocol.js';
 
 interface DebuggingTargetServiceConsumerEvents {
   'debugging:message': (message: unknown) => void;

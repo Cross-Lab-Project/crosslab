@@ -2,7 +2,7 @@ import { MessagingProtocol } from '@cross-lab-project/abstract-messaging-channel
 import { DirectorySchema } from '@cross-lab-project/filesystem-schemas';
 import { z } from 'zod';
 
-import { DebugAdapterProtocolSchemas } from './dap-zod-schemas';
+import { DebugAdapterProtocolSchemas } from './dap-zod-schemas.js';
 
 type DebuggingAdapterProtocolMessageType =
   | 'message:dap'

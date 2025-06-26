@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   LanguageServerMessagingProtocol,
   languageServerMessagingProtocol,
-} from './protocol';
+} from './protocol.js';
 
 export interface LanguageServerConsumerEvents {
   'new-producer': (producerId: string) => void;

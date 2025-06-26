@@ -1,7 +1,7 @@
 // declare schemas and types for files without a name
 import { z } from 'zod';
 
-import { Directory, DirectoryWithoutName, File, FileWithoutName } from './normal';
+import { Directory, DirectoryWithoutName, File, FileWithoutName } from './normal.js';
 
 export const CollaborationFileWithoutNameSchema = z.object({
   type: z.literal('file'),

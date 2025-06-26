@@ -1,5 +1,5 @@
-export * from './consumer';
-export { DebugAdapterProtocol } from './dap-types';
-export { isDebugAdapterProtocolType } from './dap-zod-schemas';
-export * from './producer';
-export * from './protocol';
+export * from './consumer.js';
+export { DebugAdapterProtocol } from './dap-types.js';
+export { isDebugAdapterProtocolType } from './dap-zod-schemas.js';
+export * from './producer.js';
+export * from './protocol.js';

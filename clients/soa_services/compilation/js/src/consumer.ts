@@ -22,7 +22,7 @@ import {
   ResultFormat,
   UniqueResultFormatArray,
   buildCompilationProtocol,
-} from './protocol';
+} from './protocol.js';
 
 interface CompilationService__ConsumerEvents {
   'new-producer': (producerId: string) => void;

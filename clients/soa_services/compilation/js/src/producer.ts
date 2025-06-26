@@ -19,7 +19,7 @@ import {
   ResultFormat,
   UniqueResultFormatArray,
   buildCompilationProtocol,
-} from './protocol';
+} from './protocol.js';
 
 interface CompilationService__ProducerEvents<R extends ResultFormat[] = []> {
   'new-client': (clientId: string) => void;

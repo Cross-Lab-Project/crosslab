@@ -7,7 +7,7 @@ import {
 } from '@cross-lab-project/abstract-messaging-channel';
 import { DataChannel } from '@cross-lab-project/soa-client';
 
-import { replacer, reviver } from './util';
+import { replacer, reviver } from './util.js';
 
 export class CrossLabMessagingChannel<
   MP extends MessagingProtocol | undefined = undefined,

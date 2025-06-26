@@ -11,7 +11,7 @@ import {
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 
-import { ProgrammingProtocol, programmingProtocol } from './protocol';
+import { ProgrammingProtocol, programmingProtocol } from './protocol.js';
 
 interface ProgrammingServiceProducerEvents {
   'new-consumer': (consumerId: string) => void;

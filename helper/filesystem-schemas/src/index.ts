@@ -1,2 +1,2 @@
-export * from './collaboration';
-export * from './normal';
+export * from './collaboration.js';
+export * from './normal.js';

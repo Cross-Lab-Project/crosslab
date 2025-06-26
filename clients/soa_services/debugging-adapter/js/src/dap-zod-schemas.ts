@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { DebugAdapterProtocol } from './dap-types';
+import { DebugAdapterProtocol } from './dap-types.js';
 
 const protocolMessageSchema = z.object({
   seq: z.number(),

@@ -9,7 +9,7 @@ import {
 } from '@cross-lab-project/soa-client';
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-import { DebuggingTargetProtocol, debuggingTargetProtocol } from './protocol';
+import { DebuggingTargetProtocol, debuggingTargetProtocol } from './protocol.js';
 
 interface DebuggingTargetServiceProducerEvents {
   'debugging:start': (requestId: string, program: Uint8Array) => void;

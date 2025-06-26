@@ -1,6 +1,6 @@
 import { TypedEmitter } from 'tiny-typed-emitter';
 
-import { IncomingMessage, MessagingProtocol, OutgoingMessage, Role } from './types';
+import { IncomingMessage, MessagingProtocol, OutgoingMessage, Role } from './types.js';
 
 interface MessagingChannelEvents<
   MP extends MessagingProtocol | undefined = undefined,

@@ -15,8 +15,8 @@ import { JSONSchema } from 'json-schema-to-ts';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
 
-import { testingProtocol } from './protocol';
-import { Arguments, FunctionDescription, SimpleFromSchema } from './types';
+import { testingProtocol } from './protocol.js';
+import { Arguments, FunctionDescription, SimpleFromSchema } from './types.js';
 
 interface TestingServiceProducerEvents {
   'new-consumer': (consumerId: string) => void;

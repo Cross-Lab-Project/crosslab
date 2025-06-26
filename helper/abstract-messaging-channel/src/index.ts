@@ -1,2 +1,2 @@
-export * from './abstractMessagingChannel';
-export * from './types';
+export * from './abstractMessagingChannel.js';
+export * from './types.js';
