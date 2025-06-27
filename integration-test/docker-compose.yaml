@@ -33,7 +33,6 @@ services:
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?}
     healthcheck:
       test: ['CMD', 'healthcheck.sh', '--su=mysql', '--connect', '--innodb_initialized']
-      interval: 3s
     restart: on-failure
   gateway:
     image: ${GATEWAY_IMAGE:?}
