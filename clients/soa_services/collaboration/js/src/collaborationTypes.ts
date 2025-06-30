@@ -53,7 +53,6 @@ export class AwarenessProvider
   }
 
   setLocalState(state: Record<string, unknown>): void {
-    console.log('collaboration: setting local state', state);
     const previousState = this._states.get(this._id);
     this._states.set(this._id, state);
 
@@ -89,14 +88,6 @@ export class AwarenessProvider
       }
     }
 
-    console.log(
-      'collaboration: updated local state',
-      added,
-      filteredUpdated,
-      updated,
-      removed,
-    );
-
     if (added.length > 0 || filteredUpdated.length > 0 || removed.length > 0) {
       this.emit('change', { added, updated: filteredUpdated, removed }, 'local');
     }
@@ -108,7 +99,6 @@ export class AwarenessProvider
 
   setLocalStateField(field: string, value: unknown): void {
     const state = this.getLocalState();
-    console.log('collaboration: setting local state field', state, field, value);
 
     if (state !== null) {
       this.setLocalState({
@@ -201,14 +191,6 @@ export class AwarenessProvider
       }
     }
 
-    console.log(
-      'collaboration: applied update',
-      added,
-      filteredUpdated,
-      updated,
-      removed,
-    );
-
     if (added.length > 0 || filteredUpdated.length > 0 || removed.length > 0) {
       this.emit(
         'change',
@@ -260,7 +242,6 @@ export abstract class CollaborationProvider extends TypedEmitter<CollaborationPr
   private _initialize(initialValue: Record<string, unknown>) {
     for (const [key, value] of Object.entries(initialValue)) {
       this._knownProperties.add(key);
-      console.log('collaboration: current entry', key, value);
       if (
         typeof value === 'undefined' ||
         typeof value === 'function' ||
@@ -275,7 +256,6 @@ export abstract class CollaborationProvider extends TypedEmitter<CollaborationPr
         const array = this.get(key, 'array');
         const items = value.map(item => this.valueToCollaborationType(item));
         array.push(...items);
-        console.log('collaboration: initialized as array', key, value, array.toJSON());
         continue;
       }
 
@@ -286,10 +266,8 @@ export abstract class CollaborationProvider extends TypedEmitter<CollaborationPr
         }
         const object = this.get(key, 'object');
         for (const [key, val] of Object.entries(value)) {
-          console.log('collaboration: current entry', key, val);
           object.set(key, this.valueToCollaborationType(val));
         }
-        console.log('collaboration: initialized as object', key, value, object.toJSON());
         continue;
       }
 
@@ -297,34 +275,16 @@ export abstract class CollaborationProvider extends TypedEmitter<CollaborationPr
         case 'number': {
           const number = this.get(key, 'number');
           number.set(value);
-          console.log(
-            'collaboration: initialized as number',
-            key,
-            value,
-            number.toJSON(),
-          );
           continue;
         }
         case 'string': {
           const string = this.get(key, 'string');
           string.set(value);
-          console.log(
-            'collaboration: initialized as string',
-            key,
-            value,
-            string.toJSON(),
-          );
           continue;
         }
         case 'boolean': {
           const boolean = this.get(key, 'boolean');
           boolean.set(value);
-          console.log(
-            'collaboration: initialized as boolean',
-            key,
-            value,
-            boolean.toJSON(),
-          );
           continue;
         }
       }

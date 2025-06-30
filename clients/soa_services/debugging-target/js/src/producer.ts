@@ -51,7 +51,6 @@ export class DebuggingTargetServiceProducer
     this._messagingChannel.on('message', message => {
       switch (message.type) {
         case 'debugging:start:request':
-          console.log('Emitting debugging:start');
           this.emit(
             'debugging:start',
             message.content.requestId,

@@ -102,7 +102,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
     this.ws.onmessage = event => {
       const message = JSON.parse(event.data as string);
-      console.log('soa-client: received message', message);
 
       if (isCommandMessage(message)) {
         if (isCreatePeerConnectionMessage(message)) {
@@ -117,8 +116,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
       } else if (isExperimentStatusChangedMessage(message)) {
         return this.handleExperimentStatusChangedMessage(message);
       }
-
-      console.log('soa-client: received unknown message', message);
     };
   }
 

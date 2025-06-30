@@ -110,15 +110,11 @@ export class FileService__Consumer
   private dataRead: number = 0;
   private dataBuffer: Uint8Array | undefined;
   handleData(data: string | Blob | ArrayBuffer | ArrayBufferView) {
-    console.log('file service: received data');
     if (typeof data === 'string') {
-      console.log('file service: received string');
       this.header = JSON.parse(data);
       this.dataRead = 0;
       this.dataBuffer = new Uint8Array(this.header.length);
-      console.log(this.dataRead, '/', this.header.length, data);
     } else if (typeof data === 'object' && data instanceof ArrayBuffer) {
-      console.log('file service: received arraybuffer');
       const chunk = new Uint8Array(data);
       if (this.dataBuffer === undefined) {
         return; //ignore
@@ -129,7 +125,6 @@ export class FileService__Consumer
       }
       this.dataBuffer.set(chunk, this.dataRead);
       this.dataRead += chunk.length;
-      console.log(this.dataRead, '/', this.header.length);
       if (this.dataRead === this.header.length) {
         this.emit('file', { file_type: this.header.fileType, file: this.dataBuffer });
         this.dataBuffer = undefined;

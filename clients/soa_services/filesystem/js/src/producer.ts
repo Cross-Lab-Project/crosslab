@@ -51,7 +51,6 @@ export class FileSystemServiceProducer
 
   setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
     // TODO: add checkConfig function
-    console.log('setting up filesystem service producer!');
     const consumerId = uuidv4();
     const channel = new DataChannel();
     const messagingChannel = new CrossLabMessagingChannel(
@@ -59,9 +58,7 @@ export class FileSystemServiceProducer
       fileSystemProtocol,
       'producer',
     );
-    console.log(messagingChannel);
     messagingChannel.on('message', message => {
-      console.log('emitting request', message);
       this.emit('request', consumerId, message);
     });
     if (connection.tiebreaker) {

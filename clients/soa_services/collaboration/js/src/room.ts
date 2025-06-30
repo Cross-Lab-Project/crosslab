@@ -31,7 +31,6 @@ export class Room extends TypedEmitter<RoomEvents> {
     _collaborationProvider: 'yjs',
     initialValue: Record<string, unknown> = {},
   ) {
-    console.log('collaboration: creating room', initialValue);
     super();
     this._name = name;
     this._awarenessProvider = new AwarenessProvider(id);
@@ -110,12 +109,7 @@ export class Room extends TypedEmitter<RoomEvents> {
         if (message.content.room !== this._name) {
           return;
         }
-
-        console.log('collaboration: handling awareness update message', message);
-
         this._awarenessProvider.applyUpdate(message.content.states, participantId);
-
-        console.log('collaboration: successfully handled awareness update message');
         return;
       }
 
@@ -160,7 +154,6 @@ export class Room extends TypedEmitter<RoomEvents> {
   }
 
   get: CollaborationProvider['get'] = (key, type) => {
-    console.log('collaboration: getting room value', key, type);
     return this._collaborationProvider.get(key, type);
   };
 }

@@ -74,17 +74,11 @@ export function isIncomingMessage<
   if (!protocol.messageTypes.includes(message.type)) return false;
   if (!role) {
     const result = protocol.messages[message.type].safeParse(message.content);
-    if (!result.success) {
-      console.log(JSON.stringify(result, null, 4));
-    }
     return result.success;
   }
   if (!protocol.roleMessages[role].incoming.includes(message.type)) return false;
 
   const result = protocol.messages[message.type].safeParse(message.content);
-  if (!result.success) {
-    console.log(JSON.stringify(result, null, 4));
-  }
   return result.success;
 }
 
@@ -97,17 +91,11 @@ export function isOutgoingMessage<
   if (!protocol.messageTypes.includes(message.type)) return false;
   if (!role) {
     const result = protocol.messages[message.type].safeParse(message.content);
-    if (!result.success) {
-      console.log(JSON.stringify(result, null, 4));
-    }
     return result.success;
   }
   if (!protocol.roleMessages[role].outgoing.includes(message.type)) return false;
 
   const result = protocol.messages[message.type].safeParse(message.content);
-  if (!result.success) {
-    console.log(JSON.stringify(result, null, 4));
-  }
   return result.success;
 }
 
@@ -120,8 +108,5 @@ export function isProtocolMessage<
   if (!protocol.messageTypes.includes(message.type)) return false;
 
   const result = protocol.messages[message.type].safeParse(message.content);
-  if (!result.success) {
-    console.log(JSON.stringify(result, null, 4));
-  }
   return result.success;
 }

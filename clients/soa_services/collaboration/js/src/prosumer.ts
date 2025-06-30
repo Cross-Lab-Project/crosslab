@@ -59,7 +59,6 @@ export class CollaborationServiceProsumer
     super();
     this.serviceId = serviceId;
     this._id = uuidv4();
-    console.log('collaboration: created prosumer with id', this.id);
   }
 
   get id() {
@@ -121,7 +120,6 @@ export class CollaborationServiceProsumer
     key: string,
     type: T,
   ) {
-    console.log('collaboration: getting collaboration value', roomName, key, type);
     const room = this._rooms.get(roomName);
     if (!room) {
       throw new Error(`Room with name "${roomName}" could not be found!`);
@@ -143,7 +141,6 @@ export class CollaborationServiceProsumer
     serviceConfiguration: ServiceConfiguration,
   ): void {
     // TODO: add checkConfig function
-    console.log('collaboration: trying to set up connection');
     const channel = new DataChannel();
     const messagingChannel = new CrossLabMessagingChannel(
       channel,
@@ -159,7 +156,6 @@ export class CollaborationServiceProsumer
       this._receiveInitializationRequest(messagingChannel);
 
     messagingChannel.once('ready', async () => {
-      console.log('collaboration: sending initialization message!');
       await messagingChannel.send({
         type: 'collaboration:initialization:request',
         content: {
@@ -217,7 +213,6 @@ export class CollaborationServiceProsumer
     } else {
       connection.receive(serviceConfiguration, 'data', channel);
     }
-    console.log('collaboration: successfully set up connection');
   }
 
   private _receiveInitializationRequest(
@@ -225,13 +220,11 @@ export class CollaborationServiceProsumer
   ): Promise<[string, Promise<void>]> {
     return new Promise<[string, Promise<void>]>((resolve, reject) => {
       messagingChannel.once('message', message => {
-        console.log('collaboration: received first message!');
         if (message.type !== 'collaboration:initialization:request') {
           return reject(
             `Expected first message to be of type "collaboration:initialization:request", instead received "${message.type}"!`,
           );
         }
-        console.log('collaboration: received initialization request!');
         this._prosumers.set(message.content.id, messagingChannel);
         resolve([
           message.content.id,
@@ -246,13 +239,11 @@ export class CollaborationServiceProsumer
   ) {
     return new Promise<void>((resolve, reject) => {
       messagingChannel.once('message', message => {
-        console.log('collaboration: received second message!');
         if (message.type !== 'collaboration:initialization:response') {
           return reject(
             `Expected second message to be of type "collaboration:initialization:response", instead received "${message.type}"!`,
           );
         }
-        console.log('collaboration: received initialization response!');
         resolve();
       });
     });

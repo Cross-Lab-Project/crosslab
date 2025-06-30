@@ -124,8 +124,6 @@ export class TestingServiceProducer
       argumentSchemas,
       returnValueSchema,
       validateArgs: args => {
-        console.log(args);
-
         const ajv = new Ajv();
 
         if (!Array.isArray(args)) {
@@ -134,7 +132,6 @@ export class TestingServiceProducer
 
         for (const [index, argumentSchema] of argumentSchemas.entries()) {
           if (!ajv.validate(argumentSchema, args[index])) {
-            console.log(index, argumentSchema, args[index]);
             return false;
           }
         }

@@ -74,7 +74,6 @@ export class TestingServiceConsumer
     );
 
     if (!this._checkServiceConfiguration(serviceConfig)) {
-      console.log(serviceConfig);
       throw new Error(
         `The service configuration is not valid for a testing service consumer!`,
       );
@@ -253,8 +252,6 @@ export class TestingServiceConsumer
   ): serviceConfiguration is TestingServiceConsumerConfiguration {
     const result =
       testingServiceConsumerConfigurationSchema.safeParse(serviceConfiguration);
-
-    console.log(result);
 
     return result.success;
   }

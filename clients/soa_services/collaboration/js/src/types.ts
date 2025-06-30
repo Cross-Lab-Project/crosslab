@@ -121,9 +121,7 @@ export function initializeDocument(
       yjsValue = yjsFromValue(value, document.getText(key));
     }
     if (observer) {
-      console.log(`collaboration: registering observer`);
       yjsValue.observeDeep((events, transaction) => {
-        console.log('collaboration: something changed', events);
         observer(events, transaction, key);
       });
     }

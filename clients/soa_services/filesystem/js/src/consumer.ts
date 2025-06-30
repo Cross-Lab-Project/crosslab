@@ -60,7 +60,6 @@ export class FileSystemServiceConsumer
 
   setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
     // TODO: add checkConfig function
-    console.log('setting up filesystem service consumer!');
     const producerId = uuidv4();
     const channel = new DataChannel();
     const messagingChannel = new CrossLabMessagingChannel(
@@ -81,7 +80,6 @@ export class FileSystemServiceConsumer
   private _handleIncomingMessage(
     message: IncomingMessage<FileSystemProtocol, 'consumer'>,
   ) {
-    console.log('received incoming message', message);
     switch (message.type) {
       case 'createDirectory:response':
         this._promiseManager.resolve(message.content.requestId, message);
@@ -230,22 +228,12 @@ export class FileSystemServiceConsumer
     const requestId = uuidv4();
     const promise = this._promiseManager.add(requestId);
 
-    console.log('sending readDirectory request!', {
-      type: 'readDirectory:request',
-      content: { requestId, path },
-    });
-
     await messagingChannel.send({
       type: 'readDirectory:request',
       content: { requestId, path },
     });
 
-    console.log('awaiting response!');
-
     const response = await promise;
-
-    console.log('received response!', response);
-
     this._parseResponse(response, 'readDirectory:response');
 
     return response.content.directory;

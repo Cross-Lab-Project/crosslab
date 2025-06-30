@@ -66,8 +66,6 @@ export class DebuggingAdapterServiceConsumer
     this._producers.set(producerId, messagingChannel);
 
     messagingChannel.on('message', message => {
-      console.log('emitting debug adapter message', message);
-
       if (
         message.type === 'session:start:response' ||
         message.type === 'session:join:response'

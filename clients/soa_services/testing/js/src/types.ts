@@ -10,8 +10,6 @@ export type FunctionDescription = {
 export const functionDescriptionSchema = z.object({
   name: z.string(),
   argumentSchemas: z.custom<JSONSchema[]>(data => {
-    console.log(data);
-
     const ajv = new Ajv();
 
     if (!Array.isArray(data)) {
@@ -22,8 +20,6 @@ export const functionDescriptionSchema = z.object({
   }),
   returnValueSchema: z.optional(
     z.custom<JSONSchema>(data => {
-      console.log(data);
-
       if (data === undefined) return true;
 
       const ajv = new Ajv();

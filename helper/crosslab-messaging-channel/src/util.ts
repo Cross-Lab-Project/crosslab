@@ -1,9 +1,5 @@
 export function replacer(_key: string, value: unknown) {
   if (value instanceof Uint8Array) {
-    console.log(value, {
-      type: 'Uint8Array',
-      data: Array.from(value),
-    });
     return {
       type: 'Uint8Array',
       data: Array.from(value),
@@ -22,7 +18,6 @@ export function reviver(_key: string, value: unknown) {
     const result = Uint8Array.from(
       'data' in value && Array.isArray(value.data) ? value.data : [],
     );
-    console.log(value, result, result instanceof Uint8Array);
     return result;
   }
   return value;

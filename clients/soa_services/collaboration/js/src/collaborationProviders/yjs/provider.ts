@@ -68,7 +68,6 @@ export class YjsCollaborationProvider extends CollaborationProvider {
       }
       const object = new YjsCollaborationObject();
       for (const [key, val] of Object.entries(value)) {
-        console.log('collaboration: current entry', key, val);
         object.set(key, this.valueToCollaborationType(val));
       }
       return object;
@@ -127,12 +126,10 @@ export class YjsCollaborationProvider extends CollaborationProvider {
   }
 
   get<T extends CollaborationTypeName>(key: string, type: T): YjsCollaborationType<T> {
-    console.log('collaboration: getting', type, key);
     switch (type) {
       case 'object': {
         const yMap = this._document.getMap(key);
         if (!this._knownProperties.has(key)) {
-          console.log('collaboration: adding observer for', key);
           this._knownProperties.add(key);
           yMap.observeDeep((events, transaction) =>
             this._handleYjsEvents(key, events, transaction),
@@ -216,20 +213,11 @@ export class YjsCollaborationProvider extends CollaborationProvider {
       'yjs:sync:step1'
     >['content'],
   ): ProtocolMessage<typeof yjsCollaborationProtocol, 'yjs:sync:step2'> {
-    console.log('collaboration: handling sync step 1 message', syncStep1Message);
-
     const decoder = new decoding.Decoder(syncStep1Message.message);
     const encoder = new encoding.Encoder();
 
     // TODO: check if "this" is correct here!
     syncProtocol.readSyncMessage(decoder, encoder, this._document, this);
-
-    console.log('collaboration:', this._document);
-
-    console.log(
-      'collaboration: successfully handled sync step 1 message',
-      syncStep1Message,
-    );
 
     return {
       type: 'yjs:sync:step2',
@@ -245,17 +233,11 @@ export class YjsCollaborationProvider extends CollaborationProvider {
       'yjs:sync:step2'
     >['content'],
   ): ProtocolMessage<typeof yjsCollaborationProtocol, 'yjs:sync:done'> {
-    console.log('collaboration: handling sync step 2 message', syncStep2Message);
-
     const encoder = new encoding.Encoder();
     const decoder = new decoding.Decoder(syncStep2Message.message);
 
     // TODO: check if "this" is correct here!
     syncProtocol.readSyncMessage(decoder, encoder, this._document, this);
-
-    console.log('collaboration:', this._document);
-
-    console.log('collaboration: successfully handled sync step 2 message');
 
     return {
       type: 'yjs:sync:done',
@@ -264,14 +246,11 @@ export class YjsCollaborationProvider extends CollaborationProvider {
   }
 
   private _handleSyncDoneMessage(
-    syncDoneMessage: ProtocolMessage<
+    _syncDoneMessage: ProtocolMessage<
       typeof yjsCollaborationProtocol,
       'yjs:sync:done'
     >['content'],
-  ) {
-    console.log('collaboration: handling sync done message', syncDoneMessage);
-    console.log('collaboration: successfully handled sync done message');
-  }
+  ) {}
 
   private _handleSyncUpdateMessage(
     syncUpdateMessage: ProtocolMessage<
@@ -279,16 +258,8 @@ export class YjsCollaborationProvider extends CollaborationProvider {
       'yjs:sync:update'
     >['content'],
   ) {
-    console.log('collaboration: handling sync update message', syncUpdateMessage);
-
     // TODO: check if "this" is correct here!
     Y.applyUpdate(this._document, syncUpdateMessage.message, this);
-
-    for (const property of this._knownProperties) {
-      console.log('collaboration:', property, this.get(property, 'object').toJSON());
-    }
-
-    console.log('collaboration: successfully handled sync update message');
   }
 
   private _handleYjsEvents(
@@ -297,7 +268,6 @@ export class YjsCollaborationProvider extends CollaborationProvider {
     events: Y.YEvent<any>[],
     transaction: Y.Transaction,
   ) {
-    console.log('collaboration:', property, events, transaction);
     const updatedEvents: CollaborationUpdateEventType[] = [];
     for (const event of events) {
       if (event instanceof Y.YMapEvent) {
