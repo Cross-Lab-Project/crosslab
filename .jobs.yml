@@ -779,6 +779,26 @@ clients/soa_services/programming/js:
     tags:
       -test
       
+clients/soa_services/programming/python:
+  - script: build
+    dependencies:
+      - clients/api/python:build
+      - clients/soa/python:build
+  - script: lint
+    dependencies:
+      - clients/soa_services/programming/python:build
+    tags:
+      - test
+  - script: test
+    dependencies:
+      - clients/api/python:test
+      - clients/soa/python:test
+      - clients/soa_services/programming/python:build
+      - clients/soa_services/programming/python:lint
+      - helper/python-test-helper:test
+    tags:
+      - test
+      
 clients/soa_services/testing/js:
   - script: build
     dependencies:
@@ -791,7 +811,6 @@ clients/soa_services/testing/js:
       - clients/soa_services/testing/js:build
     tags:
       -test
-      
 
 ################################################################################
 # Integration Tests ############################################################

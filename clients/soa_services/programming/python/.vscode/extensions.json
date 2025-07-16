@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "ms-python.black-formatter",
+        "ms-python.isort",
+        "ms-python.vscode-pylance",
+        "ryanluker.vscode-coverage-gutters",
+        "eamodio.gitlens",
+        "fabiospampinato.vscode-highlight",
+        "ronnidc.nunjucks"
+    ]
+}
