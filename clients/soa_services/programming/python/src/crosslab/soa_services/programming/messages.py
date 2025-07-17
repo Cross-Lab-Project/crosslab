@@ -1,4 +1,4 @@
-from typing import ByteString, Dict, Literal, Optional, TypedDict, Union
+from typing import Dict, Literal, Optional, TypedDict, Union
 
 
 class ProgrammingServiceConfig(TypedDict):
@@ -7,13 +7,13 @@ class ProgrammingServiceConfig(TypedDict):
 
 class FileWithoutName(TypedDict):
     type: Literal["file"]
-    content: ByteString
+    content: bytes | bytearray
 
 
 class File(TypedDict):
     type: Literal["file"]
     name: str
-    content: ByteString
+    content: bytes | bytearray
 
 
 class DirectoryWithoutName(TypedDict):
@@ -46,3 +46,8 @@ class ProgramResponseMessageContent(TypedDict):
 class ProgramResponseMessage(TypedDict):
     type: Literal["program:response"]
     content: ProgramResponseMessageContent
+
+
+class ProgramRequestEvent(TypedDict):
+    requestId: str
+    program: Union[File, Directory]

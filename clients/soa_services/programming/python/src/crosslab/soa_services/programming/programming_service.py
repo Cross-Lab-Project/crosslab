@@ -1,6 +1,6 @@
 import json
 import uuid
-from typing import Union
+from typing import Any, Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
@@ -8,11 +8,22 @@ from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_services.programming.messages import (
     ProgrammingServiceConfig,
+    ProgramRequestEvent,
     ProgramRequestMessageContent,
     ProgramResponseMessage,
     ProgramResponseMessageContent,
 )
 from crosslab.soa_services.programming.promise_manager import PromiseManager
+
+
+def check_for_uint8arrray(dictionary: dict[Any, Any]):
+    if dictionary["type"] == "Uint8Array":
+        return bytes(dictionary["data"])
+
+
+def replace_bytes(value):
+    if isinstance(value, bytes) or isinstance(value, bytearray):
+        return {"type": "Uint8Array", "data": list(value)}
 
 
 class ProgrammingService__Producer(Service, AsyncIOEventEmitter):
@@ -48,12 +59,16 @@ class ProgrammingService__Producer(Service, AsyncIOEventEmitter):
 
     def handleData(self, data: Union[str, bytes]):
         if isinstance(data, str):
-            message = json.loads(data)
-            content: ProgramRequestMessageContent = message["content"]
-            self.emit("program:request", content)
+            message = json.loads(data, object_hook=check_for_uint8arrray)
+            event: ProgramRequestEvent = message["content"]
+            self.emit("program:request", event)
 
     def sendResponse(self, response: ProgramResponseMessageContent):
-        self.channel.send(json.dumps({"type": "program:response", "content": response}))
+        self.channel.send(
+            json.dumps(
+                {"type": "program:response", "content": response}, default=replace_bytes
+            )
+        )
 
 
 class ProgrammingService__Consumer(Service):
@@ -77,6 +92,8 @@ class ProgrammingService__Consumer(Service):
         self, connection: Connection, serviceConfig: ProgrammingServiceConfig
     ):
         self.channel = DataChannel()
+        self.channel.on("data", lambda data: self.handleData(data))
+
         if connection.tiebreaker:
             connection.transmit(serviceConfig, "data", self.channel)
         else:
@@ -87,14 +104,18 @@ class ProgrammingService__Consumer(Service):
 
     def handleData(self, data: Union[str, bytes]):
         if isinstance(data, str):
-            message = json.loads(data)
+            message = json.loads(data, object_hook=check_for_uint8arrray)
             self.promise_manager.resolve(message["content"]["requestId"], message)
 
     async def program(self, request: ProgramRequestMessageContent):
         request_id = str(uuid.uuid4())
         response_promise = self.promise_manager.add(request_id)
 
-        self.channel.send(json.dumps({"type": "program:request", "content": request}))
+        self.channel.send(
+            json.dumps(
+                {"type": "program:request", "content": request}, default=replace_bytes
+            )
+        )
 
         response: ProgramResponseMessage = await response_promise
 
