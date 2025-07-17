@@ -44,6 +44,16 @@ export class InvalidBookingError extends ErrorWithStatus {
 }
 
 /**
+ * This error class should be used if something goes wrong while booking an experiment.
+ */
+export class BookingError extends ErrorWithStatus {
+  constructor(message: string, status?: number) {
+    super(message, status);
+    this.name = 'BookingError';
+  }
+}
+
+/**
  * This error class should be used if an experiment does not meet the
  * requirements of its current status.
  */

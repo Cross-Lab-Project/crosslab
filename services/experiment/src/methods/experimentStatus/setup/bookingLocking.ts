@@ -3,7 +3,11 @@ import { MissingEntityError, logger } from '@crosslab/service-common';
 import { clients } from '../../../clients/index.js';
 import { repositories } from '../../../database/dataSource.js';
 import { ExperimentModel } from '../../../database/model.js';
-import { InvalidStateError, MalformedExperimentError } from '../../../types/errors.js';
+import {
+  BookingError,
+  InvalidStateError,
+  MalformedExperimentError,
+} from '../../../types/errors.js';
 import { validateExperimentStatus } from '../../../types/typeguards.js';
 import { ResolvedDevice } from '../../../types/types.js';
 import { experimentUrlFromId } from '../../url.js';
@@ -29,8 +33,11 @@ export async function lockBookingExperiment(
       500,
     );
 
-  // TODO: error handling
-  const lockedDevices = await clients.booking.lockBooking(experimentModel.bookingID);
+  const lockedDevices = await clients.booking
+    .lockBooking(experimentModel.bookingID)
+    .catch(() => {
+      throw new BookingError('Could not lock the booking!');
+    });
 
   for (const [index, resolvedDevice] of resolvedDevices.entries()) {
     if (resolvedDevice.type !== 'group') continue;

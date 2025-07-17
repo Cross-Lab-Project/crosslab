@@ -6,6 +6,7 @@ import { repositories } from '../../database/dataSource.js';
 import { ExperimentModel } from '../../database/model.js';
 import { callbackHandler } from '../../operations/callbacks/callbackHandler.js';
 import { callbackUrl } from '../../operations/callbacks/index.js';
+import { BookingError } from '../../types/errors.js';
 import { experimentUrlFromId } from '../url.js';
 
 /**
@@ -39,28 +40,30 @@ export async function bookExperiment(experimentModel: ExperimentModel) {
     experimentModel.bookingEnd ?? startTime.getTime() + 60 * 60 * 1000,
   );
 
-  // TODO: error handling
-  const booking = await clients.booking.createBooking(
-    {
-      devices: Object.fromEntries(
-        experimentModel.devices.map(deviceModel => {
-          return [deviceModel.uuid, { url: deviceModel.url, essential: true }];
-        }),
-      ),
-      timeslot: {
-        start: startTime.toISOString(),
-        end: endTime.toISOString(),
+  try {
+    const booking = await clients.booking.createBooking(
+      {
+        devices: Object.fromEntries(
+          experimentModel.devices.map(deviceModel => {
+            return [deviceModel.uuid, { url: deviceModel.url, essential: true }];
+          }),
+        ),
+        timeslot: {
+          start: startTime.toISOString(),
+          end: endTime.toISOString(),
+        },
       },
-    },
-    { changedUrl: callbackUrl },
-  );
-  console.log('BOOKING DATA:', startTime, endTime, JSON.stringify(booking));
+      { changedUrl: callbackUrl },
+    );
 
-  callbackHandler.addListener('booking', booking.url, experimentModel.uuid);
+    callbackHandler.addListener('booking', booking.url, experimentModel.uuid);
 
-  experimentModel.bookingStart = startTime.toISOString();
-  experimentModel.bookingEnd = endTime.toISOString();
-  experimentModel.bookingID = booking.url;
+    experimentModel.bookingStart = startTime.toISOString();
+    experimentModel.bookingEnd = endTime.toISOString();
+    experimentModel.bookingID = booking.url;
+  } catch {
+    throw new BookingError(`Could not book the experiment!`, 400);
+  }
 
   experimentModel.status = 'booked';
   await repositories.experiment.save(experimentModel);
