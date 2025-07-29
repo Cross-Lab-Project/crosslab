@@ -15,42 +15,39 @@ import {
 } from '@cross-lab-project/soa-client';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
+import z from 'zod';
 
-import {
-  CompilationProtocol,
-  IdArray,
-  ResultFormat,
-  UniqueResultFormatArray,
-  buildCompilationProtocol,
-} from './protocol.js';
+import { CompilationProtocol, buildCompilationProtocol } from './protocol.js';
 
 interface CompilationService__ConsumerEvents {
   'new-producer': (producerId: string) => void;
 }
 
-export class CompilationService__Consumer<R extends ResultFormat[]>
+export class CompilationService__Consumer
   extends TypedEmitter<CompilationService__ConsumerEvents>
   implements Service
 {
+  private _ServiceConfigurationSchema = z.object({
+    serviceType: z.string(),
+    serviceId: z.string(),
+    remoteServiceId: z.string(),
+  });
   private _promiseManager: PromiseManager = new PromiseManager();
-  private _compilationProtocol: CompilationProtocol<UniqueResultFormatArray<R>>;
+  private _compilationProtocol: CompilationProtocol;
   private _producers: Map<
     string,
     {
-      messagingChannel: CrossLabMessagingChannel<
-        CompilationProtocol<UniqueResultFormatArray<R>>,
-        'client'
-      >;
+      messagingChannel: CrossLabMessagingChannel<CompilationProtocol, 'client'>;
     }
   > = new Map();
   serviceType: string = 'https://api.goldi-labs.de/serviceTypes/compilation';
   serviceId: string;
   serviceDirection: ServiceDirection = 'consumer';
 
-  constructor(serviceId: string, resultFormatsDescription?: UniqueResultFormatArray<R>) {
+  constructor(serviceId: string) {
     super();
     this.serviceId = serviceId;
-    this._compilationProtocol = buildCompilationProtocol(resultFormatsDescription);
+    this._compilationProtocol = buildCompilationProtocol();
   }
 
   getMeta() {
@@ -63,7 +60,14 @@ export class CompilationService__Consumer<R extends ResultFormat[]>
   }
 
   setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
-    // TODO: add checkConfig function
+    const parsedServiceConfig = this._ServiceConfigurationSchema.safeParse(serviceConfig);
+    if (!parsedServiceConfig.success) {
+      console.error(
+        'Service Configuration is invalid for Compilation Service Consumer!',
+        parsedServiceConfig.error,
+      );
+    }
+
     const producerId = uuidv4();
     const channel = new DataChannel();
     const messagingChannel = new CrossLabMessagingChannel(
@@ -85,7 +89,7 @@ export class CompilationService__Consumer<R extends ResultFormat[]>
 
   private _handleMessage(
     producerId: string,
-    message: IncomingMessage<CompilationProtocol<UniqueResultFormatArray<R>>, 'client'>,
+    message: IncomingMessage<CompilationProtocol, 'client'>,
   ) {
     if (!this._producers.has(producerId)) {
       throw new Error(`Could not find producer with id "${producerId}"`);
@@ -103,13 +107,8 @@ export class CompilationService__Consumer<R extends ResultFormat[]>
   async compile(
     producerId: string,
     directory: Directory,
-    format?: IdArray<R>[number],
-  ): Promise<
-    ProtocolMessage<
-      CompilationProtocol<UniqueResultFormatArray<R>>,
-      'compilation:response'
-    >['content']
-  > {
+    format?: string,
+  ): Promise<ProtocolMessage<CompilationProtocol, 'compilation:response'>['content']> {
     const producer = this._producers.get(producerId);
 
     if (!producer) {

@@ -13,9 +13,11 @@ import {
 } from '@cross-lab-project/soa-client';
 import { TypedEmitter } from 'tiny-typed-emitter';
 import { v4 as uuidv4 } from 'uuid';
+import z from 'zod';
 
 import {
   CompilationProtocol,
+  IdArray,
   ResultFormat,
   UniqueResultFormatArray,
   buildCompilationProtocol,
@@ -33,6 +35,8 @@ export class CompilationService__Producer<R extends ResultFormat[]>
   extends TypedEmitter<CompilationService__ProducerEvents<UniqueResultFormatArray<R>>>
   implements Service
 {
+  private _format?: IdArray<R>[number];
+  private _ServiceConfigurationSchema;
   private _compilationProtocol: CompilationProtocol<UniqueResultFormatArray<R>>;
   private _clients: Map<
     string,
@@ -51,6 +55,24 @@ export class CompilationService__Producer<R extends ResultFormat[]>
     super();
     this.serviceId = serviceId;
     this._compilationProtocol = buildCompilationProtocol(resultFormatsDescription);
+    this._ServiceConfigurationSchema = z.object({
+      serviceType: z.string(),
+      serviceId: z.string(),
+      remoteServiceId: z.string(),
+      format: z.optional(
+        resultFormatsDescription && resultFormatsDescription.length > 0
+          ? resultFormatsDescription.length >= 2
+            ? z.union([
+                z.literal(resultFormatsDescription[0].id),
+                z.literal(resultFormatsDescription[1].id),
+                ...(resultFormatsDescription
+                  .slice(2)
+                  .map(resultFormat => z.literal(resultFormat.id)) ?? []),
+              ])
+            : z.literal(resultFormatsDescription[0].id)
+          : z.string(),
+      ),
+    });
   }
 
   getMeta() {
@@ -63,7 +85,17 @@ export class CompilationService__Producer<R extends ResultFormat[]>
   }
 
   setupConnection(connection: PeerConnection, serviceConfig: ServiceConfiguration): void {
-    // TODO: add checkConfig function
+    const parsedServiceConfig = this._ServiceConfigurationSchema.safeParse(serviceConfig);
+
+    if (parsedServiceConfig.success) {
+      this._format = parsedServiceConfig.data.format;
+    } else {
+      console.error(
+        'Service Configuration is invalid for Compilation Service Consumer!',
+        parsedServiceConfig.error,
+      );
+    }
+
     const clientId = uuidv4();
     const channel = new DataChannel();
     const messagingChannel = new CrossLabMessagingChannel(
@@ -106,7 +138,10 @@ export class CompilationService__Producer<R extends ResultFormat[]>
 
     switch (message.type) {
       case 'compilation:request':
-        this.emit('compilation:request', clientId, message.content);
+        this.emit('compilation:request', clientId, {
+          ...message.content,
+          format: message.content.format ?? this._format,
+        });
         break;
       default:
         throw new Error(`Unrecognized message type "${message.type}"!`);

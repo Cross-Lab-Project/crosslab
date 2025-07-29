@@ -75,7 +75,7 @@ export type IdArray<A extends readonly { id: string }[]> = A extends [
   ...infer Tail extends readonly { id: string }[],
 ]
   ? [Head['id'], ...IdArray<Tail>]
-  : [];
+  : [string];
 
 export type ResultFormat = {
   id: string;
