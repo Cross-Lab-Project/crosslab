@@ -65,17 +65,21 @@ export type UniqueResultFormatArray<R extends readonly ResultFormat[]> =
     infer Head extends ResultFormat,
     ...infer Tail extends ResultFormat[],
   ]
-    ? Head['id'] extends IdArray<Tail>[number]
+    ? Head['id'] extends _IdArray<Tail>[number]
       ? never
       : [Head, ...UniqueResultFormatArray<Tail>]
     : R;
 
-export type IdArray<A extends readonly { id: string }[]> = A extends [
+type _IdArray<A extends readonly { id: string }[]> = A extends [
   infer Head extends { id: string },
   ...infer Tail extends readonly { id: string }[],
 ]
-  ? [Head['id'], ...IdArray<Tail>]
-  : [string];
+  ? [Head['id'], ..._IdArray<Tail>]
+  : [];
+
+export type IdArray<A extends readonly { id: string }[]> = A extends []
+  ? [string]
+  : _IdArray<A>;
 
 export type ResultFormat = {
   id: string;
