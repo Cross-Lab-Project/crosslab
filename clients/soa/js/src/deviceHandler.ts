@@ -218,7 +218,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   }
 
   private async handleClosePeerConnectionMessage(message: ClosePeerConnectionMessage) {
-    await this.isReady;
     const connection = this.connections.get(message.connectionUrl);
     if (!connection) {
       return;
@@ -230,7 +229,6 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
   }
 
   private async handleConfigurationMessage(message: ConfigurationMessage) {
-    await this.isReady;
     this.emit('configuration', message.configuration);
   }
 
