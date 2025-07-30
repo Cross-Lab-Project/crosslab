@@ -62,6 +62,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
           messageType: 'authenticate',
           deviceUrl: connectOptions.id,
           token: connectOptions.token,
+          services: this.getServiceMeta(),
         }),
       );
       crosslabTransport._set_upstream(info =>
@@ -105,16 +106,21 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
 
       if (isCommandMessage(message)) {
         if (isCreatePeerConnectionMessage(message)) {
-          return this.handleCreatePeerConnectionMessage(message);
+          this.handleCreatePeerConnectionMessage(message);
+          return;
         } else if (isClosePeerConnectionMessage(message)) {
-          return this.handleClosePeerConnectionMessage(message);
+          this.handleClosePeerConnectionMessage(message);
+          return;
         }
       } else if (isSignalingMessage(message)) {
-        return this.handleSignalingMessage(message);
+        this.handleSignalingMessage(message);
+        return;
       } else if (isConfigurationMessage(message)) {
-        return this.handleConfigurationMessage(message);
+        this.handleConfigurationMessage(message);
+        return;
       } else if (isExperimentStatusChangedMessage(message)) {
-        return this.handleExperimentStatusChangedMessage(message);
+        this.handleExperimentStatusChangedMessage(message);
+        return;
       }
     };
   }
@@ -202,15 +208,17 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     this.emit('connectionsChanged');
   }
 
-  private handleSignalingMessage(message: SignalingMessage) {
+  private async handleSignalingMessage(message: SignalingMessage) {
+    await this.isReady;
     const connection = this.connections.get(message.connectionUrl);
     if (connection === undefined) {
       throw Error('No Connection for the signaling message was found');
     }
-    connection.handleSignalingMessage(message);
+    await connection.handleSignalingMessage(message);
   }
 
-  private handleClosePeerConnectionMessage(message: ClosePeerConnectionMessage) {
+  private async handleClosePeerConnectionMessage(message: ClosePeerConnectionMessage) {
+    await this.isReady;
     const connection = this.connections.get(message.connectionUrl);
     if (!connection) {
       return;
@@ -221,11 +229,15 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
     this.connections.delete(message.connectionUrl);
   }
 
-  private handleConfigurationMessage(message: ConfigurationMessage) {
+  private async handleConfigurationMessage(message: ConfigurationMessage) {
+    await this.isReady;
     this.emit('configuration', message.configuration);
   }
 
-  private handleExperimentStatusChangedMessage(message: ExperimentStatusChangedMessage) {
+  private async handleExperimentStatusChangedMessage(
+    message: ExperimentStatusChangedMessage,
+  ) {
+    await this.isReady;
     this.emit('experimentStatusChanged', {
       status: message.status,
       message: message.message,
