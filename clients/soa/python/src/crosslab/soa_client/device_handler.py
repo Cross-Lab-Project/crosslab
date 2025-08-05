@@ -8,6 +8,7 @@ from crosslab.api_client import APIClient
 from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_client.connection import Connection
+from crosslab.soa_client.connection_local import LocalConnection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.connection_websocket import WebSocketPeerconnection
 from crosslab.soa_client.logging import handler as loggin_handler
@@ -80,7 +81,7 @@ async def sendLogMessage(ws: aiohttp.ClientWebSocketResponse, info: dict):
 connectionHandlers: Dict[str, Type[Connection]] = {
     "webrtc": WebRTCPeerConnection,
     "websocket": WebSocketPeerconnection,
-    # "local": LocalConnection
+    "local": LocalConnection,
 }
 
 
