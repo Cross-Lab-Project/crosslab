@@ -63,16 +63,10 @@ class ConfigurationMessage(TypedDict):
 
 class ExperimentStatusChangedMessage(TypedDict):
     messageType: Literal["experiment-status-changed"]
-    status: Literal[
-        "created", "booked", "setup", "running", "failed", "finished"
-    ]
+    status: Literal["created", "booked", "setup", "running", "failed", "finished"]
     message: Optional[str]
 
 
 class LoggingMessage(TypedDict):
     messageType: Literal["logging"]
     content: dict
-
-
-class WebSocketConnectionOptions(TypedDict):
-    url: str

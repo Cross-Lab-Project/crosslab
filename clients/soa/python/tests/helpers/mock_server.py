@@ -2,7 +2,6 @@ import asyncio
 import re
 
 import aiohttp.web
-
 from helpers import AsyncException
 
 
@@ -54,8 +53,12 @@ class MockServer:
         self.aiohttp_server = aiohttp_server
         self.app.router.add_route("*", "/{tail:.*}", self._handle)
         self.protocol = []
-        self.asExpected = True
+        self._asExpected = True
         self.async_exception = AsyncException()
+
+    @property
+    def asExpected(self):
+        return self._asExpected and len(self.protocol) == 0
 
     def add(self, method, path, check_body=None, status=200, payload=None):
         self.protocol.append(
@@ -112,7 +115,7 @@ class MockServer:
             else:
                 return aiohttp.web.Response(status=expected["status"])
         except Exception as e:
-            self.asExpected = False
+            self._asExpected = False
             self.async_exception.set(e)
             raise
 

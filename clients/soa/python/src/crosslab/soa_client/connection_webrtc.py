@@ -2,16 +2,25 @@ import json
 import logging
 from asyncio import Future, create_task, sleep
 from enum import Enum
-from typing import Any, Dict, List, Literal, Union, cast
+from typing import Any, Dict, List, Literal, cast
 
-from aiortc import RTCPeerConnection  # type: ignore
-from aiortc import RTCConfiguration, RTCIceCandidate, RTCSessionDescription
-from aiortc.rtcrtpsender import RTCRtpSender  # type: ignore
-from aiortc.sdp import SessionDescription, candidate_from_sdp  # type: ignore
-from crosslab.soa_client.connection import (Channel, Connection, DataChannel,
-                                            MediaChannel)
+from aiortc import (
+    RTCConfiguration,
+    RTCIceCandidate,
+    RTCIceServer,
+    RTCPeerConnection,
+    RTCSessionDescription,
+)
+from aiortc.rtcrtpsender import RTCRtpSender
+from aiortc.sdp import SessionDescription, candidate_from_sdp
+
+from crosslab.soa_client.connection import (
+    Channel,
+    Connection,
+    DataChannel,
+    MediaChannel,
+)
 from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +30,7 @@ class WebRTCRole(Enum):
     Callee = "Callee"
 
 
-class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
+class WebRTCPeerConnection(Connection):
     _receivingChannelMap: Dict[str, Channel]
     _mediaChannelMap: Dict[str, MediaChannel]
     _transeiverMap: Dict[Any, str]
@@ -31,9 +40,20 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
     _trickleIce: bool
     'NOTE: currently not used, since "icecandidate"-event is not implemented in aiortc'
 
-    def __init__(self, config: Union[RTCConfiguration, None] = None):
-        AsyncIOEventEmitter.__init__(self)
-        Connection.__init__(self)
+    def __init__(self, options=None):
+        Connection.__init__(self, options)
+
+        iceServers = []
+        for iceServer in self.options.get("iceServers", []):
+            iceServers.append(
+                RTCIceServer(
+                    urls=iceServer["urls"],
+                    username=iceServer.get("username"),
+                    credential=iceServer.get("credential"),
+                )
+            )
+        config = RTCConfiguration(iceServers)
+
         if config is None:
             config = RTCConfiguration([])
         self.pc = RTCPeerConnection(configuration=config)
@@ -60,8 +80,8 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
                 async def upstreamData(data):
                     datachannel.send(data)
-                    await datachannel._RTCDataChannel__transport._data_channel_flush()  # type: ignore
-                    await datachannel._RTCDataChannel__transport._transmit()  # type: ignore
+                    await datachannel._RTCDataChannel__transport._data_channel_flush()
+                    await datachannel._RTCDataChannel__transport._transmit()
 
                 def message(data):
                     dchannel.downstreamData(data)
@@ -91,11 +111,11 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
 
         create_task(optionsTimeout())
 
-    async def _on_track(self, track):
-        label = track.id
+    async def _on_track(self, event):
+        label = event.track.id
         channel = self._mediaChannelMap.get(label)
         assert channel is not None  # TODO: handle this
-        channel.emit("track", track)
+        channel.emit("track", event.track)
 
     async def close(self):
         await self.pc.close()
@@ -271,8 +291,7 @@ class WebRTCPeerConnection(AsyncIOEventEmitter, Connection):
                 channel.track if channel.track else "video", direction="sendrecv"
             )
             videoPreference = filter(
-                lambda x: x.name == "H264", RTCRtpSender.getCapabilities(
-                    "video").codecs
+                lambda x: x.name == "H264", RTCRtpSender.getCapabilities("video").codecs
             )
             rtpTranseiver.setCodecPreferences(list(videoPreference))
             self._transeiverMap[rtpTranseiver] = label

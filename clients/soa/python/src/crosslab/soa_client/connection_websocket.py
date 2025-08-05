@@ -5,26 +5,18 @@ from typing import Dict, cast
 import aiohttp
 from aiohttp.http_websocket import WSMessage
 from aiohttp.web import WSMsgType
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
 
 from crosslab.soa_client.connection import Channel, Connection, DataChannel
-from crosslab.soa_client.messages import (
-    ServiceConfig,
-    SignalingMessage,
-    WebSocketConnectionOptions,
-)
+from crosslab.soa_client.messages import ServiceConfig, SignalingMessage
 
 
-class WebSocketPeerconnection(AsyncIOEventEmitter, Connection):
-    _connectionOptions: WebSocketConnectionOptions
+class WebSocketPeerconnection(Connection):
     _ws: aiohttp.ClientWebSocketResponse
     _channels: Dict[str, Channel]
     _message_task: asyncio.Task
 
-    def __init__(self, options: WebSocketConnectionOptions):
-        AsyncIOEventEmitter.__init__(self)
-        Connection.__init__(self)
-        self._connectionOptions = options
+    def __init__(self, options):
+        Connection.__init__(self, options)
         self._channels = dict()
 
     def transmit(
@@ -65,7 +57,7 @@ class WebSocketPeerconnection(AsyncIOEventEmitter, Connection):
 
     async def _connect(self):
         async with aiohttp.ClientSession() as self.session:
-            self._ws = await self.session.ws_connect(self._connectionOptions["url"])
+            self._ws = await self.session.ws_connect(self.options["webSocketUrl"])
             for channel in self._channels.values():
                 if channel.channel_type == "DataChannel":
                     dchannel = cast(DataChannel, channel)

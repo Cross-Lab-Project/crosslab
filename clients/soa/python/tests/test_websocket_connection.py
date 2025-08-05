@@ -4,7 +4,6 @@ from aiohttp import web
 from helpers import AsyncException, wait
 from test_helper import NoReferenceLeaks
 
-from crosslab.soa_client.messages import WebSocketConnectionOptions
 from crosslab.soa_client.test_helper.service_stub import ServiceStub
 from src.crosslab.soa_client.connection_websocket import WebSocketPeerconnection
 
@@ -34,7 +33,7 @@ async def server(aiohttp_server):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("tiebreaker", [True, False])
-async def test_webrtc_connection_data_only(
+async def test_websocket_connection_data_only(
     server,
     tiebreaker: bool,
 ):
@@ -50,12 +49,8 @@ async def test_webrtc_connection_data_only(
     localService = ServiceStub("data", dataChannel=True)
     remoteService = ServiceStub("data", dataChannel=True)
 
-    local = WebSocketPeerconnection(
-        options=WebSocketConnectionOptions(url="ws://127.0.0.1:3020/ws")
-    )
-    remote = WebSocketPeerconnection(
-        options=WebSocketConnectionOptions(url="ws://127.0.0.1:3020/ws")
-    )
+    local = WebSocketPeerconnection(options={"webSocketUrl": "ws://127.0.0.1:3020/ws"})
+    remote = WebSocketPeerconnection(options={"webSocketUrl": "ws://127.0.0.1:3020/ws"})
 
     local.on("error", lambda error: asyncException.set(error))
     remote.on("error", lambda error: asyncException.set(error))

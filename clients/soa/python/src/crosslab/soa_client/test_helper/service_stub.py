@@ -1,8 +1,8 @@
 import asyncio
 from typing import List, Literal, Optional
 
-from aiortc import MediaStreamTrack  # type: ignore
-from aiortc.mediastreams import MediaStreamError  # type: ignore
+from aiortc import MediaStreamTrack
+from aiortc.mediastreams import MediaStreamError
 
 from crosslab.soa_client.connection import Connection, DataChannel, MediaChannel
 from crosslab.soa_client.service import Service

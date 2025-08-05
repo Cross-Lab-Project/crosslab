@@ -1,8 +1,8 @@
 import asyncio
 from abc import ABC, abstractmethod
-from typing import Any, Literal, Optional, Union
+from typing import Any, Dict, Literal, Optional, Union
 
-from pyee.asyncio import AsyncIOEventEmitter  # type: ignore
+from pyee.asyncio import AsyncIOEventEmitter
 
 from crosslab.soa_client.messages import SignalingMessage
 
@@ -56,14 +56,21 @@ class DataChannel(Channel, AsyncIOEventEmitter):
         self.remove_all_listeners()
 
 
-class Connection(ABC):
+class Connection(ABC, AsyncIOEventEmitter):
     tiebreaker: bool
     state: Literal["new", "connecting", "connected", "disconnected", "closed", "failed"]
+    options: Dict[str, Any]
 
-    def __init__(self) -> None:
+    def __init__(self, options: Optional[Dict[str, Any]] = None) -> None:
         super().__init__()
+        AsyncIOEventEmitter.__init__(self)
+        self.options = options if options else {}
         self.tiebreaker = False
         self.state = "new"
+
+    @abstractmethod
+    async def connect(self):
+        pass
 
     @abstractmethod
     async def close(self):
