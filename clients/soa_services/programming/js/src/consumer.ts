@@ -72,7 +72,21 @@ export class ProgrammingServiceConsumer
     this.emit('new-producer', producerId);
   }
 
-  async program(producerId: string, program: File | Directory) {
+  async program(
+    producerId: string,
+    program: File | Directory,
+    options?: { awaitResponse?: false },
+  ): Promise<void>;
+  async program(
+    producerId: string,
+    program: File | Directory,
+    options?: { awaitResponse?: true },
+  ): Promise<ProtocolMessage<ProgrammingProtocol, 'program:response'>['content']>;
+  async program(
+    producerId: string,
+    program: File | Directory,
+    options?: { awaitResponse?: boolean },
+  ): Promise<ProtocolMessage<ProgrammingProtocol, 'program:response'>['content'] | void> {
     const producer = this._producers.get(producerId);
 
     if (!producer) {
@@ -86,6 +100,10 @@ export class ProgrammingServiceConsumer
       type: 'program:request',
       content: { requestId, program },
     });
+
+    if (!options?.awaitResponse) {
+      return;
+    }
 
     const response = (await responsePromise) as ProtocolMessage<
       ProgrammingProtocol,
