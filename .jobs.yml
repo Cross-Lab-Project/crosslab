@@ -58,16 +58,6 @@ helper/dummy-device/python:
     tags:
       - test
 
-helper/cli:
-  - script: build
-    dependencies:
-      - clients/api/js:build
-  - script: lint
-    dependencies:
-      - helper/cli:build
-    tags:
-      - test
-
 helper/abstract-messaging-channel:
   - script: build
   - script: lint
@@ -161,7 +151,6 @@ services/authorization:
   - script: build
     dependencies:
       - services/common:build
-      - services/common:lint
   - script: build-docker
     dependencies:
       - services/authorization:build
