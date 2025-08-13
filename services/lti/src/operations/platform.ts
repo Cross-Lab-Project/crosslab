@@ -7,7 +7,7 @@ import {
   patchLtiPlatformByPlatformIdSignature,
   postLtiPlatformSignature,
 } from '../generated/signatures.js';
-import * as uri from './uris.js';
+import * as uri from '../helper/uris.js';
 
 import { Platform as PlatformObject } from '../generated/types.js';
 function platform_to_wire(platform: LTIPlatform): PlatformObject<'response'> {

@@ -41,3 +41,5 @@ paths:
     $ref: 'operations/resource.yml#/paths/resource_by_id_students_by_id'
   /lti/session/{session_id}/experiment:
     $ref: 'operations/session.yml#/paths/session_by_id_experiment'
+  /lti/session/{session_id}/experiment_callback:
+    $ref: 'operations/session.yml#/paths/session_by_id_experiment_callback'

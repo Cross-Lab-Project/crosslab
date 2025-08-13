@@ -1,38 +1,38 @@
-import asyncio
-import random
-import socket
-import subprocess
-from typing import Optional
+import platform
+from typing import Literal, Union
 
-from aiortc import MediaStreamTrack  # type: ignore
+from aiortc import MediaStreamTrack
 
-
-class UDPTrack(MediaStreamTrack):
-    def __init__(self, port: int, kind="video") -> None:
-        super().__init__()
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Internet  # UDP
-        self.sock.bind(("0.0.0.0", port))
-        self.sock.setblocking(False)
-        self.kind = kind
-        self.loop = asyncio.get_event_loop()
-
-    async def raw_recv(self):
-        return await self.loop.sock_recv(self.sock, 2048)
-
-    def recv(self):
-        return
-
-    def stop(self):
-        pass
-        # self.sock.close() // When we close the socket, the next user would not be able to use it: ERR 9
+from ._media import MediaPlayer
 
 
-class GstTrack(UDPTrack):
-    def __init__(self, pipeline, port: Optional[int] = None, kind="video") -> None:
-        if port is None:
-            port = random.randint(10000, 65535)
-        super().__init__(port, kind)
-        subprocess.Popen(
-            f"gst-launch-1.0 {pipeline} ! rtph264pay config-interval=1 mtu=1300 ! udpsink host=127.0.0.1 port={port}",
-            shell=True,
-        )
+def WebcamTrack(
+    webcam: Union[str, None] = None, rotate: Literal["0", "90", "180", "270"] = "0"
+) -> MediaStreamTrack:
+    options = {"framerate": "30", "video_size": "640x480"}
+    if platform.system() == "Darwin":
+        track = MediaPlayer(
+            webcam if webcam else "default:none",
+            format="avfoundation",
+            options=options,
+            rotate=rotate,
+        ).video
+    elif platform.system() == "Windows":
+        track = MediaPlayer(
+            webcam if webcam else "video=Integrated Camera",
+            format="dshow",
+            options=options,
+            rotate=rotate,
+        ).video
+    else:
+        track = MediaPlayer(
+            webcam if webcam else "/dev/video0",
+            format="v4l2",
+            options=options,
+            rotate=rotate,
+        ).video
+    if track:
+        return track
+    raise ValueError(
+        "Could not create webcam track. Please check if the webcam is connected and accessible."
+    )

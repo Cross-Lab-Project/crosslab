@@ -1,17 +1,18 @@
 import os
 
 import pytest
+from aiortc.contrib.media import MediaPlayer
 from helpers import AsyncException, wait
-from test_helper import NoReferenceLeaks
+from test_helper import NoReferenceLeaks, timeout
 
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.messages import SignalingMessage
-from crosslab.soa_client.test_helper.dummy_track import DummyTrack
 from crosslab.soa_client.test_helper.service_stub import ServiceStub
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("tiebreaker", [True, False])
+@timeout(5)
 async def test_webrtc_connection_data_only(tiebreaker: bool):
     asyncException = AsyncException()
 
@@ -78,6 +79,7 @@ async def test_webrtc_connection_data_only(tiebreaker: bool):
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("tiebreaker", [True, False])
+@timeout(5)
 async def test_webrtc_connection_video_only(tiebreaker: bool):
     asyncException = AsyncException()
 
@@ -87,11 +89,12 @@ async def test_webrtc_connection_video_only(tiebreaker: bool):
         "remoteServiceId": "data",
     }
 
-    with open(
-        os.path.join(os.path.dirname(os.path.abspath(__file__)), "./h264_test.bin"),
-        "rb",
-    ) as f:
-        track = DummyTrack(f)
+    player = MediaPlayer(
+        os.path.join(os.path.dirname(os.path.abspath(__file__)), "test.mp4"),
+        decode=True,
+    )
+    track = player.video
+
     localService = ServiceStub("video", outTrack=track)
     remoteService = ServiceStub("video", receiveVideo=True)
 
@@ -139,7 +142,7 @@ async def test_webrtc_connection_video_only(tiebreaker: bool):
             assert local.pc.getTransceivers()[0].direction == localReceiverDir
             assert remote.pc.getTransceivers()[0].direction == remoteReceiverDir
             await wait(
-                [track.sendPacket.wait(), remoteService.recvPacket.wait()],
+                [remoteService.recvPacket.wait()],
                 asyncException,
             )
             assert len(remoteService.received_frame_pts) == 1

@@ -74,6 +74,14 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
 
+    --download-release)
+      CLEAN=true
+      SKIP_DOWNLOAD=false
+      DEV_VERSION=false
+      SUBCOMMANDVARS="$SUBCOMMANDVARS --release"
+      shift
+      ;;
+
     --script)
       if [ -z "$SCRIPT" ]; then
         SCRIPT="$2"

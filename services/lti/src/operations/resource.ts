@@ -8,7 +8,7 @@ import {
   patchLtiResourceByResourceIdSignature,
 } from '../generated/signatures.js';
 import { Resource as ResourceObject } from '../generated/types.js';
-import * as uri from './uris.js';
+import * as uri from '../helper/uris.js';
 
 function resource_to_wire(resource: LTIResource): ResourceObject<'response'> {
   return utils.removeNullOrUndefined({
