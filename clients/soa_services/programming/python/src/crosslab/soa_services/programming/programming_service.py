@@ -4,21 +4,19 @@ from typing import Any, Union
 
 from crosslab.soa_client.connection import Connection, DataChannel
 from crosslab.soa_client.service import Service
+from crosslab.soa_services.programming.messages import (
+    ProgrammingServiceConfig, ProgramRequestEvent,
+    ProgramRequestMessageContent, ProgramResponseMessage,
+    ProgramResponseMessageContent)
+from crosslab.soa_services.programming.promise_manager import PromiseManager
 from pyee.asyncio import AsyncIOEventEmitter
 
-from crosslab.soa_services.programming.messages import (
-    ProgrammingServiceConfig,
-    ProgramRequestEvent,
-    ProgramRequestMessageContent,
-    ProgramResponseMessage,
-    ProgramResponseMessageContent,
-)
-from crosslab.soa_services.programming.promise_manager import PromiseManager
 
-
-def check_for_uint8arrray(dictionary: dict[Any, Any]):
-    if dictionary["type"] == "Uint8Array":
+def check_for_uint8arrray(dictionary):
+    if dictionary.get("type", None) == "Uint8Array":
         return bytes(dictionary["data"])
+    else:
+        return dictionary
 
 
 def replace_bytes(value):

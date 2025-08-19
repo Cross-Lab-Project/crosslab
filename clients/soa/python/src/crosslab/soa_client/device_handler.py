@@ -5,24 +5,20 @@ from typing import Dict, List, Optional, Type
 
 import aiohttp
 from crosslab.api_client import APIClient
-from pyee.asyncio import AsyncIOEventEmitter
-
 from crosslab.soa_client.connection import Connection
 from crosslab.soa_client.connection_local import LocalConnection
 from crosslab.soa_client.connection_webrtc import WebRTCPeerConnection
 from crosslab.soa_client.connection_websocket import WebSocketPeerconnection
 from crosslab.soa_client.logging import handler as loggin_handler
-from crosslab.soa_client.messages import (
-    AuthenticationMessage,
-    ClosePeerConnectionMessage,
-    ConfigurationMessage,
-    ConnectionStateChangedMessage,
-    CreatePeerConnectionMessage,
-    ExperimentStatusChangedMessage,
-    LoggingMessage,
-    SignalingMessage,
-)
+from crosslab.soa_client.messages import (AuthenticationMessage,
+                                          ClosePeerConnectionMessage,
+                                          ConfigurationMessage,
+                                          ConnectionStateChangedMessage,
+                                          CreatePeerConnectionMessage,
+                                          ExperimentStatusChangedMessage,
+                                          LoggingMessage, SignalingMessage)
 from crosslab.soa_client.service import Service
+from pyee.asyncio import AsyncIOEventEmitter
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +169,6 @@ class DeviceHandler(AsyncIOEventEmitter):
                 pass  # Do not raise any Exception here, so we are forward compatible for new message types
 
     async def _on_create_peerconnection(self, msg: CreatePeerConnectionMessage):
-        assert msg["connectionUrl"] not in self._connections
         connection = self._connections.get(msg["connectionUrl"], None)
         if connection is None:
             connectionHandler = connectionHandlers.get(msg["connectionType"], None)
