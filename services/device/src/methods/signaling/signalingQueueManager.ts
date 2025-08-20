@@ -121,7 +121,8 @@ export class SignalingQueueManager {
     if (peerconnectionModel.type === 'websocket') {
       delete common.connectionOptions?.webSocketUrls;
     } else if (peerconnectionModel.type === 'webrtc') {
-      common.config = {
+      common.connectionOptions = {
+        ...common.connectionOptions,
         iceServers: config.WEBRTC_ICE_SERVERS,
       };
     }
