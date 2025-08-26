@@ -128,7 +128,7 @@ async function reserveConcreteDevice(
     }
   }
 
-  if (!isAvailable) {
+  if (!isAvailable && !config.IGNORE_AVAILABILITY) {
     throw new ReservationError(
       `Device "${concreteDevice.url}" is not available from "${bookingModel.start}" to "${bookingModel.end}"!`,
       400,

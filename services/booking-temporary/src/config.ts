@@ -20,6 +20,7 @@ export const config = {
     process.env.AUTHORIZATION_PSK ||
     utils.die('Environment variable AUTHORIZATION_PSK must be set'),
   JWT_SECRET: 'secret',
+  IGNORE_AVAILABILITY: process.env.IGNORE_AVAILABILITY ?? true,
   orm: {
     ...basicOrmConfig,
     entities: Entities,
