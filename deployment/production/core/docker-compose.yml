@@ -33,12 +33,14 @@ x-config: &common-config
   FEDERATION_SERVICE_URL: "http://federation:3003"
   BOOKING_SERVICE_URL: "http://booking:3004"
   FORWARDING_SERVICE_URL: "http://forwarding:3005"
+  LTI_SERVICE_URL: "http://lti:3009"
   AUTH_SERVICE_DOMAIN: "authentication:3000"
   DEVICE_SERVICE_DOMAIN: "device:3001"
   EXPERIMENT_SERVICE_DOMAIN: "experiment:3002"
   FEDERATION_SERVICE_DOMAIN: "federation:3003"
   BOOKING_SERVICE_DOMAIN: "booking:3004"
   FORWARDING_SERVICE_DOMAIN: "forwarding:3005"
+  LTI_SERVICE_DOMAIN: "lti:3009"
   AUTHORIZATION_SERVICE_DOMAIN: "authorization:3010"
 
 services:
@@ -79,6 +81,7 @@ services:
       <<: *common-config
       DB_USERNAME: authentication
       DB_DATABASE: authentication
+      AUTH_local_TYPE: local
       ADMIN_USERNAME: admin
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?}
       JWT_SECRET: ${JWT_SECRET:?}
@@ -110,6 +113,17 @@ services:
       <<: *common-config
       DB_USERNAME: device
       DB_DATABASE: device
+      WEBRTC_ICE_SERVER_0: "stun:stun.l.google.com:19302"
+      WEBRTC_ICE_SERVER_1: "stun:turn2.goldi-labs.de:3478"
+      WEBRTC_ICE_SERVER_2: "turn:turn2.goldi-labs.de:3478"
+      WEBRTC_ICE_SERVER_2_USERNAME: "goldi"
+      WEBRTC_ICE_SERVER_2_CREDENTIAL: "goldi"
+      WEBRTC_ICE_SERVER_3: "turns:turn.goldi-labs.de:443?transport=tcp"
+      WEBRTC_ICE_SERVER_3_USERNAME: "goldi"
+      WEBRTC_ICE_SERVER_3_CREDENTIAL: "goldi"
+      WEBRTC_ICE_SERVER_4: "turns:turn2.goldi-labs.de:5349?transport=tcp"
+      WEBRTC_ICE_SERVER_4_USERNAME: "goldi"
+      WEBRTC_ICE_SERVER_4_CREDENTIAL: "goldi"
     networks:
       backend:
     restart: on-failure
@@ -119,10 +133,6 @@ services:
       <<: *common-config
       DB_USERNAME: experiment
       DB_DATABASE: experiment
-      STUN_SERVER_URL: "stun:stun.goldi-labs.de:3478"
-      TURN_SERVER_URL: "turn:turn.goldi-labs.de:3478"
-      TURN_SERVER_USERNAME: "goldi"
-      TURN_SERVER_CREDENTIAL: "goldi"
     networks:
       backend:
     restart: on-failure
@@ -150,10 +160,6 @@ services:
       <<: *common-config
       DB_USERNAME: lti
       DB_DATABASE: lti
-      COOKIE_SECRET: ${COOKIE_SECRET:?}
-      API_BASE_URL: ${API_BASE_URL}
-      BASE_URL: ${LTI_BASE_URL}
     networks:
-      frontend:
       backend:
     restart: on-failure
