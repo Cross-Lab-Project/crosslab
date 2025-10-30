@@ -875,7 +875,7 @@ export type AddDeviceAvailabilityRulesParameters = {
  * @category addDeviceAvailabilityRules()
  */
 export type AddDeviceAvailabilityRulesBody =
-  | Types.AvailabilityRule<'request'>[]
+  | Types.AvailabilityRuleList<'request'>
   | undefined;
 
 /**

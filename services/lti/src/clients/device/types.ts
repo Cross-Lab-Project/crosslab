@@ -142,8 +142,10 @@ type NumericRangeTuple<
 	[k: string]: unknown
 } & {
 	messageType: "authenticate"
-	token?: string
-	authenticated?: boolean
+	token: string
+	deviceUrl: string
+	services: (ServiceDescription)[]
+	authenticated: boolean
 	[k: string]: unknown
 }
                     : T extends "request" 
@@ -152,8 +154,9 @@ type NumericRangeTuple<
 	[k: string]: unknown
 } & {
 	messageType: "authenticate"
-	token?: string
-	authenticated?: boolean
+	token: string
+	deviceUrl: string
+	services: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -162,8 +165,7 @@ type NumericRangeTuple<
 	[k: string]: unknown
 } & {
 	messageType: "authenticate"
-	token?: string
-	authenticated?: boolean
+	authenticated: boolean
 	[k: string]: unknown
 }
                     : never
@@ -241,7 +243,7 @@ type NumericRangeTuple<
                 
 
 
-                export type DeviceOverview<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                export type DeviceOverviewWithoutType<T extends "request"|"response"|"all" = "all"> = T extends "all" 
                     ? {
 	/**
 	 * URL of the device
@@ -255,10 +257,6 @@ type NumericRangeTuple<
 	 * Extended description of the device, features, etc.
 	 */
 	description?: string
-	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
 	/**
 	 * If true, the device may be seen and used by every user.
 	 */
@@ -283,10 +281,6 @@ type NumericRangeTuple<
 	 * Extended description of the device, features, etc.
 	 */
 	description?: string
-	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
 	/**
 	 * If true, the device may be seen and used by every user.
 	 */
@@ -316,9 +310,107 @@ type NumericRangeTuple<
 	 */
 	description?: string
 	/**
+	 * If true, the device may be seen and used by every user.
+	 */
+	isPublic: boolean
+	/**
+	 * List of users who can view the device
+	 */
+	viewer?: (UserReference<"response">)[]
+	/**
+	 * List of users who own the device
+	 */
+	owner?: (UserReference<"response">)[]
+	[k: string]: unknown
+}
+                    : never
+                
+
+
+                export type DeviceOverview<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                    ? {
+	/**
 	 * Type of the device
 	 */
 	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+	[k: string]: unknown
+} & {
+	/**
+	 * URL of the device
+	 */
+	url: string
+	/**
+	 * Name of the device
+	 */
+	name: string
+	/**
+	 * Extended description of the device, features, etc.
+	 */
+	description?: string
+	/**
+	 * If true, the device may be seen and used by every user.
+	 */
+	isPublic: boolean
+	/**
+	 * List of users who can view the device
+	 */
+	viewer?: (UserReference)[]
+	/**
+	 * List of users who own the device
+	 */
+	owner?: (UserReference)[]
+	[k: string]: unknown
+}
+                    : T extends "request" 
+                    ? {
+	/**
+	 * Type of the device
+	 */
+	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+	[k: string]: unknown
+} & {
+	/**
+	 * Name of the device
+	 */
+	name: string
+	/**
+	 * Extended description of the device, features, etc.
+	 */
+	description?: string
+	/**
+	 * If true, the device may be seen and used by every user.
+	 */
+	isPublic: boolean
+	/**
+	 * List of users who can view the device
+	 */
+	viewer?: (UserReference<"request">)[]
+	/**
+	 * List of users who own the device
+	 */
+	owner?: (UserReference<"request">)[]
+	[k: string]: unknown
+}
+                    : T extends "response"
+                    ? {
+	/**
+	 * Type of the device
+	 */
+	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+	[k: string]: unknown
+} & {
+	/**
+	 * URL of the device
+	 */
+	url: string
+	/**
+	 * Name of the device
+	 */
+	name: string
+	/**
+	 * Extended description of the device, features, etc.
+	 */
+	description?: string
 	/**
 	 * If true, the device may be seen and used by every user.
 	 */
@@ -380,10 +472,6 @@ type NumericRangeTuple<
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -397,8 +485,8 @@ type NumericRangeTuple<
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
-	instantiateUrl?: string
+	type: "cloud instantiable"
+	instantiateUrl: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
 }
@@ -413,10 +501,6 @@ type NumericRangeTuple<
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -430,8 +514,8 @@ type NumericRangeTuple<
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
-	instantiateUrl?: string
+	type: "cloud instantiable"
+	instantiateUrl: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 }
@@ -450,10 +534,6 @@ type NumericRangeTuple<
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -467,8 +547,8 @@ type NumericRangeTuple<
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
-	instantiateUrl?: string
+	type: "cloud instantiable"
+	instantiateUrl: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
 }
@@ -527,10 +607,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -544,7 +620,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
+	type: "device"
 	/**
 	 * If true, the device is connected to the service and can be used.
 	 * 
@@ -571,10 +647,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -588,10 +660,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription<"request">)[]
-	instanceOf?: string
 	[k: string]: unknown
 }
                     : T extends "response"
@@ -609,10 +679,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -626,7 +692,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
+	type: "device"
 	/**
 	 * If true, the device is connected to the service and can be used.
 	 * 
@@ -661,10 +727,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -678,8 +740,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
-	codeUrl?: string
+	type: "edge instantiable"
+	codeUrl: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
 }
@@ -694,10 +756,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -711,8 +769,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
-	codeUrl?: string
+	type: "edge instantiable"
+	codeUrl: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 }
@@ -731,10 +789,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -748,8 +802,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
-	codeUrl?: string
+	type: "edge instantiable"
+	codeUrl: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
 }
@@ -800,10 +854,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -817,7 +867,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices: (DeviceReference)[]
 	[k: string]: unknown
 }
@@ -832,10 +882,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -849,7 +895,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices: (DeviceReference<"request">)[]
 	[k: string]: unknown
 }
@@ -868,10 +914,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -885,7 +927,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices: (DeviceReference<"response">)[]
 	[k: string]: unknown
 }
@@ -908,10 +950,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -925,8 +963,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
-	instantiateUrl?: string
+	type: "cloud instantiable"
+	instantiateUrl: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
 } | {
@@ -943,10 +981,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -960,7 +994,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
+	type: "device"
 	/**
 	 * If true, the device is connected to the service and can be used.
 	 * 
@@ -989,10 +1023,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1006,8 +1036,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
-	codeUrl?: string
+	type: "edge instantiable"
+	codeUrl: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
 } | {
@@ -1024,10 +1054,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1041,7 +1067,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices: (DeviceReference)[]
 	[k: string]: unknown
 }
@@ -1056,10 +1082,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1073,8 +1095,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
-	instantiateUrl?: string
+	type: "cloud instantiable"
+	instantiateUrl: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 } | {
@@ -1087,10 +1109,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1104,40 +1122,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
-	services?: (ServiceDescription<"request">)[]
-	instanceOf?: string
-	[k: string]: unknown
-} | {
-	/**
-	 * Name of the device
-	 */
-	name: string
-	/**
-	 * Extended description of the device, features, etc.
-	 */
-	description?: string
-	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
-	 * If true, the device may be seen and used by every user.
-	 */
-	isPublic: boolean
-	/**
-	 * List of users who can view the device
-	 */
-	viewer?: (UserReference<"request">)[]
-	/**
-	 * List of users who own the device
-	 */
-	owner?: (UserReference<"request">)[]
-	[k: string]: unknown
-} & {
-	type?: "edge instantiable"
-	codeUrl?: string
+	type: "device"
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 } | {
@@ -1150,9 +1135,32 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
+	 * If true, the device may be seen and used by every user.
 	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
+	isPublic: boolean
+	/**
+	 * List of users who can view the device
+	 */
+	viewer?: (UserReference<"request">)[]
+	/**
+	 * List of users who own the device
+	 */
+	owner?: (UserReference<"request">)[]
+	[k: string]: unknown
+} & {
+	type: "edge instantiable"
+	codeUrl: string
+	services?: (ServiceDescription<"request">)[]
+	[k: string]: unknown
+} | {
+	/**
+	 * Name of the device
+	 */
+	name: string
+	/**
+	 * Extended description of the device, features, etc.
+	 */
+	description?: string
 	/**
 	 * If true, the device may be seen and used by every user.
 	 */
@@ -1167,7 +1175,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices: (DeviceReference<"request">)[]
 	[k: string]: unknown
 }
@@ -1186,10 +1194,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1203,8 +1207,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
-	instantiateUrl?: string
+	type: "cloud instantiable"
+	instantiateUrl: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
 } | {
@@ -1221,10 +1225,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1238,7 +1238,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
+	type: "device"
 	/**
 	 * If true, the device is connected to the service and can be used.
 	 * 
@@ -1267,10 +1267,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1284,8 +1280,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
-	codeUrl?: string
+	type: "edge instantiable"
+	codeUrl: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
 } | {
@@ -1302,10 +1298,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic: boolean
@@ -1319,7 +1311,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices: (DeviceReference<"response">)[]
 	[k: string]: unknown
 }
@@ -1401,10 +1393,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1418,8 +1406,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference)[]
 		[k: string]: unknown
 	} & {
-		type?: "cloud instantiable"
-		instantiateUrl?: string
+		type: "cloud instantiable"
+		instantiateUrl: string
 		services?: (ServiceDescription)[]
 		[k: string]: unknown
 	} | {
@@ -1436,10 +1424,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1453,8 +1437,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference)[]
 		[k: string]: unknown
 	} & {
-		type?: "edge instantiable"
-		codeUrl?: string
+		type: "edge instantiable"
+		codeUrl: string
 		services?: (ServiceDescription)[]
 		[k: string]: unknown
 	} | {
@@ -1471,10 +1455,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1488,7 +1468,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference)[]
 		[k: string]: unknown
 	} & {
-		type?: "device"
+		type: "device"
 		/**
 		 * If true, the device is connected to the service and can be used.
 		 * 
@@ -1517,10 +1497,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1534,7 +1510,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference)[]
 		[k: string]: unknown
 	} & {
-		type?: "group"
+		type: "group"
 		devices: (DeviceReference)[]
 		[k: string]: unknown
 	} & {
@@ -1565,10 +1541,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1582,8 +1554,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"request">)[]
 		[k: string]: unknown
 	} & {
-		type?: "cloud instantiable"
-		instantiateUrl?: string
+		type: "cloud instantiable"
+		instantiateUrl: string
 		services?: (ServiceDescription<"request">)[]
 		[k: string]: unknown
 	} | {
@@ -1596,10 +1568,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1613,8 +1581,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"request">)[]
 		[k: string]: unknown
 	} & {
-		type?: "edge instantiable"
-		codeUrl?: string
+		type: "edge instantiable"
+		codeUrl: string
 		services?: (ServiceDescription<"request">)[]
 		[k: string]: unknown
 	} | {
@@ -1627,10 +1595,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1644,10 +1608,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"request">)[]
 		[k: string]: unknown
 	} & {
-		type?: "device"
-		experiment?: string
+		type: "device"
 		services?: (ServiceDescription<"request">)[]
-		instanceOf?: string
 		[k: string]: unknown
 	} | {
 		/**
@@ -1659,10 +1621,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1676,7 +1634,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"request">)[]
 		[k: string]: unknown
 	} & {
-		type?: "group"
+		type: "group"
 		devices: (DeviceReference<"request">)[]
 		[k: string]: unknown
 	} & {
@@ -1711,10 +1669,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1728,8 +1682,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"response">)[]
 		[k: string]: unknown
 	} & {
-		type?: "cloud instantiable"
-		instantiateUrl?: string
+		type: "cloud instantiable"
+		instantiateUrl: string
 		services?: (ServiceDescription<"response">)[]
 		[k: string]: unknown
 	} | {
@@ -1746,10 +1700,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1763,8 +1713,8 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"response">)[]
 		[k: string]: unknown
 	} & {
-		type?: "edge instantiable"
-		codeUrl?: string
+		type: "edge instantiable"
+		codeUrl: string
 		services?: (ServiceDescription<"response">)[]
 		[k: string]: unknown
 	} | {
@@ -1781,10 +1731,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1798,7 +1744,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"response">)[]
 		[k: string]: unknown
 	} & {
-		type?: "device"
+		type: "device"
 		/**
 		 * If true, the device is connected to the service and can be used.
 		 * 
@@ -1827,10 +1773,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		 */
 		description?: string
 		/**
-		 * Type of the device
-		 */
-		type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-		/**
 		 * If true, the device may be seen and used by every user.
 		 */
 		isPublic: boolean
@@ -1844,7 +1786,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 		owner?: (UserReference<"response">)[]
 		[k: string]: unknown
 	} & {
-		type?: "group"
+		type: "group"
 		devices: (DeviceReference<"response">)[]
 		[k: string]: unknown
 	} & {
@@ -1870,10 +1812,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -1898,10 +1836,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -1925,10 +1859,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 * Extended description of the device, features, etc.
 	 */
 	description?: string
-	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
 	/**
 	 * If true, the device may be seen and used by every user.
 	 */
@@ -1958,10 +1888,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -1975,7 +1901,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
+	type: "cloud instantiable"
 	instantiateUrl?: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
@@ -1991,10 +1917,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2008,7 +1930,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
+	type: "cloud instantiable"
 	instantiateUrl?: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
@@ -2024,10 +1946,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2041,7 +1959,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
+	type: "cloud instantiable"
 	instantiateUrl?: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
@@ -2061,10 +1979,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2078,8 +1992,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
 }
@@ -2094,10 +2007,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2111,8 +2020,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 }
@@ -2127,10 +2035,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2144,8 +2048,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
 }
@@ -2164,10 +2067,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2181,7 +2080,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
+	type: "edge instantiable"
 	codeUrl?: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
@@ -2197,10 +2096,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2214,7 +2109,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
+	type: "edge instantiable"
 	codeUrl?: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
@@ -2230,10 +2125,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2247,7 +2138,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
+	type: "edge instantiable"
 	codeUrl?: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
@@ -2267,10 +2158,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2284,7 +2171,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices?: (DeviceReference)[]
 	[k: string]: unknown
 }
@@ -2299,10 +2186,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2316,7 +2199,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices?: (DeviceReference<"request">)[]
 	[k: string]: unknown
 }
@@ -2331,10 +2214,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2348,7 +2227,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices?: (DeviceReference<"response">)[]
 	[k: string]: unknown
 }
@@ -2367,10 +2246,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2384,7 +2259,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
+	type: "cloud instantiable"
 	instantiateUrl?: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
@@ -2398,10 +2273,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2415,8 +2286,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
 } | {
@@ -2429,10 +2299,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2446,7 +2312,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
+	type: "edge instantiable"
 	codeUrl?: string
 	services?: (ServiceDescription)[]
 	[k: string]: unknown
@@ -2460,10 +2326,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2477,7 +2339,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices?: (DeviceReference)[]
 	[k: string]: unknown
 }
@@ -2492,10 +2354,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2509,7 +2367,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
+	type: "cloud instantiable"
 	instantiateUrl?: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
@@ -2523,10 +2381,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2540,8 +2394,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
 } | {
@@ -2554,10 +2407,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2571,7 +2420,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
+	type: "edge instantiable"
 	codeUrl?: string
 	services?: (ServiceDescription<"request">)[]
 	[k: string]: unknown
@@ -2585,10 +2434,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2602,7 +2447,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"request">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices?: (DeviceReference<"request">)[]
 	[k: string]: unknown
 }
@@ -2617,10 +2462,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2634,7 +2475,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "cloud instantiable"
+	type: "cloud instantiable"
 	instantiateUrl?: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
@@ -2648,10 +2489,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2665,8 +2502,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "device"
-	experiment?: string
+	type: "device"
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
 } | {
@@ -2679,10 +2515,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2696,7 +2528,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "edge instantiable"
+	type: "edge instantiable"
 	codeUrl?: string
 	services?: (ServiceDescription<"response">)[]
 	[k: string]: unknown
@@ -2710,10 +2542,6 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	 */
 	description?: string
 	/**
-	 * Type of the device
-	 */
-	type: "device" | "group" | "edge instantiable" | "cloud instantiable"
-	/**
 	 * If true, the device may be seen and used by every user.
 	 */
 	isPublic?: boolean
@@ -2727,7 +2555,7 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	owner?: (UserReference<"response">)[]
 	[k: string]: unknown
 } & {
-	type?: "group"
+	type: "group"
 	devices?: (DeviceReference<"response">)[]
 	[k: string]: unknown
 }
@@ -2862,6 +2690,16 @@ export type Availability<T extends "request"|"response"|"all" = "all"> = T exten
 	}
 	[k: string]: unknown
 }
+                    : never
+                
+
+
+                export type AvailabilityRuleList<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                    ? (AvailabilityRule)[]
+                    : T extends "request" 
+                    ? (AvailabilityRule<"request">)[]
+                    : T extends "response"
+                    ? (AvailabilityRule<"response">)[]
                     : never
                 
 

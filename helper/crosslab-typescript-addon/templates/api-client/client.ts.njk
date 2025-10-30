@@ -1,7 +1,10 @@
 {%- macro generateIndex() -%}
 {%- set schemas = (api | resolveSchemas) -%}
 {%- set operations = (api | resolveOperations) -%}
-{%- set typeDependencies = ["FetchFunction", "isErrorResponse", "ResponseData", "type Require"] -%}
+{%- set typeDependencies = ["FetchFunction", "isErrorResponse", "ResponseData"] -%}
+{%- if (schemas | string | includes("Require<")) -%}
+    {%- set typeDependencies = (typeDependencies.push("type Require"), typeDependencies) -%}
+{%- endif -%}
 {%- set signatureDependencies = [] -%}
 {%- set validationDependencies = [] -%}
 

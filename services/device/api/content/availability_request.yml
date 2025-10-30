@@ -1,10 +1,6 @@
 # yaml-language-server: $schema=https://cross-lab-project.github.io/crosslab/meta-schemas/openapi-content.json
 schema:
-  title: Availability Rules
-  description: The availability rule to be applied.
-  type: array
-  items:
-    $ref: '../schemas/devices/availability/availability_rule.yml'
+  $ref: '../schemas/devices/availability/availability_rule_list.yml'
 examples:
   make_the_device_always_unavailable:
     description: Make the device always unavailable

@@ -39,7 +39,7 @@ patch:
     content:
       application/json:
         schema:
-          $ref: '../schemas/user.yml'
+          $ref: '../schemas/user_update.yml'
   responses:
     200:
       description: The JSON representation of the updated user.

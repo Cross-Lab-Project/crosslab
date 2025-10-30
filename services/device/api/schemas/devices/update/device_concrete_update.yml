@@ -5,11 +5,14 @@ allOf:
   - type: object
     properties:
       type:
-        const: device
-      experiment:
         type: string
-        format: uri
+        const: device
+      # experiment:
+      #   type: string
+      #   format: uri
       services:
         type: array
         items:
           $ref: ../services/service_description.yml
+    required:
+      - type

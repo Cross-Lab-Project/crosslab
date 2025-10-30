@@ -856,7 +856,7 @@ export class Client {
    *
    * @param url
    * Url of the resource to be accessed.
-   * @param availabilityRules
+   * @param availabilityRuleList
    * The availability rules to be applied.
    *
    * @throws {@link FetchError | FetchError }
@@ -873,7 +873,7 @@ export class Client {
    */
   public async addDeviceAvailabilityRules(
     url: string,
-    availabilityRules: Types.AvailabilityRule<'request'>[] | undefined,
+    availabilityRuleList: Types.AvailabilityRuleList<'request'> | undefined,
     options?: {
       headers?: [string, string][];
     },
@@ -882,7 +882,7 @@ export class Client {
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [device_id] = validateUrl(new URL(url).toString(), '/devices/{}/availability');
 
-    const body = availabilityRules;
+    const body = availabilityRuleList;
 
     const parameters = {
       device_id: device_id,

@@ -14,6 +14,7 @@ components:
       properties:
         url:
           type: string
+          format: uri
           readOnly: true
         status:
           type: string

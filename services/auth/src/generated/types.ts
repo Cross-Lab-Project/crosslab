@@ -9,10 +9,13 @@ import { Application, Request, ErrorRequestHandler } from "express"
 import {
     validateUserType,
 	validateUser,
+	validateUserUpdate,
 	validateUserTypeRequest,
 	validateUserTypeResponse,
 	validateUserRequest,
-	validateUserResponse
+	validateUserResponse,
+	validateUserUpdateRequest,
+	validateUserUpdateResponse
 } from "./basicValidation.cjs"
 export type TypedRequest<P,B,Q> = Request<P, {}, B, Q, {}>
 
@@ -250,6 +253,54 @@ export type AuthMethod<T extends "request"|"response"|"all" = "all"> = T extends
                     : never
                 
 
+
+                export type UserInit<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                    ? {
+	url?: string
+	id?: string
+	username: string
+	password: string
+	admin?: boolean
+	[k: string]: unknown
+}
+                    : T extends "request" 
+                    ? {
+	username: string
+	password: string
+	admin?: boolean
+	[k: string]: unknown
+}
+                    : T extends "response"
+                    ? {
+	url?: string
+	id?: string
+	username: string
+	admin?: boolean
+	[k: string]: unknown
+}
+                    : never
+                
+
+
+                export type UserUpdate<T extends "request"|"response"|"all" = "all"> = T extends "all" 
+                    ? {
+	password?: string
+	admin?: boolean
+	[k: string]: unknown
+}
+                    : T extends "request" 
+                    ? {
+	password?: string
+	admin?: boolean
+	[k: string]: unknown
+}
+                    : T extends "response"
+                    ? {
+	[k: string]: unknown
+}
+                    : never
+                
+
 export function isUserType<T extends "request"|"response"|"all" = "all">(obj: unknown, type: "request" | "response" | "all" | T = "all"): obj is UserType<T> {
     switch (type) {
         case "request":
@@ -269,5 +320,16 @@ export function isUser<T extends "request"|"response"|"all" = "all">(obj: unknow
             return validateUserResponse(obj)
         default:
             return validateUser(obj)
+    }
+}
+
+export function isUserUpdate<T extends "request"|"response"|"all" = "all">(obj: unknown, type: "request" | "response" | "all" | T = "all"): obj is UserUpdate<T> {
+    switch (type) {
+        case "request":
+            return validateUserUpdateRequest(obj)
+        case "response":
+            return validateUserUpdateResponse(obj)
+        default:
+            return validateUserUpdate(obj)
     }
 }

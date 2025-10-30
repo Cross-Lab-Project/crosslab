@@ -844,7 +844,7 @@ export class Client {
 	 * 
 	 * @param url
 	 * Url of the resource to be accessed.
-	 * @param availabilityRules
+	 * @param availabilityRuleList
 	 * The availability rules to be applied.
      *
      * @throws {@link FetchError | FetchError } 
@@ -859,14 +859,14 @@ export class Client {
      * @returns
 	 * The JSON Representation of the changed availability.
      */
-    public async addDeviceAvailabilityRules(url: string,availabilityRules: (Types.AvailabilityRule<"request">)[] | undefined,
+    public async addDeviceAvailabilityRules(url: string,availabilityRuleList: Types.AvailabilityRuleList<"request"> | undefined,
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.AddDeviceAvailabilityRulesSuccessResponse["body"]> {
                 const urlSuffix = '/devices/{}/availability'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
                 const [device_id,] = validateUrl(new URL(url).toString(), '/devices/{}/availability')
 
-        const body = availabilityRules
+        const body = availabilityRuleList
 
         
         const parameters = {

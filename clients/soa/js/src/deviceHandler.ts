@@ -62,6 +62,7 @@ export class DeviceHandler extends TypedEmitter<DeviceHandlerEvents> {
           messageType: 'authenticate',
           deviceUrl: connectOptions.id,
           token: connectOptions.token,
+          services: this.getServiceMeta(),
         }),
       );
       crosslabTransport._set_upstream(info =>

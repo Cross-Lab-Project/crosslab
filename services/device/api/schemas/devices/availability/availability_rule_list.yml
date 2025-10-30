@@ -1,0 +1,5 @@
+# yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
+title: Availability Rule List
+type: array
+items:
+  $ref: ./availability_rule.yml

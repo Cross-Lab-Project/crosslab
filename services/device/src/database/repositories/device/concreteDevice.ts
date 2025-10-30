@@ -58,7 +58,7 @@ export class ConcreteDeviceRepository extends AbstractRepository<
     } = { ...model.additionalAttributes, ...data };
 
     await this.dependencies.deviceOverview.write(model, data);
-    if (experiment) model.experiment = experiment;
+    // if (experiment) model.experiment = experiment;
     if (services) model.services = services;
 
     model.additionalAttributes = additionalAttributes;

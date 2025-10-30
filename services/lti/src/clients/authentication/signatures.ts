@@ -418,7 +418,7 @@ export interface ListUsersResponse500 extends Types.ErrorResponse {
  * Typing for the body of the request made by createUser()
  * @category createUser()
  */
-export type CreateUserBody = Require<Types.User<"request">, "username" | "password">
+export type CreateUserBody = Types.UserInit<"request">
 
 /**
  * Typing for all possible responses to the request made by createUser()
@@ -620,7 +620,7 @@ export type UpdateUserParameters = {
  * Typing for the body of the request made by updateUser()
  * @category updateUser()
  */
-export type UpdateUserBody = Types.User<"request">
+export type UpdateUserBody = Types.UserUpdate<"request">
 
 /**
  * Typing for all possible responses to the request made by updateUser()
@@ -904,7 +904,7 @@ export interface GetIdentityResponse500 extends Types.ErrorResponse {
  * Typing for the body of the request made by updateIdentity()
  * @category updateIdentity()
  */
-export type UpdateIdentityBody = Types.User<"request"> | undefined
+export type UpdateIdentityBody = Types.UserUpdate<"request"> | undefined
 
 /**
  * Typing for all possible responses to the request made by updateIdentity()

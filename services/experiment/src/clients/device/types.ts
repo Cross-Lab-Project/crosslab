@@ -144,8 +144,10 @@ export type AuthenticationMessage<T extends 'request' | 'response' | 'all' = 'al
         [k: string]: unknown;
       } & {
         messageType: 'authenticate';
-        token?: string;
-        authenticated?: boolean;
+        token: string;
+        deviceUrl: string;
+        services: ServiceDescription[];
+        authenticated: boolean;
         [k: string]: unknown;
       }
     : T extends 'request'
@@ -154,8 +156,9 @@ export type AuthenticationMessage<T extends 'request' | 'response' | 'all' = 'al
           [k: string]: unknown;
         } & {
           messageType: 'authenticate';
-          token?: string;
-          authenticated?: boolean;
+          token: string;
+          deviceUrl: string;
+          services: ServiceDescription<'request'>[];
           [k: string]: unknown;
         }
       : T extends 'response'
@@ -164,8 +167,7 @@ export type AuthenticationMessage<T extends 'request' | 'response' | 'all' = 'al
             [k: string]: unknown;
           } & {
             messageType: 'authenticate';
-            token?: string;
-            authenticated?: boolean;
+            authenticated: boolean;
             [k: string]: unknown;
           }
         : never;
@@ -246,7 +248,7 @@ export type UserReference<T extends 'request' | 'response' | 'all' = 'all'> =
           }
         : never;
 
-export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
+export type DeviceOverviewWithoutType<T extends 'request' | 'response' | 'all' = 'all'> =
   T extends 'all'
     ? {
         /**
@@ -261,10 +263,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
          * Extended description of the device, features, etc.
          */
         description?: string;
-        /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -289,10 +287,6 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
            * Extended description of the device, features, etc.
            */
           description?: string;
-          /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
           /**
            * If true, the device may be seen and used by every user.
            */
@@ -322,9 +316,106 @@ export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
+             * If true, the device may be seen and used by every user.
+             */
+            isPublic: boolean;
+            /**
+             * List of users who can view the device
+             */
+            viewer?: UserReference<'response'>[];
+            /**
+             * List of users who own the device
+             */
+            owner?: UserReference<'response'>[];
+            [k: string]: unknown;
+          }
+        : never;
+
+export type DeviceOverview<T extends 'request' | 'response' | 'all' = 'all'> =
+  T extends 'all'
+    ? {
+        /**
+         * Type of the device
+         */
+        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+        [k: string]: unknown;
+      } & {
+        /**
+         * URL of the device
+         */
+        url: string;
+        /**
+         * Name of the device
+         */
+        name: string;
+        /**
+         * Extended description of the device, features, etc.
+         */
+        description?: string;
+        /**
+         * If true, the device may be seen and used by every user.
+         */
+        isPublic: boolean;
+        /**
+         * List of users who can view the device
+         */
+        viewer?: UserReference[];
+        /**
+         * List of users who own the device
+         */
+        owner?: UserReference[];
+        [k: string]: unknown;
+      }
+    : T extends 'request'
+      ? {
+          /**
+           * Type of the device
+           */
+          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+          [k: string]: unknown;
+        } & {
+          /**
+           * Name of the device
+           */
+          name: string;
+          /**
+           * Extended description of the device, features, etc.
+           */
+          description?: string;
+          /**
+           * If true, the device may be seen and used by every user.
+           */
+          isPublic: boolean;
+          /**
+           * List of users who can view the device
+           */
+          viewer?: UserReference<'request'>[];
+          /**
+           * List of users who own the device
+           */
+          owner?: UserReference<'request'>[];
+          [k: string]: unknown;
+        }
+      : T extends 'response'
+        ? {
+            /**
              * Type of the device
              */
             type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+            [k: string]: unknown;
+          } & {
+            /**
+             * URL of the device
+             */
+            url: string;
+            /**
+             * Name of the device
+             */
+            name: string;
+            /**
+             * Extended description of the device, features, etc.
+             */
+            description?: string;
             /**
              * If true, the device may be seen and used by every user.
              */
@@ -384,10 +475,6 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic: boolean;
@@ -401,8 +488,8 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
         owner?: UserReference[];
         [k: string]: unknown;
       } & {
-        type?: 'cloud instantiable';
-        instantiateUrl?: string;
+        type: 'cloud instantiable';
+        instantiateUrl: string;
         services?: ServiceDescription[];
         [k: string]: unknown;
       }
@@ -417,10 +504,6 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -434,8 +517,8 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
           owner?: UserReference<'request'>[];
           [k: string]: unknown;
         } & {
-          type?: 'cloud instantiable';
-          instantiateUrl?: string;
+          type: 'cloud instantiable';
+          instantiateUrl: string;
           services?: ServiceDescription<'request'>[];
           [k: string]: unknown;
         }
@@ -454,10 +537,6 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic: boolean;
@@ -471,8 +550,8 @@ export type InstantiableCloudDevice<T extends 'request' | 'response' | 'all' = '
             owner?: UserReference<'response'>[];
             [k: string]: unknown;
           } & {
-            type?: 'cloud instantiable';
-            instantiateUrl?: string;
+            type: 'cloud instantiable';
+            instantiateUrl: string;
             services?: ServiceDescription<'response'>[];
             [k: string]: unknown;
           }
@@ -527,10 +606,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic: boolean;
@@ -544,7 +619,7 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
         owner?: UserReference[];
         [k: string]: unknown;
       } & {
-        type?: 'device';
+        type: 'device';
         /**
          * If true, the device is connected to the service and can be used.
          *
@@ -571,10 +646,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -588,10 +659,8 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
           owner?: UserReference<'request'>[];
           [k: string]: unknown;
         } & {
-          type?: 'device';
-          experiment?: string;
+          type: 'device';
           services?: ServiceDescription<'request'>[];
-          instanceOf?: string;
           [k: string]: unknown;
         }
       : T extends 'response'
@@ -609,10 +678,6 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic: boolean;
@@ -626,7 +691,7 @@ export type ConcreteDevice<T extends 'request' | 'response' | 'all' = 'all'> =
             owner?: UserReference<'response'>[];
             [k: string]: unknown;
           } & {
-            type?: 'device';
+            type: 'device';
             /**
              * If true, the device is connected to the service and can be used.
              *
@@ -660,10 +725,6 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic: boolean;
@@ -677,8 +738,8 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
         owner?: UserReference[];
         [k: string]: unknown;
       } & {
-        type?: 'edge instantiable';
-        codeUrl?: string;
+        type: 'edge instantiable';
+        codeUrl: string;
         services?: ServiceDescription[];
         [k: string]: unknown;
       }
@@ -693,10 +754,6 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -710,8 +767,8 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
           owner?: UserReference<'request'>[];
           [k: string]: unknown;
         } & {
-          type?: 'edge instantiable';
-          codeUrl?: string;
+          type: 'edge instantiable';
+          codeUrl: string;
           services?: ServiceDescription<'request'>[];
           [k: string]: unknown;
         }
@@ -730,10 +787,6 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic: boolean;
@@ -747,8 +800,8 @@ export type InstantiableBrowserDevice<T extends 'request' | 'response' | 'all' =
             owner?: UserReference<'response'>[];
             [k: string]: unknown;
           } & {
-            type?: 'edge instantiable';
-            codeUrl?: string;
+            type: 'edge instantiable';
+            codeUrl: string;
             services?: ServiceDescription<'response'>[];
             [k: string]: unknown;
           }
@@ -797,10 +850,6 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic: boolean;
@@ -814,7 +863,7 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
         owner?: UserReference[];
         [k: string]: unknown;
       } & {
-        type?: 'group';
+        type: 'group';
         devices: DeviceReference[];
         [k: string]: unknown;
       }
@@ -829,10 +878,6 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -846,7 +891,7 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
           owner?: UserReference<'request'>[];
           [k: string]: unknown;
         } & {
-          type?: 'group';
+          type: 'group';
           devices: DeviceReference<'request'>[];
           [k: string]: unknown;
         }
@@ -865,10 +910,6 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic: boolean;
@@ -882,7 +923,7 @@ export type DeviceGroup<T extends 'request' | 'response' | 'all' = 'all'> =
             owner?: UserReference<'response'>[];
             [k: string]: unknown;
           } & {
-            type?: 'group';
+            type: 'group';
             devices: DeviceReference<'response'>[];
             [k: string]: unknown;
           }
@@ -904,10 +945,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -921,8 +958,8 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
           owner?: UserReference[];
           [k: string]: unknown;
         } & {
-          type?: 'cloud instantiable';
-          instantiateUrl?: string;
+          type: 'cloud instantiable';
+          instantiateUrl: string;
           services?: ServiceDescription[];
           [k: string]: unknown;
         })
@@ -940,10 +977,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -957,7 +990,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
           owner?: UserReference[];
           [k: string]: unknown;
         } & {
-          type?: 'device';
+          type: 'device';
           /**
            * If true, the device is connected to the service and can be used.
            *
@@ -987,10 +1020,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -1004,8 +1033,8 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
           owner?: UserReference[];
           [k: string]: unknown;
         } & {
-          type?: 'edge instantiable';
-          codeUrl?: string;
+          type: 'edge instantiable';
+          codeUrl: string;
           services?: ServiceDescription[];
           [k: string]: unknown;
         })
@@ -1023,10 +1052,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic: boolean;
@@ -1040,7 +1065,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
           owner?: UserReference[];
           [k: string]: unknown;
         } & {
-          type?: 'group';
+          type: 'group';
           devices: DeviceReference[];
           [k: string]: unknown;
         })
@@ -1056,10 +1081,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic: boolean;
@@ -1073,8 +1094,8 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
             owner?: UserReference<'request'>[];
             [k: string]: unknown;
           } & {
-            type?: 'cloud instantiable';
-            instantiateUrl?: string;
+            type: 'cloud instantiable';
+            instantiateUrl: string;
             services?: ServiceDescription<'request'>[];
             [k: string]: unknown;
           })
@@ -1088,10 +1109,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic: boolean;
@@ -1105,41 +1122,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
             owner?: UserReference<'request'>[];
             [k: string]: unknown;
           } & {
-            type?: 'device';
-            experiment?: string;
-            services?: ServiceDescription<'request'>[];
-            instanceOf?: string;
-            [k: string]: unknown;
-          })
-        | ({
-            /**
-             * Name of the device
-             */
-            name: string;
-            /**
-             * Extended description of the device, features, etc.
-             */
-            description?: string;
-            /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
-             * If true, the device may be seen and used by every user.
-             */
-            isPublic: boolean;
-            /**
-             * List of users who can view the device
-             */
-            viewer?: UserReference<'request'>[];
-            /**
-             * List of users who own the device
-             */
-            owner?: UserReference<'request'>[];
-            [k: string]: unknown;
-          } & {
-            type?: 'edge instantiable';
-            codeUrl?: string;
+            type: 'device';
             services?: ServiceDescription<'request'>[];
             [k: string]: unknown;
           })
@@ -1153,9 +1136,33 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
              */
             description?: string;
             /**
-             * Type of the device
+             * If true, the device may be seen and used by every user.
              */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
+            isPublic: boolean;
+            /**
+             * List of users who can view the device
+             */
+            viewer?: UserReference<'request'>[];
+            /**
+             * List of users who own the device
+             */
+            owner?: UserReference<'request'>[];
+            [k: string]: unknown;
+          } & {
+            type: 'edge instantiable';
+            codeUrl: string;
+            services?: ServiceDescription<'request'>[];
+            [k: string]: unknown;
+          })
+        | ({
+            /**
+             * Name of the device
+             */
+            name: string;
+            /**
+             * Extended description of the device, features, etc.
+             */
+            description?: string;
             /**
              * If true, the device may be seen and used by every user.
              */
@@ -1170,7 +1177,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
             owner?: UserReference<'request'>[];
             [k: string]: unknown;
           } & {
-            type?: 'group';
+            type: 'group';
             devices: DeviceReference<'request'>[];
             [k: string]: unknown;
           })
@@ -1190,10 +1197,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1207,8 +1210,8 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
               owner?: UserReference<'response'>[];
               [k: string]: unknown;
             } & {
-              type?: 'cloud instantiable';
-              instantiateUrl?: string;
+              type: 'cloud instantiable';
+              instantiateUrl: string;
               services?: ServiceDescription<'response'>[];
               [k: string]: unknown;
             })
@@ -1226,10 +1229,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1243,7 +1242,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
               owner?: UserReference<'response'>[];
               [k: string]: unknown;
             } & {
-              type?: 'device';
+              type: 'device';
               /**
                * If true, the device is connected to the service and can be used.
                *
@@ -1273,10 +1272,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1290,8 +1285,8 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
               owner?: UserReference<'response'>[];
               [k: string]: unknown;
             } & {
-              type?: 'edge instantiable';
-              codeUrl?: string;
+              type: 'edge instantiable';
+              codeUrl: string;
               services?: ServiceDescription<'response'>[];
               [k: string]: unknown;
             })
@@ -1309,10 +1304,6 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1326,7 +1317,7 @@ export type Device<T extends 'request' | 'response' | 'all' = 'all'> = T extends
               owner?: UserReference<'response'>[];
               [k: string]: unknown;
             } & {
-              type?: 'group';
+              type: 'group';
               devices: DeviceReference<'response'>[];
               [k: string]: unknown;
             })
@@ -1405,10 +1396,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1422,8 +1409,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
               owner?: UserReference[];
               [k: string]: unknown;
             } & {
-              type?: 'cloud instantiable';
-              instantiateUrl?: string;
+              type: 'cloud instantiable';
+              instantiateUrl: string;
               services?: ServiceDescription[];
               [k: string]: unknown;
             })
@@ -1441,10 +1428,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1458,8 +1441,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
               owner?: UserReference[];
               [k: string]: unknown;
             } & {
-              type?: 'edge instantiable';
-              codeUrl?: string;
+              type: 'edge instantiable';
+              codeUrl: string;
               services?: ServiceDescription[];
               [k: string]: unknown;
             })
@@ -1477,10 +1460,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1494,7 +1473,7 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
               owner?: UserReference[];
               [k: string]: unknown;
             } & {
-              type?: 'device';
+              type: 'device';
               /**
                * If true, the device is connected to the service and can be used.
                *
@@ -1524,10 +1503,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic: boolean;
@@ -1541,7 +1516,7 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
               owner?: UserReference[];
               [k: string]: unknown;
             } & {
-              type?: 'group';
+              type: 'group';
               devices: DeviceReference[];
               [k: string]: unknown;
             } & {
@@ -1573,10 +1548,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic: boolean;
@@ -1590,8 +1561,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                 owner?: UserReference<'request'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'cloud instantiable';
-                instantiateUrl?: string;
+                type: 'cloud instantiable';
+                instantiateUrl: string;
                 services?: ServiceDescription<'request'>[];
                 [k: string]: unknown;
               })
@@ -1605,10 +1576,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic: boolean;
@@ -1622,8 +1589,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                 owner?: UserReference<'request'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'edge instantiable';
-                codeUrl?: string;
+                type: 'edge instantiable';
+                codeUrl: string;
                 services?: ServiceDescription<'request'>[];
                 [k: string]: unknown;
               })
@@ -1637,10 +1604,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic: boolean;
@@ -1654,10 +1617,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                 owner?: UserReference<'request'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'device';
-                experiment?: string;
+                type: 'device';
                 services?: ServiceDescription<'request'>[];
-                instanceOf?: string;
                 [k: string]: unknown;
               })
             | ({
@@ -1670,10 +1631,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic: boolean;
@@ -1687,7 +1644,7 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                 owner?: UserReference<'request'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'group';
+                type: 'group';
                 devices: DeviceReference<'request'>[];
                 [k: string]: unknown;
               } & {
@@ -1723,10 +1680,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    */
                   description?: string;
                   /**
-                   * Type of the device
-                   */
-                  type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                  /**
                    * If true, the device may be seen and used by every user.
                    */
                   isPublic: boolean;
@@ -1740,8 +1693,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                   owner?: UserReference<'response'>[];
                   [k: string]: unknown;
                 } & {
-                  type?: 'cloud instantiable';
-                  instantiateUrl?: string;
+                  type: 'cloud instantiable';
+                  instantiateUrl: string;
                   services?: ServiceDescription<'response'>[];
                   [k: string]: unknown;
                 })
@@ -1759,10 +1712,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    */
                   description?: string;
                   /**
-                   * Type of the device
-                   */
-                  type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                  /**
                    * If true, the device may be seen and used by every user.
                    */
                   isPublic: boolean;
@@ -1776,8 +1725,8 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                   owner?: UserReference<'response'>[];
                   [k: string]: unknown;
                 } & {
-                  type?: 'edge instantiable';
-                  codeUrl?: string;
+                  type: 'edge instantiable';
+                  codeUrl: string;
                   services?: ServiceDescription<'response'>[];
                   [k: string]: unknown;
                 })
@@ -1795,10 +1744,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    */
                   description?: string;
                   /**
-                   * Type of the device
-                   */
-                  type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                  /**
                    * If true, the device may be seen and used by every user.
                    */
                   isPublic: boolean;
@@ -1812,7 +1757,7 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                   owner?: UserReference<'response'>[];
                   [k: string]: unknown;
                 } & {
-                  type?: 'device';
+                  type: 'device';
                   /**
                    * If true, the device is connected to the service and can be used.
                    *
@@ -1845,10 +1790,6 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                    */
                   description?: string;
                   /**
-                   * Type of the device
-                   */
-                  type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                  /**
                    * If true, the device may be seen and used by every user.
                    */
                   isPublic: boolean;
@@ -1862,7 +1803,7 @@ export type DeviceChangedEventCallback<T extends 'request' | 'response' | 'all' 
                   owner?: UserReference<'response'>[];
                   [k: string]: unknown;
                 } & {
-                  type?: 'group';
+                  type: 'group';
                   devices: DeviceReference<'response'>[];
                   [k: string]: unknown;
                 } & {
@@ -1886,10 +1827,6 @@ export type DeviceOverviewUpdate<T extends 'request' | 'response' | 'all' = 'all
          * Extended description of the device, features, etc.
          */
         description?: string;
-        /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
         /**
          * If true, the device may be seen and used by every user.
          */
@@ -1915,10 +1852,6 @@ export type DeviceOverviewUpdate<T extends 'request' | 'response' | 'all' = 'all
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic?: boolean;
@@ -1942,10 +1875,6 @@ export type DeviceOverviewUpdate<T extends 'request' | 'response' | 'all' = 'all
              * Extended description of the device, features, etc.
              */
             description?: string;
-            /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
             /**
              * If true, the device may be seen and used by every user.
              */
@@ -1975,10 +1904,6 @@ export type InstantiableCloudDeviceUpdate<
        */
       description?: string;
       /**
-       * Type of the device
-       */
-      type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-      /**
        * If true, the device may be seen and used by every user.
        */
       isPublic?: boolean;
@@ -1992,7 +1917,7 @@ export type InstantiableCloudDeviceUpdate<
       owner?: UserReference[];
       [k: string]: unknown;
     } & {
-      type?: 'cloud instantiable';
+      type: 'cloud instantiable';
       instantiateUrl?: string;
       services?: ServiceDescription[];
       [k: string]: unknown;
@@ -2008,10 +1933,6 @@ export type InstantiableCloudDeviceUpdate<
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic?: boolean;
@@ -2025,7 +1946,7 @@ export type InstantiableCloudDeviceUpdate<
         owner?: UserReference<'request'>[];
         [k: string]: unknown;
       } & {
-        type?: 'cloud instantiable';
+        type: 'cloud instantiable';
         instantiateUrl?: string;
         services?: ServiceDescription<'request'>[];
         [k: string]: unknown;
@@ -2041,10 +1962,6 @@ export type InstantiableCloudDeviceUpdate<
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic?: boolean;
@@ -2058,7 +1975,7 @@ export type InstantiableCloudDeviceUpdate<
           owner?: UserReference<'response'>[];
           [k: string]: unknown;
         } & {
-          type?: 'cloud instantiable';
+          type: 'cloud instantiable';
           instantiateUrl?: string;
           services?: ServiceDescription<'response'>[];
           [k: string]: unknown;
@@ -2077,10 +1994,6 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic?: boolean;
@@ -2094,8 +2007,7 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
         owner?: UserReference[];
         [k: string]: unknown;
       } & {
-        type?: 'device';
-        experiment?: string;
+        type: 'device';
         services?: ServiceDescription[];
         [k: string]: unknown;
       }
@@ -2110,10 +2022,6 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic?: boolean;
@@ -2127,8 +2035,7 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
           owner?: UserReference<'request'>[];
           [k: string]: unknown;
         } & {
-          type?: 'device';
-          experiment?: string;
+          type: 'device';
           services?: ServiceDescription<'request'>[];
           [k: string]: unknown;
         }
@@ -2143,10 +2050,6 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic?: boolean;
@@ -2160,8 +2063,7 @@ export type ConcreteDeviceUpdate<T extends 'request' | 'response' | 'all' = 'all
             owner?: UserReference<'response'>[];
             [k: string]: unknown;
           } & {
-            type?: 'device';
-            experiment?: string;
+            type: 'device';
             services?: ServiceDescription<'response'>[];
             [k: string]: unknown;
           }
@@ -2180,10 +2082,6 @@ export type InstantiableBrowserDeviceUpdate<
        */
       description?: string;
       /**
-       * Type of the device
-       */
-      type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-      /**
        * If true, the device may be seen and used by every user.
        */
       isPublic?: boolean;
@@ -2197,7 +2095,7 @@ export type InstantiableBrowserDeviceUpdate<
       owner?: UserReference[];
       [k: string]: unknown;
     } & {
-      type?: 'edge instantiable';
+      type: 'edge instantiable';
       codeUrl?: string;
       services?: ServiceDescription[];
       [k: string]: unknown;
@@ -2213,10 +2111,6 @@ export type InstantiableBrowserDeviceUpdate<
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic?: boolean;
@@ -2230,7 +2124,7 @@ export type InstantiableBrowserDeviceUpdate<
         owner?: UserReference<'request'>[];
         [k: string]: unknown;
       } & {
-        type?: 'edge instantiable';
+        type: 'edge instantiable';
         codeUrl?: string;
         services?: ServiceDescription<'request'>[];
         [k: string]: unknown;
@@ -2246,10 +2140,6 @@ export type InstantiableBrowserDeviceUpdate<
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic?: boolean;
@@ -2263,7 +2153,7 @@ export type InstantiableBrowserDeviceUpdate<
           owner?: UserReference<'response'>[];
           [k: string]: unknown;
         } & {
-          type?: 'edge instantiable';
+          type: 'edge instantiable';
           codeUrl?: string;
           services?: ServiceDescription<'response'>[];
           [k: string]: unknown;
@@ -2282,10 +2172,6 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
          */
         description?: string;
         /**
-         * Type of the device
-         */
-        type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-        /**
          * If true, the device may be seen and used by every user.
          */
         isPublic?: boolean;
@@ -2299,7 +2185,7 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
         owner?: UserReference[];
         [k: string]: unknown;
       } & {
-        type?: 'group';
+        type: 'group';
         devices?: DeviceReference[];
         [k: string]: unknown;
       }
@@ -2314,10 +2200,6 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
            */
           description?: string;
           /**
-           * Type of the device
-           */
-          type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-          /**
            * If true, the device may be seen and used by every user.
            */
           isPublic?: boolean;
@@ -2331,7 +2213,7 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
           owner?: UserReference<'request'>[];
           [k: string]: unknown;
         } & {
-          type?: 'group';
+          type: 'group';
           devices?: DeviceReference<'request'>[];
           [k: string]: unknown;
         }
@@ -2346,10 +2228,6 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic?: boolean;
@@ -2363,7 +2241,7 @@ export type DeviceGroupUpdate<T extends 'request' | 'response' | 'all' = 'all'> 
             owner?: UserReference<'response'>[];
             [k: string]: unknown;
           } & {
-            type?: 'group';
+            type: 'group';
             devices?: DeviceReference<'response'>[];
             [k: string]: unknown;
           }
@@ -2382,10 +2260,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic?: boolean;
@@ -2399,7 +2273,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
             owner?: UserReference[];
             [k: string]: unknown;
           } & {
-            type?: 'cloud instantiable';
+            type: 'cloud instantiable';
             instantiateUrl?: string;
             services?: ServiceDescription[];
             [k: string]: unknown;
@@ -2414,10 +2288,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic?: boolean;
@@ -2431,8 +2301,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
             owner?: UserReference[];
             [k: string]: unknown;
           } & {
-            type?: 'device';
-            experiment?: string;
+            type: 'device';
             services?: ServiceDescription[];
             [k: string]: unknown;
           })
@@ -2446,10 +2315,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic?: boolean;
@@ -2463,7 +2328,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
             owner?: UserReference[];
             [k: string]: unknown;
           } & {
-            type?: 'edge instantiable';
+            type: 'edge instantiable';
             codeUrl?: string;
             services?: ServiceDescription[];
             [k: string]: unknown;
@@ -2478,10 +2343,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
              */
             description?: string;
             /**
-             * Type of the device
-             */
-            type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-            /**
              * If true, the device may be seen and used by every user.
              */
             isPublic?: boolean;
@@ -2495,7 +2356,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
             owner?: UserReference[];
             [k: string]: unknown;
           } & {
-            type?: 'group';
+            type: 'group';
             devices?: DeviceReference[];
             [k: string]: unknown;
           })
@@ -2511,10 +2372,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic?: boolean;
@@ -2528,7 +2385,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
               owner?: UserReference<'request'>[];
               [k: string]: unknown;
             } & {
-              type?: 'cloud instantiable';
+              type: 'cloud instantiable';
               instantiateUrl?: string;
               services?: ServiceDescription<'request'>[];
               [k: string]: unknown;
@@ -2543,10 +2400,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic?: boolean;
@@ -2560,8 +2413,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
               owner?: UserReference<'request'>[];
               [k: string]: unknown;
             } & {
-              type?: 'device';
-              experiment?: string;
+              type: 'device';
               services?: ServiceDescription<'request'>[];
               [k: string]: unknown;
             })
@@ -2575,10 +2427,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic?: boolean;
@@ -2592,7 +2440,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
               owner?: UserReference<'request'>[];
               [k: string]: unknown;
             } & {
-              type?: 'edge instantiable';
+              type: 'edge instantiable';
               codeUrl?: string;
               services?: ServiceDescription<'request'>[];
               [k: string]: unknown;
@@ -2607,10 +2455,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                */
               description?: string;
               /**
-               * Type of the device
-               */
-              type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-              /**
                * If true, the device may be seen and used by every user.
                */
               isPublic?: boolean;
@@ -2624,7 +2468,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
               owner?: UserReference<'request'>[];
               [k: string]: unknown;
             } & {
-              type?: 'group';
+              type: 'group';
               devices?: DeviceReference<'request'>[];
               [k: string]: unknown;
             })
@@ -2640,10 +2484,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic?: boolean;
@@ -2657,7 +2497,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                 owner?: UserReference<'response'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'cloud instantiable';
+                type: 'cloud instantiable';
                 instantiateUrl?: string;
                 services?: ServiceDescription<'response'>[];
                 [k: string]: unknown;
@@ -2672,10 +2512,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic?: boolean;
@@ -2689,8 +2525,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                 owner?: UserReference<'response'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'device';
-                experiment?: string;
+                type: 'device';
                 services?: ServiceDescription<'response'>[];
                 [k: string]: unknown;
               })
@@ -2704,10 +2539,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic?: boolean;
@@ -2721,7 +2552,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                 owner?: UserReference<'response'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'edge instantiable';
+                type: 'edge instantiable';
                 codeUrl?: string;
                 services?: ServiceDescription<'response'>[];
                 [k: string]: unknown;
@@ -2736,10 +2567,6 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                  */
                 description?: string;
                 /**
-                 * Type of the device
-                 */
-                type: 'device' | 'group' | 'edge instantiable' | 'cloud instantiable';
-                /**
                  * If true, the device may be seen and used by every user.
                  */
                 isPublic?: boolean;
@@ -2753,7 +2580,7 @@ export type DeviceUpdate<T extends 'request' | 'response' | 'all' = 'all'> =
                 owner?: UserReference<'response'>[];
                 [k: string]: unknown;
               } & {
-                type?: 'group';
+                type: 'group';
                 devices?: DeviceReference<'response'>[];
                 [k: string]: unknown;
               })
@@ -2886,6 +2713,15 @@ export type AvailabilityRule<T extends 'request' | 'response' | 'all' = 'all'> =
             };
             [k: string]: unknown;
           }
+        : never;
+
+export type AvailabilityRuleList<T extends 'request' | 'response' | 'all' = 'all'> =
+  T extends 'all'
+    ? AvailabilityRule[]
+    : T extends 'request'
+      ? AvailabilityRule<'request'>[]
+      : T extends 'response'
+        ? AvailabilityRule<'response'>[]
         : never;
 
 export type Message<T extends 'request' | 'response' | 'all' = 'all'> = T extends 'all'

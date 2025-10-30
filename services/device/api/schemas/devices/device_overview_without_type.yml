@@ -1,7 +1,12 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
-title: Device Overview Update
 type: object
+title: Device Overview Without Type
 properties:
+  url:
+    type: string
+    description: URL of the device
+    format: uri
+    readOnly: true
   name:
     type: string
     description: Name of the device
@@ -16,9 +21,13 @@ properties:
     type: array
     description: List of users who can view the device
     items:
-      $ref: ../references/user_reference.yml
+      $ref: ./references/user_reference.yml
   owner:
     type: array
     description: List of users who own the device
     items:
-      $ref: ../references/user_reference.yml
+      $ref: ./references/user_reference.yml
+required:
+  - url
+  - name
+  - isPublic

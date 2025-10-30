@@ -10,6 +10,10 @@ export declare function validateUserReference<T extends 'request' | 'response' |
     object: unknown
 ): UserReference<T>
 
+export declare function validateDeviceOverviewWithoutType<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): DeviceOverviewWithoutType<T>
+
 export declare function validateDeviceOverview<T extends 'request' | 'response' | 'all'>(
     object: unknown
 ): DeviceOverview<T>
@@ -93,6 +97,10 @@ export declare function validateDeviceDeletedEventCallback<T extends 'request' |
 export declare function validateAvailabilityRule<T extends 'request' | 'response' | 'all'>(
     object: unknown
 ): AvailabilityRule<T>
+
+export declare function validateAvailabilityRuleList<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): AvailabilityRuleList<T>
 
 export declare function validateMessage<T extends 'request' | 'response' | 'all'>(
     object: unknown
@@ -294,6 +302,14 @@ export declare function validateUserReferenceResponse<T extends 'request' | 'res
     object: unknown
 ): UserReferenceResponse<T>
 
+export declare function validateDeviceOverviewWithoutTypeRequest<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): DeviceOverviewWithoutTypeRequest<T>
+
+export declare function validateDeviceOverviewWithoutTypeResponse<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): DeviceOverviewWithoutTypeResponse<T>
+
 export declare function validateDeviceOverviewRequest<T extends 'request' | 'response' | 'all'>(
     object: unknown
 ): DeviceOverviewRequest<T>
@@ -461,6 +477,14 @@ export declare function validateAvailabilityRuleRequest<T extends 'request' | 'r
 export declare function validateAvailabilityRuleResponse<T extends 'request' | 'response' | 'all'>(
     object: unknown
 ): AvailabilityRuleResponse<T>
+
+export declare function validateAvailabilityRuleListRequest<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): AvailabilityRuleListRequest<T>
+
+export declare function validateAvailabilityRuleListResponse<T extends 'request' | 'response' | 'all'>(
+    object: unknown
+): AvailabilityRuleListResponse<T>
 
 export declare function validateMessageRequest<T extends 'request' | 'response' | 'all'>(
     object: unknown

@@ -39,10 +39,10 @@ def cleandict(d):
 
 
 async def authenticate(
-    ws: aiohttp.ClientWebSocketResponse, device_url: str, token: str
+    ws: aiohttp.ClientWebSocketResponse, device_url: str, token: str, services
 ):
     authMessage: AuthenticationMessage = {
-        "messageType": "authenticate", "token": token}
+        "messageType": "authenticate", "token": token, "deviceUrl": device_url, "services": services}
     await ws.send_json(authMessage)
     try:
         authentification_response = await receiveMessage(ws)
@@ -109,7 +109,7 @@ class DeviceHandler(AsyncIOEventEmitter):
                 token = await self.client.create_websocket_token(token_endpoint)
                 self.emit("websocketToken", token)
                 self.ws = await self.session.ws_connect(ws_endpoint)
-                await authenticate(self.ws, device_url, token)
+                await authenticate(self.ws, device_url, token, self.get_service_meta())
                 self.emit("websocketConnected")
                 loggin_handler.setUpstream(
                     lambda info: sendLogMessage(self.ws, info))

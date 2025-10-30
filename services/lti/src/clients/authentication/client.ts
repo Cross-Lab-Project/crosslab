@@ -419,7 +419,7 @@ export class Client {
     /**
      * Create a user 
 	 * 
-	 * @param user
+	 * @param userInit
 	 * User to be created.
 	 * @param options.url
 	 * Url of the  to be used.
@@ -436,12 +436,12 @@ export class Client {
      * @returns
 	 * The JSON representation of the created user.
      */
-    public async createUser(user: Require<Types.User<"request">, "username" | "password">,
+    public async createUser(userInit: Types.UserInit<"request">,
             options?: {
                 headers?: [string, string][],url?: string}): Promise<Signatures.CreateUserSuccessResponse["body"]> {
             const url = appendToUrl(options?.url ?? this.baseUrl, "/users")
 
-        const body = user
+        const body = userInit
 
         
 
@@ -553,7 +553,7 @@ export class Client {
 	 * 
 	 * @param url
 	 * Url of the resource to be accessed.
-	 * @param user
+	 * @param userUpdate
 	 * Updated user
      *
      * @throws {@link FetchError | FetchError } 
@@ -568,14 +568,14 @@ export class Client {
      * @returns
 	 * The JSON representation of the updated user.
      */
-    public async updateUser(url: string,user: Types.User<"request">,
+    public async updateUser(url: string,userUpdate: Types.UserUpdate<"request">,
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.UpdateUserSuccessResponse["body"]> {
                 const urlSuffix = '/users/{}'.split('{}').at(-1) ?? ''
                 if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix)
                 const [user_id,] = validateUrl(new URL(url).toString(), '/users/{}')
 
-        const body = user
+        const body = userUpdate
 
         
         const parameters = {
@@ -745,7 +745,7 @@ export class Client {
     /**
      * Update identity 
 	 * 
-	 * @param user
+	 * @param userUpdate
 	 * Updated identity.
      *
      * @throws {@link FetchError | FetchError } 
@@ -760,12 +760,12 @@ export class Client {
      * @returns
 	 * The JSON representation of the updated user.
      */
-    public async updateIdentity(user: Types.User<"request"> | undefined,
+    public async updateIdentity(userUpdate: Types.UserUpdate<"request"> | undefined,
             options?: {
                 headers?: [string, string][],}): Promise<Signatures.UpdateIdentitySuccessResponse["body"]> {
             const url = appendToUrl(this.baseUrl, "/identity")
 
-        const body = user
+        const body = userUpdate
 
         
 

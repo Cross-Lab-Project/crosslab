@@ -8,7 +8,7 @@ import {
   isAuthenticationMessage,
   isMessage,
 } from '../../../../generated/types.js';
-import { deviceUrlFromId } from '../../../../methods/urlFromId.js';
+import { deviceIdFromUrl, deviceUrlFromId } from '../../../../methods/urlFromId.js';
 import { sendChangedCallback } from '../../../callbacks/index.js';
 import { removeDisconnectTimeout } from './disconnect.js';
 import { connectedDevices } from './index.js';
@@ -19,36 +19,46 @@ export async function authenticationHandling(
 ): Promise<ConcreteDeviceModel | void> {
   const message = JSON.parse(data.toString('utf8'));
 
-  if (!(isMessage(message) && isAuthenticationMessage(message))) {
+  if (!(isMessage(message) && isAuthenticationMessage(message, 'request'))) {
     logger.log(
       'error',
       'First received websocket message is not an authentication message',
     );
-    return ws.close(1002, 'Received message is not an authentication message');
+    return ws.close(1002, 'Received message is not a valid authentication message');
   }
 
-  if (!message.token) {
-    logger.log('error', 'Authentication message does not contain a websocket token');
-    return ws.close(1002, 'Authentication message does not contain a websocket token');
+  let deviceId: string | undefined;
+  try {
+    deviceId = deviceIdFromUrl(message.deviceUrl);
+  } catch {
+    logger.log('error', 'Received device url is not valid for this device service');
+    return ws.close(1002, 'Received device url is not valid for this device service');
   }
 
   const deviceModel = await repositories.concreteDevice.findOne({
-    where: { token: message.token },
+    where: { uuid: deviceId },
   });
   if (!deviceModel) {
-    logger.log('error', 'No device found with matching websocket token');
-    return ws.close(1002, 'No device found with matching websocket token');
+    logger.log('error', 'Device could not be found');
+    return ws.close(1002, 'Device could not be found');
   }
 
-  connectedDevices.set(deviceModel.uuid, ws);
+  if (deviceModel.token !== message.token) {
+    logger.log('error', 'Websocket token does not match');
+    return ws.close(1002, 'Websocket token does not match');
+  }
+
+  deviceModel.services = message.services;
   await repositories.concreteDevice.save(deviceModel);
+
+  connectedDevices.set(deviceModel.uuid, ws);
   removeDisconnectTimeout(deviceModel.uuid);
 
   ws.send(
-    JSON.stringify(<AuthenticationMessage>{
+    JSON.stringify({
       messageType: 'authenticate',
       authenticated: true,
-    }),
+    } satisfies AuthenticationMessage<'response'>),
   );
   sendChangedCallback(deviceModel);
 

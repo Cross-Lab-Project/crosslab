@@ -8,8 +8,22 @@ allOf:
         const: authenticate
       token:
         type: string
+        writeOnly: true
+      deviceUrl:
+        type: string
+        writeOnly: true
+      services:
+        type: array
+        items: 
+          $ref: ../devices/services/service_description.yml
+        writeOnly: true
       authenticated:
         type: boolean
+        readOnly: true
     required:
       - messageType
+      - deviceUrl
+      - token
+      - authenticated
+      - services
 x-typeguard: true

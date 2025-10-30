@@ -411,7 +411,7 @@ export class Client {
   /**
    * Create a user
    *
-   * @param user
+   * @param userInit
    * User to be created.
    * @param options.url
    * Url of the  to be used.
@@ -429,7 +429,7 @@ export class Client {
    * The JSON representation of the created user.
    */
   public async createUser(
-    user: Require<Types.User<'request'>, 'username' | 'password'>,
+    userInit: Types.UserInit<'request'>,
     options?: {
       headers?: [string, string][];
       url?: string;
@@ -437,7 +437,7 @@ export class Client {
   ): Promise<Signatures.CreateUserSuccessResponse['body']> {
     const url = appendToUrl(options?.url ?? this.baseUrl, '/users');
 
-    const body = user;
+    const body = userInit;
 
     if (!RequestValidation.validateCreateUserInput(body))
       throw new ValidationError(
@@ -549,7 +549,7 @@ export class Client {
    *
    * @param url
    * Url of the resource to be accessed.
-   * @param user
+   * @param userUpdate
    * Updated user
    *
    * @throws {@link FetchError | FetchError }
@@ -566,7 +566,7 @@ export class Client {
    */
   public async updateUser(
     url: string,
-    user: Types.User<'request'>,
+    userUpdate: Types.UserUpdate<'request'>,
     options?: {
       headers?: [string, string][];
     },
@@ -575,7 +575,7 @@ export class Client {
     if (urlSuffix && !url.endsWith(urlSuffix)) url = appendToUrl(url, urlSuffix);
     const [user_id] = validateUrl(new URL(url).toString(), '/users/{}');
 
-    const body = user;
+    const body = userUpdate;
 
     const parameters = {
       user_id: user_id,
@@ -743,7 +743,7 @@ export class Client {
   /**
    * Update identity
    *
-   * @param user
+   * @param userUpdate
    * Updated identity.
    *
    * @throws {@link FetchError | FetchError }
@@ -759,14 +759,14 @@ export class Client {
    * The JSON representation of the updated user.
    */
   public async updateIdentity(
-    user: Types.User<'request'> | undefined,
+    userUpdate: Types.UserUpdate<'request'> | undefined,
     options?: {
       headers?: [string, string][];
     },
   ): Promise<Signatures.UpdateIdentitySuccessResponse['body']> {
     const url = appendToUrl(this.baseUrl, '/identity');
 
-    const body = user;
+    const body = userUpdate;
 
     if (!RequestValidation.validateUpdateIdentityInput(body))
       throw new ValidationError(

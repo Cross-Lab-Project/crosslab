@@ -1,10 +1,11 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Concrete Device
 allOf:
-  - $ref: ./device_overview.yml
+  - $ref: ./device_overview_without_type.yml
   - type: object
     properties:
       type:
+        type: string
         const: device
       connected:
         description: |
@@ -17,10 +18,14 @@ allOf:
       experiment:
         type: string
         format: uri
+        readOnly: true
       services:
         type: array
         items:
           $ref: ./services/service_description.yml
       instanceOf:
         type: string
+        readOnly: true
+    required:
+      - type
 x-typeguard: true

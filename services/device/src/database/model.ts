@@ -99,7 +99,7 @@ export class InstantiableCloudDeviceModel extends InstantiableDeviceOverviewMode
   declare type: 'cloud instantiable';
 
   @Column()
-  instantiateUrl?: string;
+  instantiateUrl!: string;
 
   @Column('simple-json')
   services?: ServiceDescription[];
@@ -110,7 +110,7 @@ export class InstantiableBrowserDeviceModel extends InstantiableDeviceOverviewMo
   declare type: 'edge instantiable';
 
   @Column()
-  codeUrl?: string;
+  codeUrl!: string;
 
   @Column('simple-json')
   services?: ServiceDescription[];

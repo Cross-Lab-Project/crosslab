@@ -111,15 +111,9 @@ GetUserResponse: TypeAlias = GetUserResponse200
 class UpdateUserRequest(TypedDict):
     """
     Properties:
-    - url
-    - id
-    - username
     - password
     - admin
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
     password: NotRequired[str]
     admin: NotRequired[bool]
 
@@ -168,15 +162,9 @@ GetIdentityResponse: TypeAlias = GetIdentityResponse200
 class UpdateIdentityRequest(TypedDict):
     """
     Properties:
-    - url
-    - id
-    - username
     - password
     - admin
     """
-    url: NotRequired[str]
-    id: NotRequired[str]
-    username: NotRequired[str]
     password: NotRequired[str]
     admin: NotRequired[bool]
 
@@ -264,18 +252,18 @@ class ListDevicesResponse200ItemsOwnerItems(TypedDict):
 class ListDevicesResponse200Items(TypedDict):
     """
     Properties:
+    - type: Type of the device
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
     """
+    type: Literal["device", "group", "edge instantiable", "cloud instantiable"]
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["device", "group", "edge instantiable", "cloud instantiable"]
     isPublic: bool
     viewer: NotRequired[List[ListDevicesResponse200ItemsViewerItems]]
     owner: NotRequired[List[ListDevicesResponse200ItemsOwnerItems]]
@@ -323,21 +311,21 @@ class CreateDeviceRequestAlt1(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - instantiateUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["cloud instantiable"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceRequestAlt1ViewerItems]]
     owner: NotRequired[List[CreateDeviceRequestAlt1OwnerItems]]
-    instantiateUrl: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    instantiateUrl: str
     services: NotRequired[List[CreateDeviceRequestAlt1ServicesItems]]
 
 
@@ -387,10 +375,10 @@ class CreateDeviceRequestAlt2(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -402,10 +390,10 @@ class CreateDeviceRequestAlt2(TypedDict):
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["device"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceRequestAlt2ViewerItems]]
     owner: NotRequired[List[CreateDeviceRequestAlt2OwnerItems]]
+    type: Literal["device"]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceRequestAlt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -449,21 +437,21 @@ class CreateDeviceRequestAlt3(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - codeUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["edge instantiable"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceRequestAlt3ViewerItems]]
     owner: NotRequired[List[CreateDeviceRequestAlt3OwnerItems]]
-    codeUrl: NotRequired[str]
+    type: Literal["edge instantiable"]
+    codeUrl: str
     services: NotRequired[List[CreateDeviceRequestAlt3ServicesItems]]
 
 
@@ -497,19 +485,19 @@ class CreateDeviceRequestAlt4(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["group"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceRequestAlt4ViewerItems]]
     owner: NotRequired[List[CreateDeviceRequestAlt4OwnerItems]]
+    type: Literal["group"]
     devices: List[CreateDeviceRequestAlt4DevicesItems]
 
 
@@ -552,21 +540,21 @@ class CreateDeviceResponse201Alt1(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - instantiateUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["cloud instantiable"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceResponse201Alt1ViewerItems]]
     owner: NotRequired[List[CreateDeviceResponse201Alt1OwnerItems]]
-    instantiateUrl: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    instantiateUrl: str
     services: NotRequired[List[CreateDeviceResponse201Alt1ServicesItems]]
 
 
@@ -616,10 +604,10 @@ class CreateDeviceResponse201Alt2(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -631,10 +619,10 @@ class CreateDeviceResponse201Alt2(TypedDict):
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["device"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceResponse201Alt2ViewerItems]]
     owner: NotRequired[List[CreateDeviceResponse201Alt2OwnerItems]]
+    type: Literal["device"]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[CreateDeviceResponse201Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -678,21 +666,21 @@ class CreateDeviceResponse201Alt3(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - codeUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["edge instantiable"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceResponse201Alt3ViewerItems]]
     owner: NotRequired[List[CreateDeviceResponse201Alt3OwnerItems]]
-    codeUrl: NotRequired[str]
+    type: Literal["edge instantiable"]
+    codeUrl: str
     services: NotRequired[List[CreateDeviceResponse201Alt3ServicesItems]]
 
 
@@ -726,19 +714,19 @@ class CreateDeviceResponse201Alt4(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["group"]
     isPublic: bool
     viewer: NotRequired[List[CreateDeviceResponse201Alt4ViewerItems]]
     owner: NotRequired[List[CreateDeviceResponse201Alt4OwnerItems]]
+    type: Literal["group"]
     devices: List[CreateDeviceResponse201Alt4DevicesItems]
 
 
@@ -784,21 +772,21 @@ class GetDeviceResponse200Alt1(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - instantiateUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["cloud instantiable"]
     isPublic: bool
     viewer: NotRequired[List[GetDeviceResponse200Alt1ViewerItems]]
     owner: NotRequired[List[GetDeviceResponse200Alt1OwnerItems]]
-    instantiateUrl: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    instantiateUrl: str
     services: NotRequired[List[GetDeviceResponse200Alt1ServicesItems]]
 
 
@@ -848,10 +836,10 @@ class GetDeviceResponse200Alt2(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -863,10 +851,10 @@ class GetDeviceResponse200Alt2(TypedDict):
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["device"]
     isPublic: bool
     viewer: NotRequired[List[GetDeviceResponse200Alt2ViewerItems]]
     owner: NotRequired[List[GetDeviceResponse200Alt2OwnerItems]]
+    type: Literal["device"]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[GetDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -910,21 +898,21 @@ class GetDeviceResponse200Alt3(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - codeUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["edge instantiable"]
     isPublic: bool
     viewer: NotRequired[List[GetDeviceResponse200Alt3ViewerItems]]
     owner: NotRequired[List[GetDeviceResponse200Alt3OwnerItems]]
-    codeUrl: NotRequired[str]
+    type: Literal["edge instantiable"]
+    codeUrl: str
     services: NotRequired[List[GetDeviceResponse200Alt3ServicesItems]]
 
 
@@ -958,19 +946,19 @@ class GetDeviceResponse200Alt4(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["group"]
     isPublic: bool
     viewer: NotRequired[List[GetDeviceResponse200Alt4ViewerItems]]
     owner: NotRequired[List[GetDeviceResponse200Alt4OwnerItems]]
+    type: Literal["group"]
     devices: List[GetDeviceResponse200Alt4DevicesItems]
 
 
@@ -1015,19 +1003,19 @@ class UpdateDeviceRequestAlt1(TypedDict):
     Properties:
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - instantiateUrl
     - services
     """
     name: NotRequired[str]
     description: NotRequired[str]
-    type: Literal["cloud instantiable"]
     isPublic: NotRequired[bool]
     viewer: NotRequired[List[UpdateDeviceRequestAlt1ViewerItems]]
     owner: NotRequired[List[UpdateDeviceRequestAlt1OwnerItems]]
+    type: Literal["cloud instantiable"]
     instantiateUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt1ServicesItems]]
 
@@ -1067,20 +1055,18 @@ class UpdateDeviceRequestAlt2(TypedDict):
     Properties:
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
-    - experiment
+    - type
     - services
     """
     name: NotRequired[str]
     description: NotRequired[str]
-    type: Literal["device"]
     isPublic: NotRequired[bool]
     viewer: NotRequired[List[UpdateDeviceRequestAlt2ViewerItems]]
     owner: NotRequired[List[UpdateDeviceRequestAlt2OwnerItems]]
-    experiment: NotRequired[str]
+    type: Literal["device"]
     services: NotRequired[List[UpdateDeviceRequestAlt2ServicesItems]]
 
 
@@ -1119,19 +1105,19 @@ class UpdateDeviceRequestAlt3(TypedDict):
     Properties:
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - codeUrl
     - services
     """
     name: NotRequired[str]
     description: NotRequired[str]
-    type: Literal["edge instantiable"]
     isPublic: NotRequired[bool]
     viewer: NotRequired[List[UpdateDeviceRequestAlt3ViewerItems]]
     owner: NotRequired[List[UpdateDeviceRequestAlt3OwnerItems]]
+    type: Literal["edge instantiable"]
     codeUrl: NotRequired[str]
     services: NotRequired[List[UpdateDeviceRequestAlt3ServicesItems]]
 
@@ -1165,18 +1151,18 @@ class UpdateDeviceRequestAlt4(TypedDict):
     Properties:
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - devices
     """
     name: NotRequired[str]
     description: NotRequired[str]
-    type: Literal["group"]
     isPublic: NotRequired[bool]
     viewer: NotRequired[List[UpdateDeviceRequestAlt4ViewerItems]]
     owner: NotRequired[List[UpdateDeviceRequestAlt4OwnerItems]]
+    type: Literal["group"]
     devices: NotRequired[List[UpdateDeviceRequestAlt4DevicesItems]]
 
 
@@ -1219,21 +1205,21 @@ class UpdateDeviceResponse200Alt1(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - instantiateUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["cloud instantiable"]
     isPublic: bool
     viewer: NotRequired[List[UpdateDeviceResponse200Alt1ViewerItems]]
     owner: NotRequired[List[UpdateDeviceResponse200Alt1OwnerItems]]
-    instantiateUrl: NotRequired[str]
+    type: Literal["cloud instantiable"]
+    instantiateUrl: str
     services: NotRequired[List[UpdateDeviceResponse200Alt1ServicesItems]]
 
 
@@ -1283,10 +1269,10 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1298,10 +1284,10 @@ class UpdateDeviceResponse200Alt2(TypedDict):
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["device"]
     isPublic: bool
     viewer: NotRequired[List[UpdateDeviceResponse200Alt2ViewerItems]]
     owner: NotRequired[List[UpdateDeviceResponse200Alt2OwnerItems]]
+    type: Literal["device"]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[UpdateDeviceResponse200Alt2AnnouncedavailabilityItems]]
     experiment: NotRequired[str]
@@ -1345,21 +1331,21 @@ class UpdateDeviceResponse200Alt3(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - codeUrl
     - services
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["edge instantiable"]
     isPublic: bool
     viewer: NotRequired[List[UpdateDeviceResponse200Alt3ViewerItems]]
     owner: NotRequired[List[UpdateDeviceResponse200Alt3OwnerItems]]
-    codeUrl: NotRequired[str]
+    type: Literal["edge instantiable"]
+    codeUrl: str
     services: NotRequired[List[UpdateDeviceResponse200Alt3ServicesItems]]
 
 
@@ -1393,19 +1379,19 @@ class UpdateDeviceResponse200Alt4(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - devices
     """
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["group"]
     isPublic: bool
     viewer: NotRequired[List[UpdateDeviceResponse200Alt4ViewerItems]]
     owner: NotRequired[List[UpdateDeviceResponse200Alt4OwnerItems]]
+    type: Literal["group"]
     devices: List[UpdateDeviceResponse200Alt4DevicesItems]
 
 
@@ -1464,10 +1450,10 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     - url: URL of the device
     - name: Name of the device
     - description: Extended description of the device, features, etc.
-    - type: Type of the device
     - isPublic: If true, the device may be seen and used by every user.
     - viewer: List of users who can view the device
     - owner: List of users who own the device
+    - type
     - connected: If true, the device is connected to the service and can be used.
 
     - announcedAvailability: A list of time slots that the maintainer of the device announced it is available
@@ -1479,10 +1465,10 @@ class InstantiateDeviceResponse201Instance(TypedDict):
     url: str
     name: str
     description: NotRequired[str]
-    type: Literal["device"]
     isPublic: bool
     viewer: NotRequired[List[InstantiateDeviceResponse201InstanceViewerItems]]
     owner: NotRequired[List[InstantiateDeviceResponse201InstanceOwnerItems]]
+    type: Literal["device"]
     connected: NotRequired[bool]
     announcedAvailability: NotRequired[List[InstantiateDeviceResponse201InstanceAnnouncedavailabilityItems]]
     experiment: NotRequired[str]

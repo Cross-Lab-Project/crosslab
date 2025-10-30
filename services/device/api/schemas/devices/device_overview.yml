@@ -1,42 +1,17 @@
 # yaml-language-server: $schema=https://json-schema.org/draft/2020-12/schema
 title: Device Overview
-type: object
-properties:
-  url:
-    type: string
-    description: URL of the device
-    format: uri
-    readOnly: true
-  name:
-    type: string
-    description: Name of the device
-  description:
-    type: string
-    description: Extended description of the device, features, etc.
-  type:
-    type: string
-    description: Type of the device
-    enum:
-      - device
-      - group
-      - edge instantiable
-      - cloud instantiable
-  isPublic:
-    type: boolean
-    description: If true, the device may be seen and used by every user.
-  viewer:
-    type: array
-    description: List of users who can view the device
-    items:
-      $ref: ./references/user_reference.yml
-  owner:
-    type: array
-    description: List of users who own the device
-    items:
-      $ref: ./references/user_reference.yml
-required:
-  - url
-  - type
-  - name
-  - isPublic
+allOf: 
+  - type: object
+    properties:
+      type:
+        type: string
+        description: Type of the device
+        enum:
+          - device
+          - group
+          - edge instantiable
+          - cloud instantiable
+    required:
+      - type
+  - $ref: ./device_overview_without_type.yml
 x-typeguard: true

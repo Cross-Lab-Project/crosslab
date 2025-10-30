@@ -4,7 +4,8 @@ allOf:
   - $ref: ./device_overview_update.yml
   - type: object
     properties:
-      type:
+      type: 
+        type: string
         const: cloud instantiable
       instantiateUrl:
         type: string
@@ -13,3 +14,5 @@ allOf:
         type: array
         items:
           $ref: ../services/service_description.yml
+    required:
+      - type

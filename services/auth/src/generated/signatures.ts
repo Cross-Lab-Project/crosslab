@@ -9,7 +9,9 @@ import {
 	ErrorResponse,
 	Credentials,
 	AuthMethod,
-	User
+	User,
+	UserInit,
+	UserUpdate
 } from "./types.js"
 import express from "express"
 
@@ -411,7 +413,7 @@ export type postUsersSignature = (
 /**
  * Typing for the request body of a POST request on /users
  */
-export type postUsersRequestBodyType = Require<User<"request">, "username" | "password">
+export type postUsersRequestBodyType = UserInit<"request">
 
 /**
  * Typing for all possible responses to a POST request on /users
@@ -604,7 +606,7 @@ export type patchUsersByUserIdParametersType = {
 /**
  * Typing for the request body of a PATCH request on /users/{user_id}
  */
-export type patchUsersByUserIdRequestBodyType = User<"request">
+export type patchUsersByUserIdRequestBodyType = UserUpdate<"request">
 
 /**
  * Typing for all possible responses to a PATCH request on /users/{user_id}
@@ -877,7 +879,7 @@ export type patchIdentitySignature = (
 /**
  * Typing for the request body of a PATCH request on /identity
  */
-export type patchIdentityRequestBodyType = User<"request"> | undefined
+export type patchIdentityRequestBodyType = UserUpdate<"request"> | undefined
 
 /**
  * Typing for all possible responses to a PATCH request on /identity

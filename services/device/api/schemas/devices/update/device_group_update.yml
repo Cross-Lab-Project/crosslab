@@ -5,8 +5,11 @@ allOf:
   - type: object
     properties:
       type:
+        type: string
         const: group
       devices:
         type: array
         items:
           $ref: ../references/device_reference.yml
+    required:
+      - type

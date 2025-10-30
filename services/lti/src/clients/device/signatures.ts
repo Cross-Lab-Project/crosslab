@@ -821,7 +821,7 @@ export type AddDeviceAvailabilityRulesParameters = {
  * Typing for the body of the request made by addDeviceAvailabilityRules()
  * @category addDeviceAvailabilityRules()
  */
-export type AddDeviceAvailabilityRulesBody = (Types.AvailabilityRule<"request">)[] | undefined
+export type AddDeviceAvailabilityRulesBody = Types.AvailabilityRuleList<"request"> | undefined
 
 /**
  * Typing for all possible responses to the request made by addDeviceAvailabilityRules()
